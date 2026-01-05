@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>오프라인 - 산만이의 아침</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+      background: linear-gradient(135deg, #dbeafe 0%, #e0e7ff 100%);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-center;
+      padding: 1.5rem;
+    }
+
+    .container {
+      max-width: 28rem;
+      background: white;
+      border-radius: 1rem;
+      box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+      padding: 2rem;
+      text-align: center;
+    }
+
+    h1 {
+      font-size: 1.5rem;
+      color: #1e293b;
+      margin-bottom: 1rem;
+    }
+
+    p {
+      color: #64748b;
+      line-height: 1.6;
+      margin-bottom: 1.5rem;
+    }
+
+    .icon {
+      font-size: 4rem;
+      margin-bottom: 1rem;
+    }
+
+    button {
+      background: #2563eb;
+      color: white;
+      border: none;
+      padding: 0.75rem 1.5rem;
+      border-radius: 0.5rem;
+      font-size: 1rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    button:hover {
+      background: #1d4ed8;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="icon">📡</div>
+    <h1>오프라인 상태입니다</h1>
+    <p>
+      인터넷 연결을 확인해주세요.<br>
+      저장된 To-do는 오프라인에서도 확인할 수 있습니다.
+    </p>
+    <button onclick="window.location.reload()">다시 시도</button>
+  </div>
+</body>
+</html>
