@@ -27,27 +27,27 @@ ADHD 사용자를 위한 매일의 동기부여 앱 - Next.js 16.1.1 버전
 
 ### 개발 서버 실행
 
-\`\`\`bash
+```bash
 bun dev
-\`\`\`
+```
 
 [http://localhost:3000](http://localhost:3000)에서 앱을 확인할 수 있습니다.
 
 ### 빌드
 
-\`\`\`bash
+``` bash
 bun run build
-\`\`\`
+```
 
 ### 프로덕션 서버 실행
 
-\`\`\`bash
+``` bash
 bun start
-\`\`\`
+```
 
 ## 프로젝트 구조
 
-\`\`\`
+```
 nextjs-migration/
 ├── app/                    # Next.js App Router
 │   ├── api/               # API Routes
@@ -71,7 +71,7 @@ nextjs-migration/
 │   ├── icons/            # PWA 아이콘
 │   └── manifest.webmanifest
 └── next.config.ts        # Next.js 설정
-\`\`\`
+```
 
 ## 데이터 관리
 
