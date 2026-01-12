@@ -1,16 +1,10 @@
 import Dexie, { type EntityTable } from 'dexie'
+import type { TodoData } from './types'
+import { TodoDataSchema, validateMigrationData } from './validation'
 
-export interface TodoData {
-  id: string
-  date: string
-  title: string
-  content: string
-  createdAt: string
-}
-
-export interface Settings {
+export interface Settings<T = unknown> {
   key: string
-  value: any
+  value: T
 }
 
 // Lazy initialization to avoid SSR issues
@@ -32,8 +26,15 @@ function getDB() {
     }
 
     // Schema declaration
+    // v1: Initial schema
     _db.version(1).stores({
       todos: 'id, date, createdAt',
+      settings: 'key'
+    })
+
+    // v2: Add compound index for optimized date-based queries
+    _db.version(2).stores({
+      todos: 'id, date, createdAt, [date+createdAt]',
       settings: 'key'
     })
   }
@@ -61,7 +62,16 @@ export async function getRecentTodos(limit: number = 30): Promise<TodoData[]> {
 }
 
 export async function saveTodo(todo: TodoData): Promise<string> {
-  return await getDB().todos.put(todo)
+  // Validate before saving to prevent corrupt data
+  const validated = TodoDataSchema.parse(todo)
+  return await getDB().todos.put(validated)
+}
+
+export async function bulkSaveTodos(todos: TodoData[]): Promise<string> {
+  // Validate all todos before bulk saving
+  const validated = todos.map(todo => TodoDataSchema.parse(todo))
+  // bulkPut returns the key of the last item
+  return await getDB().todos.bulkPut(validated)
 }
 
 export async function deleteTodo(id: string): Promise<void> {
@@ -73,12 +83,12 @@ export async function clearAllTodos(): Promise<void> {
 }
 
 // Helper functions for settings
-export async function getSetting<T = any>(key: string): Promise<T | undefined> {
+export async function getSetting<T = unknown>(key: string): Promise<T | undefined> {
   const setting = await getDB().settings.get(key)
   return setting?.value as T | undefined
 }
 
-export async function setSetting<T = any>(key: string, value: T): Promise<string> {
+export async function setSetting<T = unknown>(key: string, value: T): Promise<string> {
   return await getDB().settings.put({ key, value })
 }
 
@@ -90,30 +100,73 @@ export async function deleteSetting(key: string): Promise<void> {
 export async function migrateFromLocalStorage(): Promise<void> {
   if (typeof window === 'undefined') return
 
+  // Check if migration already completed (idempotency)
+  const migrationComplete = await getSetting<boolean>('migrationComplete')
+  if (migrationComplete) {
+    console.log('[Migration] Already completed, skipping')
+    return
+  }
+
   try {
+    let migratedCount = 0
+
     // Migrate todos history
     const historyRaw = localStorage.getItem('notesHistory')
     if (historyRaw) {
-      const history = JSON.parse(historyRaw) as any[]
-      for (const note of history) {
-        if (!note.id) {
-          note.id = crypto.randomUUID()
+      try {
+        const parsed = JSON.parse(historyRaw)
+        if (Array.isArray(parsed)) {
+          for (const note of parsed) {
+            const validated = validateMigrationData(note)
+            if (!validated) {
+              console.warn('[Migration] Skipping invalid note:', note)
+              continue
+            }
+
+            // Fill in required fields with defaults
+            const todoData: TodoData = {
+              id: validated.id || crypto.randomUUID(),
+              date: validated.date || new Date().toLocaleDateString('ko-KR'),
+              title: validated.title || 'Migrated Todo',
+              content: validated.content || '',
+              createdAt: validated.createdAt || new Date().toLocaleString('ko-KR')
+            }
+
+            await saveTodo(todoData)
+            migratedCount++
+          }
+          localStorage.removeItem('notesHistory')
         }
-        await saveTodo(note as TodoData)
+      } catch (parseError) {
+        console.error('[Migration] Failed to parse notesHistory:', parseError)
       }
-      localStorage.removeItem('notesHistory')
     }
 
     // Migrate today's note
     const todayNoteRaw = localStorage.getItem('todayNote')
     if (todayNoteRaw) {
-      const todayNote = JSON.parse(todayNoteRaw) as any
-      if (!todayNote.id) {
-        todayNote.id = crypto.randomUUID()
+      try {
+        const parsed = JSON.parse(todayNoteRaw)
+        const validated = validateMigrationData(parsed)
+
+        if (validated) {
+          const todoData: TodoData = {
+            id: validated.id || crypto.randomUUID(),
+            date: validated.date || new Date().toLocaleDateString('ko-KR'),
+            title: validated.title || 'Migrated Todo',
+            content: validated.content || '',
+            createdAt: validated.createdAt || new Date().toLocaleString('ko-KR')
+          }
+
+          await saveTodo(todoData)
+          migratedCount++
+        }
+
+        localStorage.removeItem('todayNote')
+        localStorage.removeItem('todayNoteDate')
+      } catch (parseError) {
+        console.error('[Migration] Failed to parse todayNote:', parseError)
       }
-      await saveTodo(todayNote as TodoData)
-      localStorage.removeItem('todayNote')
-      localStorage.removeItem('todayNoteDate')
     }
 
     // Migrate settings
@@ -130,8 +183,13 @@ export async function migrateFromLocalStorage(): Promise<void> {
       localStorage.removeItem('todayMotivation')
     }
 
-    console.log('Migration from localStorage completed successfully')
+    // Mark migration as complete
+    await setSetting('migrationComplete', true)
+
+    console.log(`[Migration] Successfully migrated ${migratedCount} todos`)
   } catch (error) {
-    console.error('Error migrating from localStorage:', error)
+    console.error('[Migration] Critical error:', error)
+    // Don't mark as complete so it can be retried
+    throw new Error(`마이그레이션 실패: ${error instanceof Error ? error.message : '알 수 없는 오류'}`)
   }
 }

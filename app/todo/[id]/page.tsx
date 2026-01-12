@@ -2,25 +2,31 @@
 
 import { use, useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
+import { Loader2 } from 'lucide-react'
 import { TodayTodoView } from '@/components/TodayTodoView'
+import { Card, CardContent } from '@/components/ui/Card'
 import { getTodoById } from '@/lib/db'
 import { useTodoStore } from '@/lib/store'
 import type { TodoData } from '@/lib/types'
+import { showSuccess } from '@/lib/toast'
 
 export default function TodoPage({ params }: { params: Promise<{ id: string }> }) {
   const resolvedParams = use(params)
   const router = useRouter()
   const [todo, setTodo] = useState<TodoData | null>(null)
+  const [isLoading, setIsLoading] = useState(true)
   const copyToClipboard = useTodoStore((state) => state.copyToClipboard)
 
   useEffect(() => {
     const loadTodo = async () => {
+      setIsLoading(true)
       const todoData = await getTodoById(resolvedParams.id)
       if (todoData) {
         setTodo(todoData)
       } else {
         router.push('/')
       }
+      setIsLoading(false)
     }
 
     loadTodo()
@@ -32,18 +38,25 @@ export default function TodoPage({ params }: { params: Promise<{ id: string }> }
 
   const handleCopyContent = async (content: string) => {
     await copyToClipboard(content)
-    alert('클립보드에 복사되었습니다!')
+    showSuccess('클립보드에 복사되었습니다!')
   }
 
   return (
-    <div className="max-w-md mx-auto bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-slate-900 dark:to-slate-800 min-h-screen p-6 pt-safe pb-24-safe">
-      <div className="bg-surface border border-token rounded-2xl shadow-lg p-6">
-        <TodayTodoView
-          todayTodo={todo}
-          onBack={handleBack}
-          onCopyContent={handleCopyContent}
-        />
-      </div>
-    </div>
+    <Card className="shadow-lg">
+      <CardContent className="p-6 sm:p-8 lg:p-10">
+        {isLoading ? (
+          <div className="flex flex-col items-center justify-center py-16">
+            <Loader2 className="mb-4 h-8 w-8 animate-spin text-brand-500" />
+            <p className="text-sm text-secondary">To-do를 불러오는 중...</p>
+          </div>
+        ) : (
+          <TodayTodoView
+            todayTodo={todo}
+            onBack={handleBack}
+            onCopyContent={handleCopyContent}
+          />
+        )}
+      </CardContent>
+    </Card>
   )
 }

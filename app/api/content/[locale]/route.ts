@@ -18,7 +18,8 @@ export async function GET(
     const { locale } = await params
 
     // Security: Validate locale to prevent path traversal attacks
-    if (!ALLOWED_LOCALES.includes(locale as any) ||
+    const allowedLocales = ALLOWED_LOCALES as readonly string[]
+    if (!allowedLocales.includes(locale) ||
         locale.includes('..') ||
         locale.includes('/') ||
         locale.includes('\\')) {

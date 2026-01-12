@@ -333,7 +333,7 @@ ${antiFogTip}
   copyToClipboard: async (text: string) => {
     try {
       await navigator.clipboard.writeText(text)
-    } catch (err) {
+    } catch {
       const textArea = document.createElement('textarea')
       textArea.value = text
       document.body.appendChild(textArea)

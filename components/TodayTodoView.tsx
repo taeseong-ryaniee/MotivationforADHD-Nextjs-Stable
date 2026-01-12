@@ -3,7 +3,8 @@
 import { useMemo } from 'react'
 import { ArrowLeft, Copy, NotebookPen } from 'lucide-react'
 import type { TodoData } from '@/lib/types'
-import { BaseButton } from './ui/BaseButton'
+import { Button } from './ui/Button'
+import { Card, CardContent } from './ui/Card'
 
 interface TodayTodoViewProps {
   todayTodo: TodoData | null
@@ -66,62 +67,72 @@ export function TodayTodoView({ todayTodo, onBack, onCopyContent }: TodayTodoVie
   }
 
   return (
-    <div>
-      <div className="flex items-center justify-between mb-4">
-        <div className="flex items-center">
-          <NotebookPen className="w-5 h-5 text-brand-500 mr-2" />
-          <h2 className="heading-font text-lg font-semibold text-primary">오늘의 격려 To-do</h2>
+    <div className="space-y-6">
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <div className="flex items-center gap-3">
+          <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-brand-500/10 text-brand-500">
+            <NotebookPen className="h-5 w-5" aria-hidden="true" />
+          </div>
+          <div>
+            <p className="text-xs font-semibold text-secondary">오늘의 정리</p>
+            <h2 className="text-xl font-semibold text-primary md:text-2xl">오늘의 격려 To-do</h2>
+          </div>
         </div>
-        <BaseButton variant="ghost" size="sm" onClick={onBack} icon={<ArrowLeft className="w-4 h-4" />}>
+        <Button variant="ghost" size="sm" onClick={onBack}>
+          <ArrowLeft className="h-4 w-4" />
           돌아가기
-        </BaseButton>
+        </Button>
       </div>
 
       {todayTodo && (
-        <div className="bg-surface-muted rounded-xl p-4 border border-token shadow-md">
-          <div className="mb-4">
-            <span className="inline-block heading-font text-xs text-secondary bg-surface border border-token rounded-full px-3 py-1">
-              {todayTodo.date}
-            </span>
-            <span className="ml-2 text-[11px] text-secondary">{todayTodo.createdAt}</span>
-          </div>
-
-          {sections.length > 0 ? (
-            <div>
-              {sections.map((sec, idx) => (
-                <div
-                  key={idx}
-                  className={`rounded-lg p-4 mb-3 border ${sectionTone(sec.emoji)}`}
-                >
-                  <div className="flex items-center mb-1">
-                    <span className="mr-2" aria-hidden="true">
-                      {sec.emoji}
-                    </span>
-                    <h4 className="heading-font text-base font-semibold text-primary">{sec.title}</h4>
-                  </div>
-                  <div className="text-sm text-secondary whitespace-pre-wrap leading-relaxed">
-                    {sec.body}
-                  </div>
-                </div>
-              ))}
+        <Card className="shadow-md" aria-live="polite" aria-atomic="true">
+          <CardContent className="p-6">
+            <div className="mb-6 flex flex-wrap items-center gap-2 border-b border-token/60 pb-4 text-xs text-secondary">
+              <span className="rounded-full border border-token/60 bg-surface px-3 py-1 font-semibold text-secondary">
+                {todayTodo.date}
+              </span>
+              <span>{todayTodo.createdAt}</span>
             </div>
-          ) : (
-            <div className="bg-surface rounded-lg p-4 mb-4 border border-token">
-              <pre className="whitespace-pre-wrap font-sans text-sm text-secondary leading-relaxed">
-                {todayTodo.content}
-              </pre>
-            </div>
-          )}
 
-          <button
-            onClick={() => onCopyContent(todayTodo.content)}
-            className="w-full bg-brand-500 hover:bg-brand-600 text-white rounded-lg py-3 px-4 font-medium transition-colors flex items-center justify-center space-x-2"
-            type="button"
-          >
-            <Copy className="w-4 h-4" />
-            <span>클립보드에 복사하기</span>
-          </button>
-        </div>
+            {sections.length > 0 ? (
+              <div role="article" aria-label="오늘의 To-do 섹션" className="grid gap-4 md:grid-cols-2">
+                {sections.map((sec, idx) => (
+                  <Card
+                    key={idx}
+                    className={`p-4 shadow-none ${sectionTone(sec.emoji)}`}
+                  >
+                    <div className="flex items-center gap-2">
+                      <span className="text-lg" aria-hidden="true">
+                        {sec.emoji}
+                      </span>
+                      <h4 className="text-sm font-semibold text-primary">{sec.title}</h4>
+                    </div>
+                    <div className="mt-3 text-sm leading-relaxed text-secondary whitespace-pre-wrap">
+                      {sec.body}
+                    </div>
+                  </Card>
+                ))}
+              </div>
+            ) : (
+              <Card className="bg-surface p-5 shadow-none">
+                <pre className="whitespace-pre-wrap font-sans text-sm text-secondary leading-relaxed">
+                  {todayTodo.content}
+                </pre>
+              </Card>
+            )}
+
+            <Button
+              onClick={() => onCopyContent(todayTodo.content)}
+              className="mt-6 w-full"
+              size="lg"
+              type="button"
+              aria-label="To-do 전체 내용 클립보드에 복사"
+            >
+              <Copy className="h-4 w-4" aria-hidden="true" />
+              클립보드에 복사하기
+            </Button>
+          </CardContent>
+        </Card>
       )}
     </div>
   )
