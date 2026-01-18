@@ -1,6 +1,6 @@
 import { CheckCircle } from 'lucide-react'
-import { Button } from './ui/Button'
-import { LoadingSpinner } from './ui/LoadingSpinner'
+import { Button } from './ui/button'
+import { LoadingSpinner } from './ui/loading-spinner'
 
 interface CreateTodoButtonProps {
   isCreating: boolean
@@ -10,7 +10,7 @@ interface CreateTodoButtonProps {
 export function CreateTodoButton({ isCreating, onClick }: CreateTodoButtonProps) {
   return (
     <Button
-      variant="gradient"
+      variant="default"
       size="lg"
       className="w-full"
       disabled={isCreating}

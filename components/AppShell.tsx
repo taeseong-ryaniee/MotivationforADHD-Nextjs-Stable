@@ -3,7 +3,7 @@
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { Clock, Home, Settings } from 'lucide-react'
-import { Card, CardContent } from './ui/Card'
+import { Card, CardContent } from './ui/card'
 
 const navItems = [
   { href: '/', label: '홈', icon: Home },
@@ -18,12 +18,19 @@ const getRouteLabel = (pathname: string) => {
   return '산만이'
 }
 
+const isActiveRoute = (pathname: string, href: string) => {
+  if (href === '/') {
+    return pathname === '/' || pathname.startsWith('/todo')
+  }
+  return pathname === href
+}
+
 export function AppShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname()
   const currentLabel = getRouteLabel(pathname)
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-blue-50 text-primary">
+    <div className="min-h-screen bg-surface-muted text-primary">
       <header className="sticky top-0 z-40 border-b border-token/60 bg-surface/90 backdrop-blur">
         <div className="mx-auto flex w-full max-w-5xl items-center justify-between px-4 py-3 sm:px-6 lg:px-8">
           <div className="flex items-center gap-3">
@@ -48,16 +55,21 @@ export function AppShell({ children }: { children: React.ReactNode }) {
               <p className="text-xs font-semibold text-secondary">빠른 이동</p>
               <nav className="mt-3 space-y-2">
                 {navItems.map(({ href, label, icon: Icon, disabled }) => {
-                  const isActive = href === '/'
-                    ? pathname === '/' || pathname.startsWith('/todo')
-                    : pathname === href
-                  const itemClass = `flex items-center gap-3 rounded-xl px-3 py-2 text-sm font-medium transition ${
-                    isActive ? 'bg-brand-500 text-white' : 'text-primary hover:bg-surface-muted'
+                  const isActive = isActiveRoute(pathname, href)
+                  const itemClass = `flex items-center gap-3 rounded-xl px-3 py-2 text-sm font-medium transition-all duration-200 ${
+                    isActive
+                      ? 'bg-brand-500 text-white shadow-md'
+                      : 'text-primary hover:bg-surface-muted hover:shadow-sm focus-within:ring-2 focus-within:ring-brand-500 focus-within:ring-offset-2'
                   }`
 
                   if (disabled) {
                     return (
-                      <div key={href} className="flex items-center gap-3 rounded-xl px-3 py-2 text-sm font-medium text-secondary/70">
+                      <div
+                        key={href}
+                        className="flex items-center gap-3 rounded-xl px-3 py-2 text-sm font-medium text-secondary/60"
+                        aria-disabled="true"
+                        title="현재 준비 중입니다"
+                      >
                         <Icon className="h-4 w-4" aria-hidden="true" />
                         {label}
                         <span className="ml-auto rounded-full bg-surface-muted px-2 py-0.5 text-[10px] text-secondary">
@@ -68,7 +80,12 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                   }
 
                   return (
-                    <Link key={href} href={href} className={itemClass}>
+                    <Link
+                      key={href}
+                      href={href}
+                      className={itemClass}
+                      aria-current={isActive ? 'page' : undefined}
+                    >
                       <Icon className="h-4 w-4" aria-hidden="true" />
                       {label}
                     </Link>
@@ -90,21 +107,27 @@ export function AppShell({ children }: { children: React.ReactNode }) {
       </div>
 
       <nav
-        className="fixed bottom-0 left-0 right-0 z-40 border-t border-token/70 bg-surface/90 px-6 py-3 backdrop-blur lg:hidden"
+        className="fixed bottom-0 left-0 right-0 z-40 w-full h-16 border-t border-token/70 bg-surface/90 backdrop-blur lg:hidden"
         aria-label="하단 네비게이션"
       >
-        <div className="mx-auto flex max-w-md items-center justify-between">
+        <div className="h-full mx-auto px-2 flex items-center justify-between max-w-5xl">
           {navItems.map(({ href, label, icon: Icon, disabled }) => {
-            const isActive = href === '/'
-              ? pathname === '/' || pathname.startsWith('/todo')
-              : pathname === href
-            const itemClass = `flex flex-1 flex-col items-center gap-1 rounded-xl px-3 py-2 text-xs font-medium ${
-              isActive ? 'text-brand-600' : 'text-secondary'
+            const isActive = isActiveRoute(pathname, href)
+            const itemClass = `flex flex-1 flex-col items-center justify-center gap-1 rounded-xl px-2 py-2 text-xs font-medium transition-all duration-200 ${
+              isActive
+                ? 'text-brand-600 bg-brand-50'
+                : 'text-secondary hover:text-primary'
             }`
 
             if (disabled) {
               return (
-                <div key={href} className="flex flex-1 flex-col items-center gap-1 rounded-xl px-3 py-2 text-xs font-medium text-secondary/60">
+                <div
+                  key={href}
+                  className="flex flex-1 flex-col items-center justify-center gap-1 rounded-xl px-2 py-2 text-xs font-medium text-secondary/60"
+                  style={{ minHeight: '48px', minWidth: '48px' }}
+                  aria-disabled="true"
+                  title="현재 준비 중입니다"
+                >
                   <Icon className="h-5 w-5" aria-hidden="true" />
                   {label}
                 </div>
@@ -112,7 +135,13 @@ export function AppShell({ children }: { children: React.ReactNode }) {
             }
 
             return (
-              <Link key={href} href={href} className={itemClass}>
+              <Link
+                key={href}
+                href={href}
+                className={itemClass}
+                style={{ minHeight: '48px', minWidth: '48px' }}
+                aria-current={isActive ? 'page' : undefined}
+              >
                 <Icon className="h-5 w-5" aria-hidden="true" />
                 {label}
               </Link>

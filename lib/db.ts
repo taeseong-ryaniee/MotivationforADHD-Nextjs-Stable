@@ -1,11 +1,6 @@
 import Dexie, { type EntityTable } from 'dexie'
-import type { TodoData } from './types'
+import type { TodoData, Settings } from './types'
 import { TodoDataSchema, validateMigrationData } from './validation'
-
-export interface Settings<T = unknown> {
-  key: string
-  value: T
-}
 
 // Lazy initialization to avoid SSR issues
 let _db: (Dexie & {
@@ -42,7 +37,7 @@ function getDB() {
   return _db
 }
 
-export { getDB as db }
+export { getDB as db, getDB }
 
 // Helper functions for todos
 export async function getTodoById(id: string): Promise<TodoData | undefined> {

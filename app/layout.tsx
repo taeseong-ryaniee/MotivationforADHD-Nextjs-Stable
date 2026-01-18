@@ -2,7 +2,7 @@ import type { Metadata, Viewport } from 'next'
 import './globals.css'
 import ServiceWorkerRegister from '@/components/ServiceWorkerRegister'
 import Providers from '@/components/Providers'
-import { Toaster } from '@/components/ui/Toaster'
+import { Toaster } from '@/components/ui/sonner'
 import { AppShell } from '@/components/AppShell'
 
 export const metadata: Metadata = {

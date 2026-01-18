@@ -1,50 +1,57 @@
 import type { Config } from 'tailwindcss'
 
 const config: Config = {
+  darkMode: 'class',
   content: [
     './pages/**/*.{js,ts,jsx,tsx,mdx}',
     './components/**/*.{js,ts,jsx,tsx,mdx}',
     './app/**/*.{js,ts,jsx,tsx,mdx}',
   ],
-  darkMode: 'class',
   theme: {
     extend: {
-      fontFamily: {
-        sans: [
-          '"Wanted Sans Std Variable"',
-          '"Wanted Sans Std"',
-          '-apple-system',
-          'BlinkMacSystemFont',
-          'system-ui',
-          'Roboto',
-          '"Helvetica Neue"',
-          '"Segoe UI"',
-          '"Apple SD Gothic Neo"',
-          '"Noto Sans KR"',
-          '"Malgun Gothic"',
-          '"Apple Color Emoji"',
-          '"Segoe UI Emoji"',
-          '"Segoe UI Symbol"',
-          'sans-serif',
-        ],
-      },
       colors: {
-        background: 'var(--background)',
-        foreground: 'var(--foreground)',
-        border: 'var(--border)',
-        primary: 'var(--primary)',
-        secondary: 'var(--secondary)',
-        surface: 'var(--surface)',
-        'surface-muted': 'var(--surface-muted)',
-        token: 'var(--token)',
-        'brand-300': 'var(--brand-300)',
-        'brand-500': 'var(--brand-500)',
-        'brand-600': 'var(--brand-600)',
-        'success-500': 'var(--success-500)',
+        background: 'hsl(var(--background))',
+        foreground: 'hsl(var(--foreground))',
+        card: {
+          DEFAULT: 'hsl(var(--card))',
+          foreground: 'hsl(var(--card-foreground))',
+        },
+        popover: {
+          DEFAULT: 'hsl(var(--popover))',
+          foreground: 'hsl(var(--popover-foreground))',
+        },
+        primary: {
+          DEFAULT: 'hsl(var(--primary))',
+          foreground: 'hsl(var(--primary-foreground))',
+        },
+        secondary: {
+          DEFAULT: 'hsl(var(--secondary))',
+          foreground: 'hsl(var(--secondary-foreground))',
+        },
+        muted: {
+          DEFAULT: 'hsl(var(--muted))',
+          foreground: 'hsl(var(--muted-foreground))',
+        },
+        accent: {
+          DEFAULT: 'hsl(var(--accent))',
+          foreground: 'hsl(var(--accent-foreground))',
+        },
+        destructive: {
+          DEFAULT: 'hsl(var(--destructive))',
+          foreground: 'hsl(var(--destructive-foreground))',
+        },
+        border: 'hsl(var(--border))',
+        input: 'hsl(var(--input))',
+        ring: 'hsl(var(--ring))',
+      },
+      borderRadius: {
+        lg: 'var(--radius)',
+        md: 'calc(var(--radius) - 2px)',
+        sm: 'calc(var(--radius) - 4px)',
       },
     },
   },
-  plugins: [],
+  plugins: [require("tailwindcss-animate")],
 }
 
 export default config

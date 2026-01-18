@@ -3,8 +3,8 @@ import { Coffee, Eye } from 'lucide-react'
 import { MotivationCard } from './MotivationCard'
 import { SpecialEventInput } from './SpecialEventInput'
 import { CreateTodoButton } from './CreateTodoButton'
-import { Button } from './ui/Button'
-import { Card, CardContent } from './ui/Card'
+import { Button } from './ui/button'
+import { Card, CardContent } from './ui/card'
 
 interface MainScreenProps {
   todayMotivation: string
@@ -52,7 +52,7 @@ export function MainScreen({
       <header className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
         <div className="space-y-3">
           <div className="flex items-center gap-3">
-            <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-amber-500/10 text-amber-500">
+            <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-brand-500/10 text-brand-500">
               <Coffee className="h-6 w-6" aria-hidden="true" />
             </div>
             <div>
@@ -62,7 +62,7 @@ export function MainScreen({
               </h1>
             </div>
           </div>
-          <span className="inline-flex items-center rounded-full border border-token/60 bg-white px-3 py-1 text-xs text-secondary shadow-sm">
+          <span className="inline-flex items-center rounded-full border border-token/60 bg-surface px-3 py-1 text-xs text-secondary shadow-sm">
             {todayString}
           </span>
         </div>

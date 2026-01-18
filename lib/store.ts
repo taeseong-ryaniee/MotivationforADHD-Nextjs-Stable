@@ -1,5 +1,5 @@
 import { create } from 'zustand'
-import type { TodoData, PracticalTip, TodayTips, ContentData } from './types'
+import type { TodoData, PracticalTip, TodayTips, ContentData, S3Config, SyncStrategy } from './types'
 import {
   getTodoByDate,
   getRecentTodos,
@@ -9,6 +9,17 @@ import {
   getSetting,
   setSetting,
 } from './db'
+import {
+  exportData,
+  downloadSyncFile,
+  importData,
+  saveS3Config,
+  getS3Config,
+  clearS3Config,
+  uploadToS3,
+  downloadFromS3,
+  getSyncStatus,
+} from './sync'
 
 interface TodoStore {
   // State
@@ -40,6 +51,15 @@ interface TodoStore {
   setTodayTodo: (todo: TodoData) => void
   updateSpecialEvent: (event: string) => void
   copyToClipboard: (text: string) => Promise<void>
+
+  exportData: () => Promise<void>
+  importData: (file: File, strategy: SyncStrategy) => Promise<void>
+  saveS3Config: (config: S3Config) => Promise<void>
+  getS3Config: () => Promise<S3Config | undefined>
+  clearS3Config: () => Promise<void>
+  uploadToS3: () => Promise<void>
+  downloadFromS3: (filename: string) => Promise<void>
+  getSyncStatus: () => { lastSyncAt: string | undefined; syncedWith: string | undefined }
 }
 
 const getRandomItem = <T,>(array: T[]): T => {
@@ -341,5 +361,52 @@ ${antiFogTip}
       document.execCommand('copy')
       document.body.removeChild(textArea)
     }
+  },
+
+  exportData: async () => {
+    const data = await exportData()
+    downloadSyncFile(data)
+  },
+
+  importData: async (file: File, strategy: SyncStrategy) => {
+    await importData(file, strategy)
+    await get().loadTodoHistory()
+  },
+
+  saveS3Config: async (config: S3Config) => {
+    await saveS3Config(config)
+  },
+
+  getS3Config: async () => {
+    return await getS3Config()
+  },
+
+  clearS3Config: async () => {
+    await clearS3Config()
+  },
+
+  uploadToS3: async () => {
+    const config = await get().getS3Config()
+    if (!config) {
+      throw new Error('S3 configuration not found')
+    }
+
+    const data = await exportData()
+    await uploadToS3(config, data)
+  },
+
+  downloadFromS3: async (filename: string) => {
+    const config = await get().getS3Config()
+    if (!config) {
+      throw new Error('S3 configuration not found')
+    }
+
+    const data = await downloadFromS3(config, filename)
+    await importData(new File([JSON.stringify(data)], filename), 'merge')
+    await get().loadTodoHistory()
+  },
+
+  getSyncStatus: () => {
+    return getSyncStatus()
   },
 }))

@@ -3,8 +3,8 @@
 import { useMemo } from 'react'
 import { ArrowLeft, Copy, NotebookPen } from 'lucide-react'
 import type { TodoData } from '@/lib/types'
-import { Button } from './ui/Button'
-import { Card, CardContent } from './ui/Card'
+import { Button } from './ui/button'
+import { Card, CardContent } from './ui/card'
 
 interface TodayTodoViewProps {
   todayTodo: TodoData | null
