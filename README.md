@@ -1,134 +1,96 @@
 # 산만이의 아침 (Motivation for ADHD)
 
-ADHD 사용자를 위한 매일의 동기부여 앱 - Next.js 16.1.1 버전
+ADHD 사용자를 위한 매일의 동기부여 및 생산성 앱 - Next.js 16.1.1 버전
 
-## 기능
+## ✨ 주요 기능
 
-- 📅 매일 동기부여 메시지 생성
-- ✅ 하루를 시작하는 To-do 작성
-- 📝 특별 일정 입력 및 맞춤 조언
-- 🗂️ To-do 히스토리 관리
-- 💾 IndexedDB를 통한 로컬 데이터 저장
-- 🌙 다크 모드 지원
-- 📱 PWA 지원 (오프라인 작동)
+- **📅 매일의 동기부여**: 하루를 시작하는 맞춤형 메시지 제공
+- **✅ 집중 To-do**: 복잡함을 제거한 심플한 할 일 관리
+- **☁️ 멀티 클라우드 동기화**: AWS S3, Google Drive, OneDrive 지원
+- **🎨 모던 UI**: shadcn/ui 기반의 깔끔하고 반응형 디자인
+- **📱 PWA 지원**: 오프라인 작동 및 앱 설치 지원
+- **🔒 프라이버시 중심**: 모든 데이터는 로컬 우선(Local-First) 저장
 
-## 기술 스택
+## 🛠 기술 스택
 
 - **Framework**: Next.js 16.1.1 (App Router)
 - **Language**: TypeScript
-- **Styling**: Tailwind CSS
-- **State Management**: Zustand (UI state)
-- **Server State**: TanStack Query (React Query)
-- **Database**: Dexie.js (IndexedDB wrapper)
-- **Icons**: Lucide React
-- **PWA**: Service Worker + Manifest
+- **Styling**: Tailwind CSS v4 + shadcn/ui
+- **State**: Zustand + TanStack Query
+- **Database**: Dexie.js (IndexedDB)
+- **Cloud**: AWS SDK v3 (S3), Google/Microsoft OAuth
+- **Testing**: Vitest + React Testing Library
 
-## 시작하기
+## 🚀 시작하기
 
 ### 개발 서버 실행
 
 ```bash
+bun install
 bun dev
 ```
 
 [http://localhost:3000](http://localhost:3000)에서 앱을 확인할 수 있습니다.
 
-### 빌드
+### 테스트 실행
 
-``` bash
-bun run build
+```bash
+bun test
 ```
 
-### 프로덕션 서버 실행
+## ☁️ 클라우드 동기화 설정 가이드
 
-``` bash
-bun start
+이 앱은 서버 없이 클라이언트에서 직접 클라우드 스토리지와 통신합니다. 동기화를 사용하려면 각 서비스의 설정이 필요합니다.
+
+### 1. AWS S3 (권장)
+1. AWS 콘솔에서 S3 버킷 생성
+2. **CORS 설정** (필수):
+   ```json
+   [
+       {
+           "AllowedHeaders": ["*"],
+           "AllowedMethods": ["GET", "PUT", "HEAD"],
+           "AllowedOrigins": ["http://localhost:3000", "https://your-domain.com"],
+           "ExposeHeaders": []
+       }
+   ]
+   ```
+3. IAM 사용자 생성 및 `Access Key`, `Secret Key` 발급 (S3 권한 부여)
+4. 앱 설정 메뉴에서 정보 입력
+
+### 2. Google Drive
+1. [Google Cloud Console](https://console.cloud.google.com/) 접속
+2. 새 프로젝트 생성 및 'Google Drive API' 활성화
+3. **OAuth 동의 화면** 구성 (User Type: External)
+4. **사용자 인증 정보** > **OAuth 클라이언트 ID** 생성 (웹 애플리케이션)
+   - 승인된 자바스크립트 원본: `http://localhost:3000`
+   - 승인된 리디렉션 URI: `http://localhost:3000/oauth/callback`
+5. 발급된 `Client ID`를 앱 설정에 입력
+
+### 3. OneDrive
+1. [Azure Portal](https://portal.azure.com/) > App registrations 접속
+2. 새 등록 (New registration)
+   - 지원 계정 유형: 개인 Microsoft 계정만 (Personal Microsoft accounts only)
+   - 리디렉션 URI (SPA): `http://localhost:3000/oauth/callback`
+3. 발급된 `Application (client) ID`를 앱 설정에 입력
+
+## 📂 프로젝트 구조
+
 ```
-
-## 프로젝트 구조
-
-```
-nextjs-migration/
 ├── app/                    # Next.js App Router
-│   ├── api/               # API Routes
-│   ├── todo/[id]/         # To-do 상세 페이지
-│   ├── history/           # 히스토리 페이지
-│   ├── layout.tsx         # 루트 레이아웃
-│   ├── page.tsx           # 메인 페이지
-│   └── globals.css        # 전역 스타일
-├── components/            # React 컴포넌트
-│   ├── ui/               # 재사용 가능한 UI 컴포넌트
-│   ├── MainScreen.tsx    # 메인 화면
-│   ├── TodayTodoView.tsx # To-do 상세 뷰
+│   ├── oauth/callback/    # OAuth 리다이렉트 처리
 │   └── ...
-├── lib/                   # 유틸리티 및 핵심 로직
-│   ├── db.ts             # IndexedDB 설정 및 헬퍼
-│   ├── store.ts          # Zustand 스토어
-│   ├── types.ts          # TypeScript 타입 정의
-│   └── utils.ts          # 유틸리티 함수
-├── public/               # 정적 파일
-│   ├── content/          # 동기부여 문구 JSON
-│   ├── icons/            # PWA 아이콘
-│   └── manifest.webmanifest
-└── next.config.ts        # Next.js 설정
+├── components/            # React 컴포넌트
+│   ├── ui/               # shadcn/ui 컴포넌트 (button, card, input...)
+│   └── ...
+├── lib/                   # 핵심 로직
+│   ├── cloud/            # 클라우드 프로바이더 (google, onedrive)
+│   ├── storage/          # 스토리지 어댑터 (Dexie)
+│   ├── auth.ts           # OAuth 인증 로직
+│   ├── sync.ts           # 동기화 매니저
+│   └── db.ts             # 레거시 DB 접근
+└── public/               # 정적 파일
 ```
-
-## 데이터 관리
-
-### TanStack Query
-- **서버 상태 관리**: API 호출 및 IndexedDB 쿼리를 자동으로 캐싱
-- **자동 리페칭**: 데이터가 stale 상태가 되면 자동으로 업데이트
-- **낙관적 업데이트**: 사용자 경험 향상을 위한 즉각적인 UI 반영
-- **React Query Devtools**: 개발 환경에서 쿼리 상태 디버깅
-- 자세한 사용법은 [USAGE.md](./USAGE.md) 참고
-
-### IndexedDB
-- To-do 데이터는 모두 브라우저의 IndexedDB에 저장됩니다
-- 서버 없이 로컬에서 완전히 작동합니다
-- 기존 localStorage 데이터는 자동으로 마이그레이션됩니다
-- TanStack Query로 캐싱 및 동기화 최적화
-
-### API Routes
-- \`/api/content/[locale]\`: 동기부여 문구를 제공하는 API
-- JSON 파일을 캐싱하여 빠른 응답 제공
-- TanStack Query로 1시간 캐싱
-
-## PWA 기능
-
-- 오프라인 지원
-- 앱 설치 가능
-- 백그라운드 동기화
-- 푸시 알림 준비 (향후 추가 가능)
-
-## 마이그레이션 정보
-
-이 프로젝트는 Vue.js에서 Next.js 16.1.1로 마이그레이션되었습니다.
-
-### 주요 변경사항
-
-- **Framework**: Vue.js → Next.js 16.1.1 (App Router)
-- **State**: Pinia → Zustand + TanStack Query
-- **Storage**: localStorage → IndexedDB (Dexie.js)
-- **Routing**: Vue Router → Next.js App Router
-- **Build Tool**: Vite → Next.js (Turbopack)
-- **Server State**: TanStack Query 추가
-
-### 보안 개선
-
-- ✅ API Route path traversal 방지 (locale 화이트리스트)
-- ✅ IndexedDB SSR 안전 처리
-- ✅ 타입 안전성 강화
-
-### 접근성 개선
-
-- ✅ IconButton에 필수 aria-label 추가
-- ✅ WCAG 2.1 AA 준수
-
-### 성능 최적화
-
-- ✅ Service Worker를 통한 캐싱
-- ✅ Static generation 활용
-- ✅ API Routes 캐싱 전략
 
 ## 라이센스
 
