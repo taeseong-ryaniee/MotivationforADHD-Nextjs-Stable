@@ -136,11 +136,11 @@ async function applySyncData(data: SyncData): Promise<void> {
 
   // 설정 복원
   for (const [key, value] of Object.entries(data.settings)) {
-    await adapter.saveSettings({ key, value })
+    await adapter.saveSetting(key, value)
   }
 
-  await adapter.saveSettings({ key: 'lastSyncAt', value: data.metadata.lastSyncAt })
-  await adapter.saveSettings({ key: 'syncedWith', value: data.metadata.deviceId })
+  await adapter.saveSetting('lastSyncAt', data.metadata.lastSyncAt)
+  await adapter.saveSetting('syncedWith', data.metadata.deviceId)
 }
 
 async function mergeSyncData(data: SyncData): Promise<void> {
@@ -160,12 +160,10 @@ async function mergeSyncData(data: SyncData): Promise<void> {
     await adapter.bulkSaveTodos(todosToSave)
   }
 
-  const lastSyncAtSetting = await adapter.getSettings() // This might need refinement
-  // 임시: 로컬 스토리지나 DB에서 직접 조회하는 것이 나을 수 있음
-  
+
   // 메타데이터 업데이트
-  await adapter.saveSettings({ key: 'lastSyncAt', value: data.metadata.lastSyncAt })
-  await adapter.saveSettings({ key: 'syncedWith', value: data.metadata.deviceId })
+  await adapter.saveSetting('lastSyncAt', data.metadata.lastSyncAt)
+  await adapter.saveSetting('syncedWith', data.metadata.deviceId)
 }
 
 // === AWS S3 Integration ===
@@ -242,6 +240,11 @@ export async function getS3Config(): Promise<S3Config | undefined> {
   const adapter = storage.getAdapter()
   const config = await adapter.getSetting<S3Config>('s3_config')
   return config || undefined
+}
+
+export async function clearS3Config(): Promise<void> {
+  const adapter = storage.getAdapter()
+  await adapter.deleteSetting('s3_config')
 }
 
 export function getSyncStatus(): {

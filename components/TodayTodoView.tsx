@@ -74,7 +74,7 @@ export function TodayTodoView({ todayTodo, onBack, onCopyContent }: TodayTodoVie
             <NotebookPen className="h-5 w-5" aria-hidden="true" />
           </div>
           <div>
-            <p className="text-xs font-semibold text-secondary">오늘의 정리</p>
+            <p className="text-xs font-semibold text-muted-foreground">오늘의 정리</p>
             <h2 className="text-xl font-semibold text-primary md:text-2xl">오늘의 격려 To-do</h2>
           </div>
         </div>
@@ -87,8 +87,8 @@ export function TodayTodoView({ todayTodo, onBack, onCopyContent }: TodayTodoVie
       {todayTodo && (
         <Card className="shadow-md" aria-live="polite" aria-atomic="true">
           <CardContent className="p-6">
-            <div className="mb-6 flex flex-wrap items-center gap-2 border-b border-token/60 pb-4 text-xs text-secondary">
-              <span className="rounded-full border border-token/60 bg-surface px-3 py-1 font-semibold text-secondary">
+            <div className="mb-6 flex flex-wrap items-center gap-2 border-b border-token/60 pb-4 text-xs text-muted-foreground">
+              <span className="rounded-full border border-token/60 bg-surface px-3 py-1 font-semibold text-muted-foreground">
                 {todayTodo.date}
               </span>
               <span>{todayTodo.createdAt}</span>
@@ -107,7 +107,7 @@ export function TodayTodoView({ todayTodo, onBack, onCopyContent }: TodayTodoVie
                       </span>
                       <h4 className="text-sm font-semibold text-primary">{sec.title}</h4>
                     </div>
-                    <div className="mt-3 text-sm leading-relaxed text-secondary whitespace-pre-wrap">
+                    <div className="mt-3 text-sm leading-relaxed text-muted-foreground whitespace-pre-wrap">
                       {sec.body}
                     </div>
                   </Card>
@@ -115,7 +115,7 @@ export function TodayTodoView({ todayTodo, onBack, onCopyContent }: TodayTodoVie
               </div>
             ) : (
               <Card className="bg-surface p-5 shadow-none">
-                <pre className="whitespace-pre-wrap font-sans text-sm text-secondary leading-relaxed">
+                <pre className="whitespace-pre-wrap font-sans text-sm text-muted-foreground leading-relaxed">
                   {todayTodo.content}
                 </pre>
               </Card>

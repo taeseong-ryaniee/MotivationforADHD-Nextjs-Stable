@@ -27,19 +27,16 @@
 
   --color-destructive: hsl(var(--destructive));
   --color-destructive-foreground: hsl(var(--destructive-foreground));
+  
+  --color-success: hsl(var(--success));
+  --color-success-foreground: hsl(var(--success-foreground));
+
+  --color-warning: hsl(var(--warning));
+  --color-warning-foreground: hsl(var(--warning-foreground));
 
   --color-border: hsl(var(--border));
   --color-input: hsl(var(--input));
   --color-ring: hsl(var(--ring));
-
-  /* === Custom Brand Aliases (Backward Compatibility) === */
-  --color-brand-50: hsl(210 100% 96%);   /* #eff6ff */
-  --color-brand-300: hsl(212 96% 78%);   /* #93c5fd */
-  --color-brand-500: hsl(217 91% 60%);   /* #3b82f6 */
-  --color-brand-600: hsl(221 83% 53%);   /* #2563eb */
-  
-  --color-surface: hsl(var(--background));
-  --color-surface-muted: hsl(var(--muted));
 
   /* === Radius === */
   --radius-lg: var(--radius);
@@ -47,86 +44,105 @@
   --radius-sm: calc(var(--radius) - 4px);
 }
 
-/* === Base Layer === */
 @layer base {
   :root {
-    /* Base */
-    --background: 0 0% 100%;      /* #ffffff */
-    --foreground: 222 47% 11%;    /* #0f172a */
+    /* === Light Mode: Gentle Focus === */
+    /* Background: Cool Slate White (#F8FAFC) - 눈부심 방지 */
+    --background: 210 40% 98%;
+    /* Foreground: Dark Slate (#0F172A) - 완전 검정보다 부드러움 */
+    --foreground: 222 47% 11%;
 
-    /* Card */
+    /* Card: White */
     --card: 0 0% 100%;
     --card-foreground: 222 47% 11%;
 
-    /* Popover */
+    /* Popover: White */
     --popover: 0 0% 100%;
     --popover-foreground: 222 47% 11%;
 
-    /* Primary (Brand-500: #3b82f6) */
-    --primary: 217 91% 60%;
-    --primary-foreground: 210 40% 98%;
+    /* Primary: Indigo (#4F46E5) - 차분한 집중 */
+    --primary: 243 75% 59%;
+    --primary-foreground: 0 0% 100%;
 
-    /* Secondary (Slate-100/Slate-900) */
-    --secondary: 210 40% 96.1%;
-    --secondary-foreground: 222 47% 11.2%;
+    /* Secondary: Slate (#64748B) - 보조 정보 */
+    --secondary: 215 16% 47%;
+    --secondary-foreground: 0 0% 100%;
 
-    /* Muted (Surface-Muted) */
-    --muted: 210 40% 96.1%;       /* #f1f5f9 */
+    /* Muted: Soft Slate (#F1F5F9) - 배경 및 구획 */
+    --muted: 210 40% 96.1%;
     --muted-foreground: 215 16% 47%;
 
-    /* Accent */
-    --accent: 210 40% 96.1%;
-    --accent-foreground: 222 47% 11.2%;
+    /* Accent: Light Indigo (#E0E7FF) - 강조 배경 */
+    --accent: 230 100% 94%;
+    --accent-foreground: 243 75% 59%;
 
-    /* Destructive */
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
+    /* Destructive: Rose (#E11D48) - 에러/삭제 */
+    --destructive: 343 88% 50%;
+    --destructive-foreground: 0 0% 100%;
 
-    /* Border & Input */
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 217 91% 60%;
+    /* Success: Emerald (#10B981) - 성취/완료 (도파민) */
+    --success: 151 55% 42%;
+    --success-foreground: 0 0% 100%;
 
-    --radius: 0.75rem; /* 12px */
+    /* Warning: Amber (#F59E0B) - 주의/중요 */
+    --warning: 38 92% 50%;
+    --warning-foreground: 0 0% 100%;
+
+    /* Border: Light Slate */
+    --border: 214 32% 91%;
+    --input: 214 32% 91%;
+    --ring: 243 75% 59%;
+
+    --radius: 0.75rem; /* 부드러운 모서리 (12px) */
   }
 
   .dark {
-    /* Base */
-    --background: 222 47% 11%;    /* #0f172a */
-    --foreground: 210 40% 98%;    /* #f8fafc */
+    /* === Dark Mode: Deep Calm === */
+    /* Background: Deep Slate (#020617) - 완전 블랙보다 눈이 편함 */
+    --background: 222 47% 11%;
+    /* Foreground: Soft Grey (#F1F5F9) */
+    --foreground: 210 40% 98%;
 
-    /* Card */
-    --card: 222 47% 11%;
+    /* Card: Dark Slate (#0F172A) */
+    --card: 215 28% 17%;
     --card-foreground: 210 40% 98%;
 
     /* Popover */
-    --popover: 222 47% 11%;
+    --popover: 215 28% 17%;
     --popover-foreground: 210 40% 98%;
 
-    /* Primary */
-    --primary: 217 91% 60%;
+    /* Primary: Soft Indigo (#818CF8) - 야간에 눈이 덜 부신 톤 */
+    --primary: 243 100% 75%;
     --primary-foreground: 222 47% 11%;
 
-    /* Secondary */
-    --secondary: 217.2 32.6% 17.5%;
+    /* Secondary: Slate Grey */
+    --secondary: 215 16% 47%;
     --secondary-foreground: 210 40% 98%;
 
-    /* Muted */
-    --muted: 217.2 32.6% 17.5%;   /* #334155 */
-    --muted-foreground: 215 20.2% 65.1%;
+    /* Muted: Darker Slate */
+    --muted: 217 33% 17%;
+    --muted-foreground: 215 20% 65%;
 
-    /* Accent */
-    --accent: 217.2 32.6% 17.5%;
+    /* Accent: Dark Indigo Muted */
+    --accent: 217 33% 17%;
     --accent-foreground: 210 40% 98%;
 
-    /* Destructive */
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 210 40% 98%;
+    /* Destructive: Soft Rose (#FB7185) */
+    --destructive: 343 88% 71%;
+    --destructive-foreground: 0 0% 100%;
 
-    /* Border & Input */
-    --border: 217.2 32.6% 17.5%;
-    --input: 217.2 32.6% 17.5%;
-    --ring: 212.7 26.8% 83.9%;
+    /* Success: Soft Emerald (#34D399) */
+    --success: 151 50% 60%;
+    --success-foreground: 222 47% 11%;
+
+    /* Warning: Soft Amber (#FBBF24) */
+    --warning: 38 92% 60%;
+    --warning-foreground: 222 47% 11%;
+
+    /* Border */
+    --border: 217 33% 17%;
+    --input: 217 33% 17%;
+    --ring: 243 100% 75%;
   }
 }
 

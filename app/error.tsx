@@ -38,7 +38,7 @@ export default function Error({
             페이지 오류
           </h2>
 
-          <p className="text-secondary text-sm mb-6">
+          <p className="text-muted-foreground text-sm mb-6">
             페이지를 불러오는 중 오류가 발생했습니다.
           </p>
 
@@ -72,7 +72,7 @@ export default function Error({
             </Button>
           </div>
 
-          <p className="text-xs text-secondary mt-6">
+          <p className="text-xs text-muted-foreground mt-6">
             문제가 계속되면 브라우저를 새로고침해주세요
           </p>
         </div>

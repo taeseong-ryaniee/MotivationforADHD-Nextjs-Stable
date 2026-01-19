@@ -23,6 +23,7 @@ export interface StorageAdapter {
   // Settings
   getSetting<T = unknown>(key: string): Promise<T | null>;
   saveSetting<T = unknown>(key: string, value: T): Promise<void>;
+  deleteSetting(key: string): Promise<void>;
   
   // Legacy Settings (Optional)
   getSettings?(): Promise<Settings | null>;

@@ -40,7 +40,7 @@ export function Sidebar() {
         </ul>
       </nav>
       <div className="absolute bottom-6 left-6 right-6">
-        <p className="text-xs text-secondary leading-relaxed">
+        <p className="text-xs text-muted-foreground leading-relaxed">
           산만이의 정신없는 아침을 응원합니다
         </p>
       </div>

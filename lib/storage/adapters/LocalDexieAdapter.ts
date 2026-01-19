@@ -39,6 +39,10 @@ export class LocalDexieAdapter implements StorageAdapter {
     await getDB().settings.put({ key, value })
   }
 
+  async deleteSetting(key: string): Promise<void> {
+    await getDB().settings.delete(key)
+  }
+
   // Legacy support
   async getSettings(): Promise<Settings | null> {
     const settings = await getDB().settings.get('user-settings')

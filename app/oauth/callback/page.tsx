@@ -34,7 +34,7 @@ export default function OAuthCallbackPage() {
   return (
     <div className="flex min-h-screen flex-col items-center justify-center bg-background">
       <Loader2 className="h-8 w-8 animate-spin text-primary" />
-      <p className="mt-4 text-sm text-secondary">인증 처리 중...</p>
+      <p className="mt-4 text-sm text-muted-foreground">인증 처리 중...</p>
     </div>
   )
 }

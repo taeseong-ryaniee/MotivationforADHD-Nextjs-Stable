@@ -66,7 +66,7 @@ export default function Home() {
         {isLoadingContent ? (
           <div className="flex flex-col items-center justify-center py-16">
             <Loader2 className="mb-4 h-8 w-8 animate-spin text-brand-500" />
-            <p className="text-sm text-secondary">앱을 불러오는 중...</p>
+            <p className="text-sm text-muted-foreground">앱을 불러오는 중...</p>
           </div>
         ) : (
           <MainScreen

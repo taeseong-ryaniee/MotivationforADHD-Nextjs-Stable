@@ -72,7 +72,7 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
                 문제가 발생했습니다
               </h2>
 
-              <p className="text-secondary text-sm mb-6">
+              <p className="text-muted-foreground text-sm mb-6">
                 앱 실행 중 오류가 발생했습니다. 아래 옵션을 시도해보세요.
               </p>
 
@@ -114,7 +114,7 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
                 </Button>
               </div>
 
-              <p className="text-xs text-secondary mt-6">
+              <p className="text-xs text-muted-foreground mt-6">
                 문제가 계속되면 앱을 새로고침해주세요
               </p>
             </div>

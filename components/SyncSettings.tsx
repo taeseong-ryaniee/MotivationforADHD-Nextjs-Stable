@@ -284,46 +284,46 @@ export default function SyncSettings() {
   }
 
   return (
-    <div className="space-y-6">
-      <Card className="overflow-hidden border-token shadow-md transition-all hover:shadow-lg">
-        <CardHeader className="bg-surface-muted/30 pb-4">
-          <div className="flex items-center gap-3">
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-blue-500/10 text-blue-600">
-              <FileJson className="h-5 w-5" />
+    <div className="space-y-8">
+      <Card className="overflow-hidden border-0 shadow-md transition-all hover:shadow-lg">
+        <CardHeader className="bg-surface-muted/30 pb-6 pt-6">
+          <div className="flex items-center gap-4">
+            <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-blue-500/10 text-blue-600">
+              <FileJson className="h-6 w-6" />
             </div>
             <div>
-              <CardTitle className="text-lg">파일 백업 / 복원</CardTitle>
-              <CardDescription>데이터를 JSON 파일로 저장하거나 불러옵니다.</CardDescription>
+              <CardTitle className="text-xl">파일 백업 / 복원</CardTitle>
+              <CardDescription className="text-base mt-1">데이터를 JSON 파일로 저장하거나 불러옵니다.</CardDescription>
             </div>
           </div>
         </CardHeader>
-        <CardContent className="grid gap-4 p-6 sm:grid-cols-2">
+        <CardContent className="grid gap-6 p-8 sm:grid-cols-2">
           <Button 
             variant="outline" 
-            className="h-auto flex-col items-start gap-2 p-4 hover:border-blue-200 hover:bg-blue-50/50"
+            className="h-auto flex-col items-start gap-3 p-6 hover:border-blue-200 hover:bg-blue-50/50"
             onClick={handleExport}
             disabled={isLoading}
           >
-            <div className="flex w-full items-center gap-2 font-semibold text-primary">
-              <Download className="h-4 w-4 text-blue-500" />
+            <div className="flex w-full items-center gap-3 font-bold text-lg text-primary">
+              <Download className="h-5 w-5 text-blue-500" />
               내보내기 (백업)
             </div>
-            <p className="text-xs text-secondary text-left font-normal">
+            <p className="text-sm text-muted-foreground text-left font-normal leading-relaxed">
               현재 데이터를 파일로 다운로드합니다.
             </p>
           </Button>
 
           <Button 
             variant="outline" 
-            className="h-auto flex-col items-start gap-2 p-4 hover:border-green-200 hover:bg-green-50/50"
+            className="h-auto flex-col items-start gap-3 p-6 hover:border-green-200 hover:bg-green-50/50"
             onClick={handleImport}
             disabled={isLoading}
           >
-             <div className="flex w-full items-center gap-2 font-semibold text-primary">
-              <Upload className="h-4 w-4 text-green-600" />
+             <div className="flex w-full items-center gap-3 font-bold text-lg text-primary">
+              <Upload className="h-5 w-5 text-green-600" />
               가져오기 (복원)
             </div>
-            <p className="text-xs text-secondary text-left font-normal">
+            <p className="text-sm text-muted-foreground text-left font-normal leading-relaxed">
               백업 파일을 선택하여 데이터를 병합합니다.
             </p>
           </Button>
@@ -331,7 +331,7 @@ export default function SyncSettings() {
           <div className="sm:col-span-2 flex justify-end">
             <button 
               onClick={handleImportOverwrite}
-              className="text-xs text-secondary underline hover:text-red-500 transition-colors"
+              className="text-sm text-muted-foreground underline hover:text-red-500 transition-colors"
               disabled={isLoading}
             >
               혹시 덮어쓰기가 필요하신가요? (고급)
@@ -340,93 +340,103 @@ export default function SyncSettings() {
         </CardContent>
       </Card>
 
-      <Card className="overflow-hidden border-token shadow-md transition-all hover:shadow-lg">
-        <CardHeader className="bg-surface-muted/30 pb-4">
+      <Card className="overflow-hidden border-0 shadow-md transition-all hover:shadow-lg">
+        <CardHeader className="bg-surface-muted/30 pb-6 pt-6">
           <div className="flex flex-wrap items-center justify-between gap-4">
-            <div className="flex items-center gap-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-purple-500/10 text-purple-600">
-                <Cloud className="h-5 w-5" />
+            <div className="flex items-center gap-4">
+              <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-purple-500/10 text-purple-600">
+                <Cloud className="h-6 w-6" />
               </div>
               <div>
-                <CardTitle className="text-lg">클라우드 동기화</CardTitle>
-                <CardDescription>다양한 클라우드 서비스와 데이터를 동기화합니다.</CardDescription>
+                <CardTitle className="text-xl">클라우드 동기화</CardTitle>
+                <CardDescription className="text-base mt-1">다양한 클라우드 서비스와 데이터를 동기화합니다.</CardDescription>
               </div>
             </div>
           </div>
         </CardHeader>
 
-        <CardContent className="p-6">
+        <CardContent className="p-8">
           <Tabs defaultValue="s3" className="w-full" onValueChange={() => setActiveProvider(null)}>
-            <TabsList className="grid w-full grid-cols-4 mb-6">
-              <TabsTrigger value="s3">AWS S3</TabsTrigger>
-              <TabsTrigger value="google">Google</TabsTrigger>
-              <TabsTrigger value="onedrive">OneDrive</TabsTrigger>
-              <TabsTrigger value="icloud">iCloud</TabsTrigger>
+            <TabsList className="grid w-full grid-cols-4 mb-8 h-12">
+              <TabsTrigger value="s3" className="text-base">AWS S3</TabsTrigger>
+              <TabsTrigger value="google" className="text-base">Google</TabsTrigger>
+              <TabsTrigger value="onedrive" className="text-base">OneDrive</TabsTrigger>
+              <TabsTrigger value="icloud" className="text-base">iCloud</TabsTrigger>
             </TabsList>
 
-            <TabsContent value="s3" className="space-y-4">
+            <TabsContent value="s3" className="space-y-6">
               <div className="flex justify-between items-center">
-                <h3 className="text-sm font-medium">AWS S3 설정</h3>
+                <h3 className="text-lg font-bold">AWS S3 설정</h3>
                 <Button 
                   variant="ghost" 
                   size="sm" 
                   onClick={() => setIsConfigExpanded(!isConfigExpanded)}
-                  className="gap-2"
+                  className="gap-2 text-base"
                 >
-                  <Settings className="h-4 w-4" />
+                  <Settings className="h-5 w-5" />
                   {isConfigExpanded ? '설정 닫기' : '설정 열기'}
                 </Button>
               </div>
 
               {isConfigExpanded && (
-                <div className="mb-6 rounded-xl border border-token bg-surface-muted/50 p-4 animate-in fade-in slide-in-from-top-2">
-                  <div className="grid gap-4 sm:grid-cols-2">
-                    <div className="space-y-2">
-                      <label className="text-xs font-medium text-secondary ml-1">Bucket Name</label>
+                <div className="mb-8 rounded-xl border border-token bg-surface-muted/50 p-6 animate-in fade-in slide-in-from-top-2">
+                  <div className="grid gap-6 sm:grid-cols-2">
+                    <div className="space-y-3">
+                      <label htmlFor="s3-bucket" className="text-sm font-medium text-muted-foreground ml-1">Bucket Name</label>
                       <Input 
-                        placeholder="my-backup-bucket"
+                      id="s3-bucket"
+                    placeholder="my-backup-bucket"
                         value={s3Config.bucketName}
                         onChange={(e) => setS3Config({...s3Config, bucketName: e.target.value})}
+                        className="h-12 text-base"
                       />
                     </div>
-                    <div className="space-y-2">
-                      <label className="text-xs font-medium text-secondary ml-1">Region</label>
+                    <div className="space-y-3">
+                      <label htmlFor="s3-region" className="text-sm font-medium text-muted-foreground ml-1">Region</label>
                       <Input 
-                        placeholder="ap-northeast-2"
+                      id="s3-region"
+                    placeholder="ap-northeast-2"
                         value={s3Config.region}
                         onChange={(e) => setS3Config({...s3Config, region: e.target.value})}
+                        className="h-12 text-base"
                       />
                     </div>
-                    <div className="space-y-2">
-                      <label className="text-xs font-medium text-secondary ml-1">Access Key ID</label>
+                    <div className="space-y-3">
+                      <label htmlFor="s3-access-key" className="text-sm font-medium text-muted-foreground ml-1">Access Key ID</label>
                       <Input 
-                        type="password"
+                      id="s3-access-key"
+                    type="password"
                         placeholder="AKIA..."
                         value={s3Config.accessKeyId}
                         onChange={(e) => setS3Config({...s3Config, accessKeyId: e.target.value})}
+                        className="h-12 text-base"
                       />
                     </div>
-                    <div className="space-y-2">
-                      <label className="text-xs font-medium text-secondary ml-1">Secret Access Key</label>
+                    <div className="space-y-3">
+                      <label htmlFor="s3-secret-key" className="text-sm font-medium text-muted-foreground ml-1">Secret Access Key</label>
                       <Input 
-                        type="password"
+                      id="s3-secret-key"
+                    type="password"
                         placeholder="wJalr..."
                         value={s3Config.secretAccessKey}
                         onChange={(e) => setS3Config({...s3Config, secretAccessKey: e.target.value})}
+                        className="h-12 text-base"
                       />
                     </div>
-                    <div className="sm:col-span-2 space-y-2">
-                      <label className="text-xs font-medium text-secondary ml-1">Key Prefix (Folder)</label>
+                    <div className="sm:col-span-2 space-y-3">
+                      <label htmlFor="s3-prefix" className="text-sm font-medium text-muted-foreground ml-1">Key Prefix (Folder)</label>
                       <Input 
-                        placeholder="backups (optional)"
+                      id="s3-prefix"
+                    placeholder="backups (optional)"
                         value={s3Config.keyPrefix}
                         onChange={(e) => setS3Config({...s3Config, keyPrefix: e.target.value})}
+                        className="h-12 text-base"
                       />
                     </div>
                   </div>
-                  <div className="mt-4 flex justify-end">
-                    <Button size="sm" onClick={handleSaveConfig} isLoading={isLoading}>
-                      <Save className="mr-2 h-4 w-4" />
+                  <div className="mt-6 flex justify-end">
+                    <Button size="lg" onClick={handleSaveConfig} isLoading={isLoading} className="text-base px-6">
+                      <Save className="mr-2 h-5 w-5" />
                       설정 저장
                     </Button>
                   </div>
@@ -435,123 +445,127 @@ export default function SyncSettings() {
 
               <div className="grid gap-4 sm:grid-cols-2">
                 <Button 
-                  className="bg-purple-600 hover:bg-purple-700 text-white shadow-sm hover:shadow-purple-500/20"
+                  className="bg-purple-600 hover:bg-purple-700 text-white shadow-sm hover:shadow-purple-500/20 h-14 text-lg"
                   onClick={handleCloudBackup}
                   disabled={isLoading || !s3Config.bucketName}
                 >
-                  <Upload className="mr-2 h-4 w-4" />
+                  <Upload className="mr-2 h-5 w-5" />
                   S3에 백업하기
                 </Button>
                 <Button 
                   variant="outline"
-                  className="border-purple-200 text-purple-700 hover:bg-purple-50"
+                  className="border-purple-200 text-purple-700 hover:bg-purple-50 h-14 text-lg"
                   onClick={handleCloudRestore}
                   disabled={isLoading || !s3Config.bucketName}
                 >
-                  <RefreshCw className="mr-2 h-4 w-4" />
+                  <RefreshCw className="mr-2 h-5 w-5" />
                   S3에서 복원하기
                 </Button>
               </div>
             </TabsContent>
 
-            <TabsContent value="google" className="py-4 text-center space-y-6">
-              <div className="flex flex-col items-center gap-4">
-                <div className="p-4 bg-blue-50 rounded-full">
-                  <Cloud className="h-8 w-8 text-blue-500" />
+            <TabsContent value="google" className="py-8 text-center space-y-8">
+              <div className="flex flex-col items-center gap-6">
+                <div className="p-6 bg-blue-50 rounded-full">
+                  <Cloud className="h-10 w-10 text-blue-500" />
                 </div>
-                <h3 className="font-medium">Google Drive 연동</h3>
+                <h3 className="font-bold text-xl">Google Drive 연동</h3>
                 
-                <div className="w-full max-w-sm space-y-2 text-left">
-                  <label className="text-xs font-medium text-secondary ml-1">Google Client ID</label>
+                <div className="w-full max-w-md space-y-3 text-left">
+                  <label htmlFor="google-client-id" className="text-sm font-medium text-muted-foreground ml-1">Google Client ID</label>
                   <Input 
+                    id="google-client-id"
                     placeholder="1234...apps.googleusercontent.com"
                     value={googleClientId}
                     onChange={(e) => setGoogleClientId(e.target.value)}
+                    className="h-12 text-base"
                   />
-                  <p className="text-[10px] text-secondary">
+                  <p className="text-xs text-muted-foreground">
                     * Google Cloud Console에서 발급받은 Client ID가 필요합니다.
                   </p>
                 </div>
 
                 {activeProvider?.type === 'google' ? (
-                  <div className="space-y-4 w-full max-w-sm">
-                    <div className="flex items-center justify-center gap-2 text-green-600 bg-green-50 p-2 rounded-lg text-sm">
-                      <Check className="h-4 w-4" />
+                  <div className="space-y-6 w-full max-w-md">
+                    <div className="flex items-center justify-center gap-2 text-green-600 bg-green-50 p-3 rounded-xl text-base font-medium">
+                      <Check className="h-5 w-5" />
                       연결됨
                     </div>
-                    <div className="grid gap-2 grid-cols-2">
-                      <Button onClick={handleCloudBackup} disabled={isLoading}>백업하기</Button>
-                      <Button variant="outline" onClick={handleCloudRestore} disabled={isLoading}>복원하기</Button>
+                    <div className="grid gap-4 grid-cols-2">
+                      <Button onClick={handleCloudBackup} disabled={isLoading} className="h-12 text-base">백업하기</Button>
+                      <Button variant="outline" onClick={handleCloudRestore} disabled={isLoading} className="h-12 text-base">복원하기</Button>
                     </div>
                   </div>
                 ) : (
                   <Button 
                     onClick={() => handleOAuthLogin('google')} 
                     disabled={isLoading || !googleClientId}
-                    className="w-full max-w-sm"
+                    className="w-full max-w-md h-14 text-lg"
                   >
-                    <LogIn className="mr-2 h-4 w-4" />
+                    <LogIn className="mr-2 h-5 w-5" />
                     Google 로그인
                   </Button>
                 )}
               </div>
             </TabsContent>
 
-            <TabsContent value="onedrive" className="py-4 text-center space-y-6">
-              <div className="flex flex-col items-center gap-4">
-                <div className="p-4 bg-blue-50 rounded-full">
-                  <Cloud className="h-8 w-8 text-blue-700" />
+            <TabsContent value="onedrive" className="py-8 text-center space-y-8">
+              <div className="flex flex-col items-center gap-6">
+                <div className="p-6 bg-blue-50 rounded-full">
+                  <Cloud className="h-10 w-10 text-blue-700" />
                 </div>
-                <h3 className="font-medium">OneDrive 연동</h3>
+                <h3 className="font-bold text-xl">OneDrive 연동</h3>
                 
-                <div className="w-full max-w-sm space-y-2 text-left">
-                  <label className="text-xs font-medium text-secondary ml-1">Microsoft Client ID</label>
+                <div className="w-full max-w-md space-y-3 text-left">
+                  <label htmlFor="onedrive-client-id" className="text-sm font-medium text-muted-foreground ml-1">Microsoft Client ID</label>
                   <Input 
+                    id="onedrive-client-id"
                     placeholder="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
                     value={oneDriveClientId}
                     onChange={(e) => setOneDriveClientId(e.target.value)}
+                    className="h-12 text-base"
                   />
-                  <p className="text-[10px] text-secondary">
+                  <p className="text-xs text-muted-foreground">
                     * Azure Portal에서 발급받은 Application (Client) ID가 필요합니다.
                   </p>
                 </div>
 
                 {activeProvider?.type === 'onedrive' ? (
-                  <div className="space-y-4 w-full max-w-sm">
-                    <div className="flex items-center justify-center gap-2 text-green-600 bg-green-50 p-2 rounded-lg text-sm">
-                      <Check className="h-4 w-4" />
+                  <div className="space-y-6 w-full max-w-md">
+                    <div className="flex items-center justify-center gap-2 text-green-600 bg-green-50 p-3 rounded-xl text-base font-medium">
+                      <Check className="h-5 w-5" />
                       연결됨
                     </div>
-                    <div className="grid gap-2 grid-cols-2">
-                      <Button onClick={handleCloudBackup} disabled={isLoading}>백업하기</Button>
-                      <Button variant="outline" onClick={handleCloudRestore} disabled={isLoading}>복원하기</Button>
+                    <div className="grid gap-4 grid-cols-2">
+                      <Button onClick={handleCloudBackup} disabled={isLoading} className="h-12 text-base">백업하기</Button>
+                      <Button variant="outline" onClick={handleCloudRestore} disabled={isLoading} className="h-12 text-base">복원하기</Button>
                     </div>
                   </div>
                 ) : (
                   <Button 
                     onClick={() => handleOAuthLogin('onedrive')} 
                     disabled={isLoading || !oneDriveClientId}
-                    className="w-full max-w-sm"
+                    className="w-full max-w-md h-14 text-lg"
                   >
-                    <LogIn className="mr-2 h-4 w-4" />
+                    <LogIn className="mr-2 h-5 w-5" />
                     Microsoft 로그인
                   </Button>
                 )}
               </div>
             </TabsContent>
 
-            <TabsContent value="icloud" className="py-4">
-              <div className="flex flex-col items-center gap-4 text-center">
-                <div className="p-4 bg-gray-100 rounded-full dark:bg-gray-800">
-                  <HardDrive className="h-8 w-8 text-gray-600 dark:text-gray-300" />
+            <TabsContent value="icloud" className="py-8">
+              <div className="flex flex-col items-center gap-6 text-center">
+                <div className="p-6 bg-gray-100 rounded-full dark:bg-gray-800">
+                  <HardDrive className="h-10 w-10 text-gray-600 dark:text-gray-300" />
                 </div>
-                <h3 className="font-medium">iCloud Drive / 로컬 파일</h3>
-                <p className="text-sm text-secondary max-w-xs">
+                <h3 className="font-bold text-xl">iCloud Drive / 로컬 파일</h3>
+                <p className="text-base text-muted-foreground max-w-sm leading-relaxed">
                   '파일 내보내기' 기능을 사용하여 <strong>iCloud Drive</strong> 폴더에 저장하면, 
                   모든 Apple 기기에서 파일에 접근할 수 있습니다.
                 </p>
-                <Button onClick={handleExport} variant="outline">
-                  <Download className="mr-2 h-4 w-4" />
+                <Button onClick={handleExport} variant="outline" className="h-14 text-lg px-8">
+                  <Download className="mr-2 h-5 w-5" />
                   iCloud Drive에 저장하기 (내보내기)
                 </Button>
               </div>
@@ -559,8 +573,8 @@ export default function SyncSettings() {
           </Tabs>
 
           {syncStatus.lastSyncAt && (
-            <div className="mt-6 flex items-center gap-2 rounded-lg bg-surface-muted px-3 py-2 text-xs text-secondary">
-              <Check className="h-3 w-3 text-green-500" />
+            <div className="mt-8 flex items-center gap-3 rounded-xl bg-surface-muted px-4 py-3 text-sm text-muted-foreground">
+              <Check className="h-4 w-4 text-green-500" />
               <span>
                 마지막 동기화: {new Date(syncStatus.lastSyncAt).toLocaleString('ko-KR')}
                 {syncStatus.syncedWith && ` (기기: ${syncStatus.syncedWith.slice(0, 8)}...)`}
@@ -570,8 +584,8 @@ export default function SyncSettings() {
         </CardContent>
       </Card>
       
-      <div className="flex items-start gap-2 rounded-lg bg-orange-50 p-4 text-xs text-orange-800 dark:bg-orange-900/20 dark:text-orange-200">
-        <AlertCircle className="h-4 w-4 shrink-0 mt-0.5" />
+      <div className="flex items-start gap-3 rounded-xl bg-orange-50 p-6 text-sm text-orange-800 dark:bg-orange-900/20 dark:text-orange-200 leading-relaxed">
+        <AlertCircle className="h-5 w-5 shrink-0 mt-0.5" />
         <p>
           주의: 클라우드 동기화는 설정된 스토리지에 직접 접근합니다. 
           중요한 데이터는 반드시 '파일 내보내기'로 별도 보관하는 것을 권장합니다.
