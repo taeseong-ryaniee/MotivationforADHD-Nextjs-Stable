@@ -1,6 +1,12 @@
 import { CloudProvider, CloudProviderType, CloudFile } from './types'
 import { SyncData } from '@/lib/types'
 
+interface GoogleDriveFile {
+  id: string
+  name: string
+  modifiedTime: string
+}
+
 export class GoogleDriveProvider implements CloudProvider {
   name = 'Google Drive'
   type: CloudProviderType = 'google'
@@ -70,7 +76,7 @@ export class GoogleDriveProvider implements CloudProvider {
     if (!response.ok) throw new Error('List failed')
 
     const result = await response.json()
-    return result.files.map((f: any) => ({
+    return (result.files as GoogleDriveFile[]).map((f) => ({
       id: f.id,
       name: f.name,
       updatedAt: f.modifiedTime

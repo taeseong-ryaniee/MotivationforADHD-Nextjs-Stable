@@ -1,6 +1,6 @@
 import { CheckCircle } from 'lucide-react'
-import { Button } from './ui/button'
-import { LoadingSpinner } from './ui/loading-spinner'
+import { Button } from '@/components/ui/button'
+import { LoadingSpinner } from '@/components/ui/loading-spinner'
 
 interface CreateTodoButtonProps {
   isCreating: boolean

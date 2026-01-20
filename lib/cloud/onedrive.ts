@@ -1,6 +1,12 @@
 import { CloudProvider, CloudProviderType, CloudFile } from './types'
 import { SyncData } from '@/lib/types'
 
+interface OneDriveFile {
+  id: string
+  name: string
+  lastModifiedDateTime: string
+}
+
 export class OneDriveProvider implements CloudProvider {
   name = 'OneDrive'
   type: CloudProviderType = 'onedrive'
@@ -61,7 +67,7 @@ export class OneDriveProvider implements CloudProvider {
     if (!response.ok) throw new Error('List failed')
 
     const result = await response.json()
-    return result.value.map((f: any) => ({
+    return (result.value as OneDriveFile[]).map((f) => ({
       id: f.id,
       name: f.name,
       updatedAt: f.lastModifiedDateTime

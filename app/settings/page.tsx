@@ -5,7 +5,7 @@ import { ArrowLeft, Palette, Settings as SettingsIcon } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
 import SyncSettings from '@/components/SyncSettings'
-import { ThemeToggle } from '@/components/ThemeToggle'
+import { ThemeToggle } from '@/components/feature/ThemeToggle'
 
 export default function SettingsPage() {
   const router = useRouter()

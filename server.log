@@ -1,0 +1,16 @@
+$ next dev --port "3005"
+▲ Next.js 16.1.1 (Turbopack)
+- Local:         http://localhost:3005
+- Network:       http://192.168.1.141:3005
+- Experiments (use with caution):
+  · optimizePackageImports
+
+✓ Starting...
+✓ Ready in 326ms
+ GET / 200 in 2.1s (compile: 1890ms, render: 218ms)
+ GET /api/content/ko 200 in 550ms (compile: 539ms, render: 11ms)
+ GET / 200 in 47ms (compile: 1456µs, render: 45ms)
+ GET / 200 in 35ms (compile: 1473µs, render: 33ms)
+ GET /api/content/ko 200 in 8ms (compile: 5ms, render: 3ms)
+ GET / 200 in 91ms (compile: 3ms, render: 88ms)
+ GET /api/content/ko 200 in 9ms (compile: 4ms, render: 5ms)

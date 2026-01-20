@@ -12,8 +12,7 @@ import {
   Check, 
   AlertCircle,
   HardDrive,
-  LogIn,
-  LogOut
+  LogIn
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -561,7 +560,7 @@ export default function SyncSettings() {
                 </div>
                 <h3 className="font-bold text-xl">iCloud Drive / 로컬 파일</h3>
                 <p className="text-base text-muted-foreground max-w-sm leading-relaxed">
-                  '파일 내보내기' 기능을 사용하여 <strong>iCloud Drive</strong> 폴더에 저장하면, 
+                  &apos;파일 내보내기&apos; 기능을 사용하여 <strong>iCloud Drive</strong> 폴더에 저장하면, 
                   모든 Apple 기기에서 파일에 접근할 수 있습니다.
                 </p>
                 <Button onClick={handleExport} variant="outline" className="h-14 text-lg px-8">
@@ -588,7 +587,7 @@ export default function SyncSettings() {
         <AlertCircle className="h-5 w-5 shrink-0 mt-0.5" />
         <p>
           주의: 클라우드 동기화는 설정된 스토리지에 직접 접근합니다. 
-          중요한 데이터는 반드시 '파일 내보내기'로 별도 보관하는 것을 권장합니다.
+          중요한 데이터는 반드시 &apos;파일 내보내기&apos;로 별도 보관하는 것을 권장합니다.
         </p>
       </div>
     </div>

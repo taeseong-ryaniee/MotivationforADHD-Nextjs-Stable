@@ -3,7 +3,7 @@
 import { use, useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { Loader2 } from 'lucide-react'
-import { TodayTodoView } from '@/components/TodayTodoView'
+import { TodayTodoView } from '@/components/feature/TodayTodoView'
 import { Card, CardContent } from '@/components/ui/card'
 import { getTodoById } from '@/lib/db'
 import { useTodoStore } from '@/lib/store'
@@ -16,6 +16,7 @@ export default function TodoPage({ params }: { params: Promise<{ id: string }> }
   const [todo, setTodo] = useState<TodoData | null>(null)
   const [isLoading, setIsLoading] = useState(true)
   const copyToClipboard = useTodoStore((state) => state.copyToClipboard)
+  const updateTodo = useTodoStore((state) => state.updateTodo)
 
   useEffect(() => {
     const loadTodo = async () => {
@@ -42,8 +43,8 @@ export default function TodoPage({ params }: { params: Promise<{ id: string }> }
   }
 
   return (
-    <Card className="shadow-lg">
-      <CardContent className="p-6 sm:p-8 lg:p-10">
+    <Card className="shadow-lg h-full border-none sm:border bg-background/50 backdrop-blur-sm">
+      <CardContent className="p-4 sm:p-8 lg:p-10 h-full">
         {isLoading ? (
           <div className="flex flex-col items-center justify-center py-16">
             <Loader2 className="mb-4 h-8 w-8 animate-spin text-brand-500" />
@@ -54,6 +55,12 @@ export default function TodoPage({ params }: { params: Promise<{ id: string }> }
             todayTodo={todo}
             onBack={handleBack}
             onCopyContent={handleCopyContent}
+            onUpdate={async (newContent) => {
+                if (todo) {
+                    await updateTodo(todo.id, newContent);
+                    setTodo({ ...todo, content: newContent });
+                }
+            }}
           />
         )}
       </CardContent>

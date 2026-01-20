@@ -1,5 +1,6 @@
 import { StorageAdapter } from './types';
 import { LocalDexieAdapter } from './adapters/LocalDexieAdapter';
+import { TodoData } from '@/lib/types';
 
 class StorageManager {
   private static instance: StorageManager;
@@ -32,7 +33,7 @@ class StorageManager {
     return this.adapter.getTodos();
   }
 
-  public async saveTodo(todo: any) {
+  public async saveTodo(todo: TodoData) {
     return this.adapter.saveTodo(todo);
   }
 }

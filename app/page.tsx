@@ -3,8 +3,7 @@
 import { useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { Loader2 } from 'lucide-react'
-import { MainScreen } from '@/components/MainScreen'
-import { Card, CardContent } from '@/components/ui/card'
+import { MainScreen } from '@/components/feature/MainScreen'
 import { useTodoStore } from '@/lib/store'
 import { migrateFromLocalStorage } from '@/lib/db'
 import { showError } from '@/lib/toast'
@@ -17,6 +16,7 @@ export default function Home() {
     specialEvent,
     isCreating,
     lastCreated,
+    todoHistory,
     initialize,
     createDailyTodo,
     updateSpecialEvent,
@@ -60,26 +60,25 @@ export default function Home() {
     console.error('Content loading error:', contentError)
   }
 
+  if (isLoadingContent) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-[60vh] space-y-4">
+        <Loader2 className="h-10 w-10 animate-spin text-brand-500" />
+        <p className="text-muted-foreground font-medium animate-pulse">오늘의 영감을 불러오고 있어요...</p>
+      </div>
+    )
+  }
+
   return (
-    <Card className="shadow-lg">
-      <CardContent className="p-6 sm:p-8 lg:p-10">
-        {isLoadingContent ? (
-          <div className="flex flex-col items-center justify-center py-16">
-            <Loader2 className="mb-4 h-8 w-8 animate-spin text-brand-500" />
-            <p className="text-sm text-muted-foreground">앱을 불러오는 중...</p>
-          </div>
-        ) : (
-          <MainScreen
-            todayMotivation={todayMotivation}
-            specialEvent={specialEvent}
-            isCreating={isCreating}
-            lastCreated={lastCreated}
-            onUpdateSpecialEvent={updateSpecialEvent}
-            onCreateDailyTodo={handleCreateTodo}
-            onShowTodayTodo={handleShowTodayTodo}
-          />
-        )}
-      </CardContent>
-    </Card>
+    <MainScreen
+      todayMotivation={todayMotivation}
+      specialEvent={specialEvent}
+      isCreating={isCreating}
+      lastCreated={lastCreated}
+      onUpdateSpecialEvent={updateSpecialEvent}
+      onCreateDailyTodo={handleCreateTodo}
+      onShowTodayTodo={handleShowTodayTodo}
+      todoHistory={todoHistory}
+    />
   )
 }

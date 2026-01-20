@@ -1,123 +1,165 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useState, useMemo } from 'react'
 import { useRouter } from 'next/navigation'
-import { Clock, Trash2, ArrowLeft, Loader2 } from 'lucide-react'
+import { ArrowLeft, Calendar as CalendarIcon, Clock, ChevronRight } from 'lucide-react'
 import { useTodoStore } from '@/lib/store'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
-import { Card, CardContent } from '@/components/ui/card'
-import { showConfirm, showSuccess } from '@/lib/toast'
+import { Calendar } from '@/components/ui/calendar'
 
 export default function HistoryPage() {
   const router = useRouter()
-  const { todoHistory, loadTodoHistory, removeFromHistory, clearHistory } = useTodoStore()
-  const [isLoading, setIsLoading] = useState(true)
+  const todoHistory = useTodoStore((state) => state.todoHistory)
+  const [date, setDate] = useState<Date | undefined>(new Date())
 
-  useEffect(() => {
-    const loadData = async () => {
-      setIsLoading(true)
-      await loadTodoHistory()
-      setIsLoading(false)
-    }
-    loadData()
-  }, [loadTodoHistory])
+  // 기록이 있는 날짜들 (Date 객체로 변환)
+  const recordedDays = useMemo(() => {
+    return todoHistory.map(todo => new Date(todo.createdAt))
+  }, [todoHistory])
 
-  const handleDelete = async (id: string) => {
-    showConfirm(
-      '이 To-do를 삭제하시겠습니까?',
-      async () => {
-        await removeFromHistory(id)
-        showSuccess('To-do가 삭제되었습니다')
-      }
-    )
-  }
+  // 선택된 날짜에 해당하는 To-do 찾기
+  const selectedTodo = useMemo(() => {
+    if (!date) return null
+    const dateString = date.toLocaleDateString('ko-KR', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+      weekday: 'long',
+    })
+    return todoHistory.find(t => t.date === dateString)
+  }, [date, todoHistory])
 
-  const handleClearAll = async () => {
-    showConfirm(
-      '모든 히스토리를 삭제하시겠습니까?',
-      async () => {
-        await clearHistory()
-        showSuccess('모든 히스토리가 삭제되었습니다')
-      },
-      {
-        description: '이 작업은 되돌릴 수 없습니다.'
-      }
-    )
-  }
+  // 최근 기록 5개 (타임라인용)
+  const recentHistory = useMemo(() => {
+    return todoHistory.slice(0, 5)
+  }, [todoHistory])
 
   return (
-    <div className="space-y-10 pb-24">
-      <Card className="shadow-lg border-0">
-        <CardContent className="p-8 sm:p-10">
-          <div className="mb-8 flex flex-wrap items-center justify-between gap-4">
-            <div className="flex items-center gap-4">
-              <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-brand-500/10 text-brand-500">
-                <Clock className="h-6 w-6" aria-hidden="true" />
-              </div>
-              <div>
-                <p className="text-sm font-semibold text-muted-foreground">최근 기록</p>
-                <h2 className="text-3xl font-bold text-primary">히스토리</h2>
-              </div>
-            </div>
-            <Button variant="ghost" size="lg" onClick={() => router.push('/')} className="text-base">
-              <ArrowLeft className="h-5 w-5 mr-2" />
-              홈으로
-            </Button>
-          </div>
+    <div className="space-y-6 max-w-full">
+      {/* Header */}
+      <div className="flex items-center gap-3">
+        <Button variant="ghost" size="icon" onClick={() => router.push('/')}>
+          <ArrowLeft className="h-5 w-5" />
+        </Button>
+        <div className="flex flex-col">
+          <span className="text-xs font-bold text-primary font-serif">History</span>
+          <h1 className="text-2xl font-bold font-serif">나의 발자취</h1>
+        </div>
+      </div>
 
-          {isLoading ? (
-            <div className="flex flex-col items-center justify-center py-20">
-              <Loader2 className="w-10 h-10 text-brand-500 animate-spin mb-4" />
-              <p className="text-muted-foreground text-base">히스토리를 불러오는 중...</p>
+      <div className="grid grid-cols-1 md:grid-cols-12 gap-8 items-start">
+        {/* Left Column: Calendar & Stats (4 cols) */}
+        <div className="md:col-span-4 space-y-6">
+          <Card className="border-none shadow-md">
+            <CardHeader className="pb-2">
+              <CardTitle className="text-base font-bold flex items-center gap-2 font-sans">
+                <CalendarIcon className="w-4 h-4 text-brand-500" />
+                날짜별 기록
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="flex justify-center p-4">
+              <Calendar
+                mode="single"
+                selected={date}
+                onSelect={setDate}
+                modifiers={{ hasTodo: recordedDays }}
+                modifiersStyles={{
+                   hasTodo: { 
+                     fontWeight: 'bold',
+                     color: 'var(--primary)',
+                     position: 'relative',
+                   }
+                }}
+                className="rounded-md border"
+              />
+            </CardContent>
+          </Card>
+
+          <Card className="bg-surface-muted border-none">
+            <CardContent className="p-4 space-y-2">
+              <div className="flex justify-between items-center text-sm">
+                <span className="text-muted-foreground">총 기록 수</span>
+                <span className="font-mono font-bold text-lg text-primary">{todoHistory.length}개</span>
+              </div>
+              <div className="flex justify-between items-center text-sm">
+                <span className="text-muted-foreground">이번 달 기록</span>
+                <span className="font-mono font-bold text-lg text-secondary">
+                  {todoHistory.filter(t => new Date(t.createdAt).getMonth() === new Date().getMonth()).length}개
+                </span>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Right Column: Detail List (8 cols) */}
+        <div className="md:col-span-8 space-y-6">
+          {date ? (
+            <div className="space-y-4 animate-in fade-in slide-in-from-bottom-2 duration-300">
+              <h2 className="text-lg font-bold flex items-center gap-2 font-serif">
+                {date.toLocaleDateString('ko-KR', { month: 'long', day: 'numeric', weekday: 'short' })}의 기록
+              </h2>
+              
+              {selectedTodo ? (
+                <Card 
+                  className="hover:shadow-md transition-all cursor-pointer border-brand-200"
+                  onClick={() => router.push(`/todo/${selectedTodo.id}`)}
+                >
+                  <CardContent className="p-6 space-y-4">
+                    <div className="flex justify-between items-start">
+                      <h3 className="font-bold text-xl text-primary font-serif">{selectedTodo.title}</h3>
+                      <ChevronRight className="text-muted-foreground" />
+                    </div>
+                    <p className="text-sm text-muted-foreground line-clamp-3 font-sans leading-relaxed whitespace-pre-wrap">
+                      {selectedTodo.content}
+                    </p>
+                    <div className="pt-2 text-xs text-muted-foreground font-mono">
+                      작성시간: {selectedTodo.createdAt}
+                    </div>
+                  </CardContent>
+                </Card>
+              ) : (
+                <div className="flex flex-col items-center justify-center py-12 text-muted-foreground bg-muted/30 rounded-xl border border-dashed border-border">
+                  <Clock className="w-10 h-10 mb-3 opacity-20" />
+                  <p>이 날 작성된 기록이 없습니다.</p>
+                  <Button 
+                    variant="link" 
+                    className="mt-2 text-brand-500"
+                    onClick={() => setDate(undefined)}
+                  >
+                    최근 기록 보기
+                  </Button>
+                </div>
+              )}
             </div>
-          ) : todoHistory.length > 0 ? (
-            <>
-              <div className="grid gap-6 md:grid-cols-2">
-                {todoHistory.map((todo) => (
-                  <Card
-                    key={todo.id}
-                    className="group cursor-pointer p-6 transition hover:-translate-y-1 hover:shadow-lg border-muted/40"
+          ) : (
+            <div className="space-y-4">
+              <h2 className="text-lg font-bold flex items-center gap-2 font-serif">
+                최근 타임라인
+              </h2>
+              <div className="space-y-3">
+                {recentHistory.map((todo) => (
+                  <Card 
+                    key={todo.id} 
+                    className="hover:bg-accent/5 transition-colors cursor-pointer group"
                     onClick={() => router.push(`/todo/${todo.id}`)}
                   >
-                    <div className="flex items-start justify-between">
-                      <div className="flex-1">
-                        <p className="text-lg font-bold text-primary">{todo.date}</p>
-                        <p className="mt-2 text-sm text-muted-foreground">{todo.createdAt}</p>
+                    <CardContent className="p-4 flex items-center justify-between">
+                      <div className="space-y-1">
+                        <p className="font-bold text-foreground font-serif group-hover:text-primary transition-colors">
+                          {todo.date}
+                        </p>
+                        <p className="text-xs text-muted-foreground font-mono">{todo.createdAt}</p>
                       </div>
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        className="h-10 w-10"
-                        aria-label="삭제"
-                        onClick={(e) => {
-                          e.stopPropagation()
-                          handleDelete(todo.id)
-                        }}
-                      >
-                        <Trash2 className="w-5 h-5 text-red-500" />
-                      </Button>
-                    </div>
+                      <ChevronRight className="w-4 h-4 text-muted-foreground group-hover:translate-x-1 transition-transform" />
+                    </CardContent>
                   </Card>
                 ))}
               </div>
-
-              <div className="mt-8 border-t border-token/60 pt-6">
-                <Button variant="outline" size="lg" className="w-full text-base h-12" onClick={handleClearAll}>
-                  모든 히스토리 삭제
-                </Button>
-              </div>
-            </>
-          ) : (
-            <div className="text-center py-24">
-              <Clock className="w-20 h-20 text-muted-foreground mx-auto mb-6 opacity-30" aria-hidden="true" />
-              <p className="text-xl font-medium text-primary mb-3">아직 히스토리가 없습니다</p>
-              <p className="text-base text-muted-foreground leading-relaxed">
-                To-do를 생성하면 여기에 표시됩니다
-              </p>
             </div>
           )}
-        </CardContent>
-      </Card>
+        </div>
+      </div>
     </div>
   )
 }

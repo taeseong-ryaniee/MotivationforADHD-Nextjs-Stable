@@ -1,6 +1,6 @@
 import { S3Client, PutObjectCommand, GetObjectCommand, ListObjectsV2Command } from '@aws-sdk/client-s3'
 import { storage } from './storage/StorageManager'
-import type { TodoData, SyncData, SyncMetadata, S3Config, SyncStrategy, SyncConflict, Settings } from './types'
+import type { TodoData, SyncData, SyncMetadata, S3Config, SyncStrategy } from './types'
 
 let deviceId: string | null = null
 

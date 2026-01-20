@@ -12,9 +12,13 @@
 - `bun run build` or `npm run build`: production build.
 - `bun start` or `npm start`: serve the production build.
 - `bun run lint` or `npm run lint`: run Next.js ESLint rules (ESLint 9 flat config).
-- **Running Tests**: No automated test runner (Jest/Vitest) is currently configured.
-  - **Single Test**: To test a specific feature (e.g., "XSS Prevention"), refer to the corresponding section in `BROWSER_TEST_GUIDE.md` and perform the manual steps via `bun dev`.
-  - **Full Suite**: Execute the full checklist in `BROWSER_TEST_GUIDE.md` manually.
+- **Automated Tests**: Vitest is configured for unit/integration tests.
+  - Run all tests: `npx vitest run`
+  - Run single test file: `npx vitest run path/to/file.test.ts`
+  - Watch mode: `npx vitest`
+- **Manual/Browser Tests**: For features requiring browser interaction (PWA, Service Workers, UI flows):
+  - Refer to `BROWSER_TEST_GUIDE.md` for the full manual checklist.
+  - Key areas: Service Worker registration, XSS prevention, Toast notifications, Offline mode.
 
 ## Coding Style & Naming Conventions
 - **TypeScript**: Strict mode enabled. Always use types/interfaces; never use `any`, `@ts-ignore`, or `@ts-expect-error`.
@@ -37,10 +41,12 @@
   - See `USAGE.md` for exact query key structures and caching strategies.
 - **Optimistic Updates**: Use `onMutate`/`onError`/`onSettled` in mutations for immediate UI feedback.
 
-## Data Persistence
-- **IndexedDB**: Dexie.js wrapper in `lib/db.ts`. Schema versions tracked in `getDB()`. Keep migrations additive. Always validate data with Zod schemas before saving.
-- **LocalStorage**: Only used for migration to IndexedDB. Do not add new localStorage usage.
-- **Validation**: All external data must be validated with Zod schemas in `lib/validation.ts` (e.g., `TodoDataSchema`, `ContentDataSchema`).
+## Data Persistence & Cloud Sync
+- **Local-First**: Primary storage is IndexedDB (Dexie.js) in `lib/db.ts`.
+- **Cloud Sync**: Supports AWS S3, Google Drive, OneDrive via `lib/cloud/`.
+  - Sync logic resides in `lib/sync.ts`.
+  - Credentials managed via client-side settings (no backend database).
+- **Validation**: All external data (API/DB) must be validated with Zod schemas in `lib/validation.ts`.
 
 ## API Routes
 - Location: `app/api/[route]/route.ts`.
@@ -48,7 +54,6 @@
 - Use `export const dynamic = 'force-static'` and `export const revalidate = N` for static caching.
 - Validate path parameters (e.g., locale whitelist `['ko', 'en']`) to prevent path traversal.
 - Return `NextResponse.json()` with appropriate headers (Cache-Control, Content-Type).
-- Error handling: Try/catch blocks with console.error and fallback responses.
 
 ## Error Handling & Notifications
 - Use `try/catch` for async operations. Log errors with `console.error`.
@@ -56,7 +61,7 @@
 - User-facing errors should use toasts, not alerts.
 
 ## Styling
-- Tailwind CSS utility classes. Group related classes for readability.
+- Tailwind CSS v4 utility classes. Group related classes for readability.
 - Use semantic color tokens: `text-primary`, `text-secondary`, `bg-surface`, `bg-surface-muted`, `border-border`, `text-brand-500`.
 - Avoid inline styles. Use `className` with Tailwind classes.
 - Responsive design: Mobile-first approach (base styles → `sm:` → `md:` → `lg:` breakpoints).
@@ -98,18 +103,6 @@ export async function saveTodo(todo: TodoData): Promise<string> {
   return await getDB().todos.put(validated)
 }
 
-// Lazy initialization for SSR safety
-let _db: Dexie | null = null
-function getDB() {
-  if (typeof window === 'undefined') {
-    throw new Error('IndexedDB can only be used in browser environment')
-  }
-  if (!_db) {
-    _db = new Dexie('MotivationForADHD')
-  }
-  return _db
-}
-
 // Async error handling with toast
 const handleCreateTodo = async () => {
   try {
@@ -122,6 +115,7 @@ const handleCreateTodo = async () => {
 ```
 
 ## Performance Guidelines
+- **Lighthouse Targets**: Performance > 90, Accessibility > 95, PWA > 90.
 - Use TanStack Query for caching (1 hour for content, 5 min for todos).
 - Optimize package imports in Next.js config (lucide-react already configured).
 - Use `React.memo` or `useMemo` for expensive computations.
@@ -136,10 +130,10 @@ const handleCreateTodo = async () => {
 
 ## Commit & Pull Request Guidelines
 - **Commit Messages**: Short, imperative subject line (e.g., "Fix API route path validation"). Describe what changed, not why.
-- **PRs**: Include summary, verification steps (`bun dev` + manual checklist from `BROWSER_TEST_GUIDE.md`), and screenshots for UI changes.
+- **PRs**: Include summary, verification steps (`npx vitest run` + manual checklist from `BROWSER_TEST_GUIDE.md`), and screenshots for UI changes.
 
 ## Configuration Notes
-- **Next.js**: v16.1.1 with Turbopack enabled. `next.config.ts` sets `reactStrictMode: true`, `poweredByHeader: false`, and `optimizePackageImports: ['lucide-react']`.
+- **Next.js**: v16.1.1 with Turbopack enabled. `next.config.ts` sets `reactStrictMode: true`, `poweredByHeader: false`.
 - **TypeScript**: `tsconfig.json` with `strict: true`, path alias `@/*` pointing to root.
 - **ESLint**: Flat config using `eslint.config.mjs`. Extends `next/core-web-vitals` and `next/typescript`.
 - **Tailwind CSS**: v4.1. Configuration in `tailwind.config.ts`.

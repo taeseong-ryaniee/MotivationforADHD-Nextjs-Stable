@@ -32,12 +32,12 @@ export default function RootLayout({
       <head>
         <link rel="icon" href="/icons/app-icon.svg" type="image/svg+xml" />
         <link rel="apple-touch-icon" href="/icons/app-icon.svg" />
-        <link
-          rel="stylesheet"
-          href="https://cdn.jsdelivr.net/gh/wanteddev/wanted-sans@v1.0.3/packages/wanted-sans-std/fonts/webfonts/variable/split/WantedSansStdVariable.min.css"
-        />
+        {/* JetBrains Mono (Mono) Only - Others via globals.css */}
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet" />
       </head>
-      <body>
+      <body className="font-sans antialiased">
         <a
           href="#main-content"
           className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-50 focus:px-4 focus:py-2 focus:bg-brand-500 focus:text-white focus:rounded-lg focus:shadow-lg"

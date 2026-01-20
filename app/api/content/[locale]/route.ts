@@ -10,6 +10,10 @@ export const revalidate = 3600 // Revalidate every hour
 // Whitelist of allowed locales
 const ALLOWED_LOCALES = ['ko', 'en'] as const
 
+export async function generateStaticParams() {
+  return ALLOWED_LOCALES.map((locale) => ({ locale }))
+}
+
 export async function GET(
   request: NextRequest,
   { params }: { params: Promise<{ locale: string }> }

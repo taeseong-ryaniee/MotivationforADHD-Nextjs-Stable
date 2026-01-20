@@ -48,7 +48,8 @@ interface TodoStore {
   loadTodoHistory: () => Promise<void>
   removeFromHistory: (id: string) => Promise<void>
   clearHistory: () => Promise<void>
-  setTodayTodo: (todo: TodoData) => void
+  updateTodo: (id: string, content: string) => Promise<void>
+
   updateSpecialEvent: (event: string) => void
   copyToClipboard: (text: string) => Promise<void>
 
@@ -336,6 +337,37 @@ ${antiFogTip}
       set({ todoHistory: [] })
     } catch (error) {
       console.error('Error clearing history:', error)
+    }
+  },
+
+  updateTodo: async (id: string, content: string) => {
+    try {
+      // Find existing todo
+      const todos = await getRecentTodos(100)
+      const existing = todos.find((t) => t.id === id)
+      
+      if (!existing) {
+        throw new Error('Todo not found')
+      }
+
+      const updated: TodoData = {
+        ...existing,
+        content,
+      }
+
+      await saveTodo(updated)
+      
+      // Update state if it's today's todo
+      const currentToday = get().todayTodo
+      if (currentToday?.id === id) {
+        set({ todayTodo: updated })
+      }
+
+      // Refresh history
+      await get().loadTodoHistory()
+    } catch (error) {
+      console.error('Error updating todo:', error)
+      throw error
     }
   },
 
