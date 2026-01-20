@@ -1,46 +1,35 @@
 'use client'
 
-import { useEffect } from 'react'
 import { useNavigate } from '@tanstack/react-router'
 import { Loader2 } from 'lucide-react'
 import { MainScreen } from '@/components/feature/MainScreen'
-import { useTodoStore } from '@/lib/store'
+import { useDailyTodo } from '@/hooks/useTodos'
+import { useContent } from '@/hooks/useContent'
 import { migrateFromLocalStorage } from '@/lib/db'
 import { showError } from '@/lib/toast'
-import { useContent } from '@/hooks/useContent'
+import { useState, useEffect } from 'react'
 
 export function DashboardView() {
   const navigate = useNavigate()
-  const {
-    todayMotivation,
-    specialEvent,
-    isCreating,
-    lastCreated,
-    todoHistory,
-    initialize,
-    createDailyTodo,
-    updateSpecialEvent,
-  } = useTodoStore()
-
   const { data: content, isLoading: isLoadingContent, error: contentError } = useContent('ko')
+
+  const [specialEvent, setSpecialEvent] = useState('')
+  const { todayMotivation, todayTodo, todoHistory, isCreating, createDailyTodo } = useDailyTodo()
 
   useEffect(() => {
     const init = async () => {
       await migrateFromLocalStorage()
-
-      if (content) {
-        useTodoStore.getState().loadContent(content)
-      }
-
-      await initialize()
     }
 
     init()
-  }, [initialize, content])
+  }, [])
 
   const handleCreateTodo = async () => {
     try {
-      const todo = await createDailyTodo()
+      const todo = await createDailyTodo({
+        specialEvent,
+        content: content || undefined,
+      })
       navigate({ to: '/todo/$id', params: { id: todo.id } })
     } catch {
       showError('To-do 생성 중 오류가 발생했습니다', '다시 시도해주세요.')
@@ -48,7 +37,7 @@ export function DashboardView() {
   }
 
   const handleShowTodayTodo = () => {
-    const latest = useTodoStore.getState().todayTodo ?? useTodoStore.getState().todoHistory[0]
+    const latest = todayTodo || todoHistory[0]
     if (latest) {
       navigate({ to: '/todo/$id', params: { id: latest.id } })
     } else {
@@ -74,8 +63,8 @@ export function DashboardView() {
       todayMotivation={todayMotivation}
       specialEvent={specialEvent}
       isCreating={isCreating}
-      lastCreated={lastCreated}
-      onUpdateSpecialEvent={updateSpecialEvent}
+      lastCreated={todayTodo?.date || null}
+      onUpdateSpecialEvent={setSpecialEvent}
       onCreateDailyTodo={handleCreateTodo}
       onShowTodayTodo={handleShowTodayTodo}
       todoHistory={todoHistory}

@@ -3,22 +3,21 @@
 import { useState, useMemo } from 'react'
 import { useNavigate } from '@tanstack/react-router'
 import { ArrowLeft, Calendar as CalendarIcon, Clock, ChevronRight } from 'lucide-react'
-import { useTodoStore } from '@/lib/store'
+import { useTodos } from '@/hooks/useTodos'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Calendar } from '@/components/ui/calendar'
 
 export function HistoryView() {
   const navigate = useNavigate()
-  const todoHistory = useTodoStore((state) => state.todoHistory)
+  const { data: todoHistory = [] } = useTodos()
+
   const [date, setDate] = useState<Date | undefined>(new Date())
 
-  // 기록이 있는 날짜들 (Date 객체로 변환)
   const recordedDays = useMemo(() => {
     return todoHistory.map(todo => new Date(todo.createdAt))
   }, [todoHistory])
 
-  // 선택된 날짜에 해당하는 To-do 찾기
   const selectedTodo = useMemo(() => {
     if (!date) return null
     const dateString = date.toLocaleDateString('ko-KR', {
@@ -30,14 +29,12 @@ export function HistoryView() {
     return todoHistory.find(t => t.date === dateString)
   }, [date, todoHistory])
 
-  // 최근 기록 5개 (타임라인용)
   const recentHistory = useMemo(() => {
     return todoHistory.slice(0, 5)
   }, [todoHistory])
 
   return (
     <div className="space-y-6 max-w-full">
-      {/* Header */}
       <div className="flex items-center gap-3">
         <Button variant="ghost" size="icon" onClick={() => navigate({ to: '/' })}>
           <ArrowLeft className="h-5 w-5" />
@@ -49,7 +46,6 @@ export function HistoryView() {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-12 gap-8 items-start">
-        {/* Left Column: Calendar & Stats (4 cols) */}
         <div className="md:col-span-4 space-y-6">
           <Card className="border-none shadow-md">
             <CardHeader className="pb-2">
@@ -65,11 +61,11 @@ export function HistoryView() {
                 onSelect={setDate}
                 modifiers={{ hasTodo: recordedDays }}
                 modifiersStyles={{
-                   hasTodo: { 
-                     fontWeight: 'bold',
-                     color: 'var(--primary)',
-                     position: 'relative',
-                   }
+                   hasTodo: {
+                      fontWeight: 'bold',
+                      color: 'var(--primary)',
+                      position: 'relative',
+                    }
                 }}
                 className="rounded-md border"
               />
@@ -85,23 +81,22 @@ export function HistoryView() {
               <div className="flex justify-between items-center text-sm">
                 <span className="text-muted-foreground">이번 달 기록</span>
                 <span className="font-mono font-bold text-lg text-secondary">
-                  {todoHistory.filter(t => new Date(t.createdAt).getMonth() === new Date().getMonth()).length}개
+                   {todoHistory.filter(t => new Date(t.createdAt).getMonth() === new Date().getMonth()).length}개
                 </span>
               </div>
             </CardContent>
           </Card>
         </div>
 
-        {/* Right Column: Detail List (8 cols) */}
         <div className="md:col-span-8 space-y-6">
           {date ? (
             <div className="space-y-4 animate-in fade-in slide-in-from-bottom-2 duration-300">
               <h2 className="text-lg font-bold flex items-center gap-2 font-serif">
                 {date.toLocaleDateString('ko-KR', { month: 'long', day: 'numeric', weekday: 'short' })}의 기록
               </h2>
-              
+
               {selectedTodo ? (
-                <Card 
+                <Card
                   className="hover:shadow-md transition-all cursor-pointer border-brand-200"
                   onClick={() => navigate({ to: '/todo/$id', params: { id: selectedTodo.id } })}
                 >
@@ -122,8 +117,8 @@ export function HistoryView() {
                 <div className="flex flex-col items-center justify-center py-12 text-muted-foreground bg-muted/30 rounded-xl border border-dashed border-border">
                   <Clock className="w-10 h-10 mb-3 opacity-20" />
                   <p>이 날 작성된 기록이 없습니다.</p>
-                  <Button 
-                    variant="link" 
+                  <Button
+                    variant="link"
                     className="mt-2 text-brand-500"
                     onClick={() => setDate(undefined)}
                   >
@@ -139,8 +134,8 @@ export function HistoryView() {
               </h2>
               <div className="space-y-3">
                 {recentHistory.map((todo) => (
-                  <Card 
-                    key={todo.id} 
+                  <Card
+                    key={todo.id}
                     className="hover:bg-accent/5 transition-colors cursor-pointer group"
                     onClick={() => navigate({ to: '/todo/$id', params: { id: todo.id } })}
                   >

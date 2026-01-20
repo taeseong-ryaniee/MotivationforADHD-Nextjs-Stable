@@ -1,18 +1,19 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { 
-  Cloud, 
-  Download, 
-  Upload, 
-  Save, 
-  RefreshCw, 
-  FileJson, 
-  Settings, 
-  Check, 
+import {
+  Cloud,
+  Download,
+  Upload,
+  Save,
+  RefreshCw,
+  FileJson,
+  Settings,
+  Check,
   AlertCircle,
   HardDrive,
-  LogIn
+  LogIn,
+  Loader2,
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -434,9 +435,18 @@ export default function SyncSettings() {
                     </div>
                   </div>
                   <div className="mt-6 flex justify-end">
-                    <Button size="lg" onClick={handleSaveConfig} isLoading={isLoading} className="text-base px-6">
-                      <Save className="mr-2 h-5 w-5" />
-                      설정 저장
+                    <Button size="lg" onClick={handleSaveConfig} disabled={isLoading} className="text-base px-6">
+                      {isLoading ? (
+                        <>
+                          <Loader2 className="mr-2 h-5 w-5 animate-spin" />
+                          저장 중...
+                        </>
+                      ) : (
+                        <>
+                          <Save className="mr-2 h-5 w-5" />
+                          설정 저장
+                        </>
+                      )}
                     </Button>
                   </div>
                 </div>
