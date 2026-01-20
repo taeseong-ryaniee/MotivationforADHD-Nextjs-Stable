@@ -19,37 +19,30 @@ import {
   SidebarMenuItem,
   SidebarRail,
 } from "@/components/ui/sidebar"
-import { usePathname } from "next/navigation"
-import Link from "next/link"
+import { Link, useLocation } from "@tanstack/react-router"
 
 const data = {
   navMain: [
     {
       title: "메인 메뉴",
-      url: "#",
-      items: [
-        {
-          title: "대시보드",
-          url: "/",
-          icon: LayoutDashboard,
-        },
-        {
-          title: "히스토리",
-          url: "/history",
-          icon: Clock,
-        },
-        {
-          title: "설정",
-          url: "/settings",
-          icon: Settings,
-        },
-      ],
+      url: "/",
+      icon: LayoutDashboard,
+    },
+    {
+      title: "히스토리",
+      url: "/history",
+      icon: Clock,
+    },
+    {
+      title: "설정",
+      url: "/settings",
+      icon: Settings,
     },
   ],
 }
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
-  const pathname = usePathname()
+  const pathname = useLocation({ select: (location) => location.pathname })
 
   return (
     <Sidebar {...props}>
@@ -69,12 +62,12 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
           <SidebarGroupLabel>Application</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
-              {data.navMain[0].items.map((item) => {
+              {data.navMain.map((item) => {
                 const isActive = pathname === item.url || (item.url !== '/' && pathname.startsWith(item.url))
                 return (
                   <SidebarMenuItem key={item.title}>
                     <SidebarMenuButton asChild isActive={isActive}>
-                      <Link href={item.url}>
+                      <Link to={item.url}>
                         <item.icon />
                         <span className="font-medium">{item.title}</span>
                       </Link>

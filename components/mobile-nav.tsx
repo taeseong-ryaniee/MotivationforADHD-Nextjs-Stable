@@ -6,8 +6,7 @@ import {
   Clock,
   LayoutDashboard,
 } from "lucide-react"
-import { usePathname } from "next/navigation"
-import Link from "next/link"
+import { Link, useLocation } from "@tanstack/react-router"
 import { cn } from "@/lib/utils"
 
 const data = {
@@ -31,7 +30,7 @@ const data = {
 }
 
 export function MobileNav() {
-  const pathname = usePathname()
+  const pathname = useLocation({ select: (location) => location.pathname })
 
   return (
     <div className="fixed bottom-0 left-0 right-0 z-50 flex h-16 items-center justify-around border-t bg-background px-4 pb-safe md:hidden">
@@ -40,7 +39,7 @@ export function MobileNav() {
         return (
           <Link
             key={item.title}
-            href={item.url}
+            to={item.url}
             className={cn(
               "flex flex-col items-center justify-center gap-1 rounded-lg px-3 py-2 text-xs font-medium transition-colors",
               isActive

@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect } from 'react'
-import { useRouter } from 'next/navigation'
+import { useNavigate } from '@tanstack/react-router'
 import { Loader2 } from 'lucide-react'
 import { MainScreen } from '@/components/feature/MainScreen'
 import { useTodoStore } from '@/lib/store'
@@ -9,8 +9,8 @@ import { migrateFromLocalStorage } from '@/lib/db'
 import { showError } from '@/lib/toast'
 import { useContent } from '@/hooks/useContent'
 
-export default function Home() {
-  const router = useRouter()
+export function DashboardView() {
+  const navigate = useNavigate()
   const {
     todayMotivation,
     specialEvent,
@@ -41,7 +41,7 @@ export default function Home() {
   const handleCreateTodo = async () => {
     try {
       const todo = await createDailyTodo()
-      router.push(`/todo/${todo.id}`)
+      navigate({ to: '/todo/$id', params: { id: todo.id } })
     } catch {
       showError('To-do 생성 중 오류가 발생했습니다', '다시 시도해주세요.')
     }
@@ -50,9 +50,9 @@ export default function Home() {
   const handleShowTodayTodo = () => {
     const latest = useTodoStore.getState().todayTodo ?? useTodoStore.getState().todoHistory[0]
     if (latest) {
-      router.push(`/todo/${latest.id}`)
+      navigate({ to: '/todo/$id', params: { id: latest.id } })
     } else {
-      router.push('/')
+      navigate({ to: '/' })
     }
   }
 

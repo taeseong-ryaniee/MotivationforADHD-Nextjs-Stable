@@ -1,7 +1,7 @@
 'use client'
 
-import { use, useEffect, useState } from 'react'
-import { useRouter } from 'next/navigation'
+import { useEffect, useState } from 'react'
+import { useNavigate, useParams } from '@tanstack/react-router'
 import { Loader2 } from 'lucide-react'
 import { TodayTodoView } from '@/components/feature/TodayTodoView'
 import { Card, CardContent } from '@/components/ui/card'
@@ -10,9 +10,9 @@ import { useTodoStore } from '@/lib/store'
 import type { TodoData } from '@/lib/types'
 import { showSuccess } from '@/lib/toast'
 
-export default function TodoPage({ params }: { params: Promise<{ id: string }> }) {
-  const resolvedParams = use(params)
-  const router = useRouter()
+export function TodoDetailView() {
+  const { id } = useParams({ from: '/todo/$id' })
+  const navigate = useNavigate()
   const [todo, setTodo] = useState<TodoData | null>(null)
   const [isLoading, setIsLoading] = useState(true)
   const copyToClipboard = useTodoStore((state) => state.copyToClipboard)
@@ -21,20 +21,20 @@ export default function TodoPage({ params }: { params: Promise<{ id: string }> }
   useEffect(() => {
     const loadTodo = async () => {
       setIsLoading(true)
-      const todoData = await getTodoById(resolvedParams.id)
+      const todoData = await getTodoById(id)
       if (todoData) {
         setTodo(todoData)
       } else {
-        router.push('/')
+        navigate({ to: '/' })
       }
       setIsLoading(false)
     }
 
     loadTodo()
-  }, [resolvedParams.id, router])
+  }, [id, navigate])
 
   const handleBack = () => {
-    router.push('/')
+    navigate({ to: '/' })
   }
 
   const handleCopyContent = async (content: string) => {

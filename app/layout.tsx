@@ -3,7 +3,6 @@ import './globals.css'
 import ServiceWorkerRegister from '@/components/ServiceWorkerRegister'
 import Providers from '@/components/Providers'
 import { Toaster } from '@/components/ui/sonner'
-import { AppShell } from '@/components/AppShell'
 
 export const metadata: Metadata = {
   title: '산만이의 아침',
@@ -47,7 +46,7 @@ export default function RootLayout({
         <Providers>
           <ServiceWorkerRegister />
           <Toaster />
-          <AppShell>{children}</AppShell>
+          {children}
         </Providers>
       </body>
     </html>

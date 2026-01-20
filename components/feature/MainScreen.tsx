@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useMemo } from 'react'
-import { useRouter } from 'next/navigation'
+import { useNavigate } from '@tanstack/react-router'
 import { Activity, Calendar as CalendarIcon, CheckCircle2, Flame, LayoutDashboard } from 'lucide-react'
 import { MotivationCard } from './MotivationCard'
 import { SpecialEventInput } from './SpecialEventInput'
@@ -35,7 +35,7 @@ export function MainScreen({
   onShowTodayTodo,
   todoHistory,
 }: MainScreenProps) {
-  const router = useRouter()
+  const navigate = useNavigate()
   const todayString = new Date().toLocaleDateString('ko-KR', {
     year: 'numeric',
     month: 'long',
@@ -86,7 +86,7 @@ export function MainScreen({
     const todo = todoHistory.find(t => t.date === dayString)
     
     if (todo) {
-      router.push(`/todo/${todo.id}`)
+      navigate({ to: '/todo/$id', params: { id: todo.id } })
     } else {
       toast.info('해당 날짜의 기록이 없습니다.')
     }

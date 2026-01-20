@@ -1,15 +1,15 @@
 'use client'
 
 import { useState, useMemo } from 'react'
-import { useRouter } from 'next/navigation'
+import { useNavigate } from '@tanstack/react-router'
 import { ArrowLeft, Calendar as CalendarIcon, Clock, ChevronRight } from 'lucide-react'
 import { useTodoStore } from '@/lib/store'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Calendar } from '@/components/ui/calendar'
 
-export default function HistoryPage() {
-  const router = useRouter()
+export function HistoryView() {
+  const navigate = useNavigate()
   const todoHistory = useTodoStore((state) => state.todoHistory)
   const [date, setDate] = useState<Date | undefined>(new Date())
 
@@ -39,7 +39,7 @@ export default function HistoryPage() {
     <div className="space-y-6 max-w-full">
       {/* Header */}
       <div className="flex items-center gap-3">
-        <Button variant="ghost" size="icon" onClick={() => router.push('/')}>
+        <Button variant="ghost" size="icon" onClick={() => navigate({ to: '/' })}>
           <ArrowLeft className="h-5 w-5" />
         </Button>
         <div className="flex flex-col">
@@ -103,7 +103,7 @@ export default function HistoryPage() {
               {selectedTodo ? (
                 <Card 
                   className="hover:shadow-md transition-all cursor-pointer border-brand-200"
-                  onClick={() => router.push(`/todo/${selectedTodo.id}`)}
+                  onClick={() => navigate({ to: '/todo/$id', params: { id: selectedTodo.id } })}
                 >
                   <CardContent className="p-6 space-y-4">
                     <div className="flex justify-between items-start">
@@ -142,7 +142,7 @@ export default function HistoryPage() {
                   <Card 
                     key={todo.id} 
                     className="hover:bg-accent/5 transition-colors cursor-pointer group"
-                    onClick={() => router.push(`/todo/${todo.id}`)}
+                    onClick={() => navigate({ to: '/todo/$id', params: { id: todo.id } })}
                   >
                     <CardContent className="p-4 flex items-center justify-between">
                       <div className="space-y-1">
