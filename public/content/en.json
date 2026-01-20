@@ -1,0 +1,173 @@
+{
+  "version": "2.0.0",
+  "updatedAt": "2026-01-19T00:00:00.000Z",
+  "locale": "en",
+  "therapyMessages": {
+    "starting": {
+      "label": "Starting",
+      "cbt": [
+        "You might think 'I can't do this today', but you did it yesterday.",
+        "Waiting for perfection is a trap. Start now, perfect later.",
+        "Difficulty starting isn't your fault. The ADHD brain just has a sticky start button."
+      ],
+      "dbt": [
+        "If you feel heavy, stretch once. Body first, mind follows.",
+        "If tense, clench your fists for 5 seconds then release slowly.",
+        "Breathe in for 4s, out for 6s. Focus on now."
+      ],
+      "act": [
+        "It's okay to be scared. Just turn on the computer.",
+        "Accept the thought 'I can't do it', and open one file anyway.",
+        "It doesn't have to be perfect. Starting is winning."
+      ]
+    },
+    "working": {
+      "label": "Working/Studying",
+      "cbt": [
+        "If overwhelmed, focus for just 5 minutes.",
+        "Multitasking is a myth. One thing at a time is faster.",
+        "Don't compare. You have your own pace."
+      ],
+      "dbt": [
+        "If distracted, close your eyes and breathe deep 3 times.",
+        "If stiff, roll your shoulders 3 times.",
+        "If bored, drink water and rest for 5 mins."
+      ],
+      "act": [
+        "It's okay to get distracted. Just come back when you notice.",
+        "Don't aim for 100%. 80% is enough.",
+        "Do the smallest possible thing right now."
+      ]
+    },
+    "stuck": {
+      "label": "Stuck",
+      "cbt": [
+        "If you feel stuck, remember what you've already done.",
+        "Being stuck isn't failing. It's pausing.",
+        "Instead of 'I'm slow', say 'I'm resting'."
+      ],
+      "dbt": [
+        "Open a window for fresh air.",
+        "Rotate your wrists to start moving.",
+        "Wash your hands with cold water."
+      ],
+      "act": [
+        "It's okay to be stuck. Do something else for a bit.",
+        "Skip the hard part for now.",
+        "Write 'temporary' and move on."
+      ]
+    },
+    "emotion": {
+      "label": "Emotions",
+      "cbt": [
+        "Anger is natural. But don't decide while angry.",
+        "This too shall pass.",
+        "Decide after you calm down."
+      ],
+      "dbt": [
+        "Wash face with cold water.",
+        "Breathe 4-7-8.",
+        "Take a bathroom break.",
+        "Feel your feet on the floor.",
+        "Clench and release fists."
+      ],
+      "act": [
+        "Anxiety is okay. Work with it.",
+        "Emotions are waves. They pass.",
+        "You don't have to act on your mood."
+      ]
+    },
+    "mistake": {
+      "label": "Mistakes",
+      "cbt": [
+        "Everyone makes mistakes. Next time will be better.",
+        "One mistake doesn't define you.",
+        "Is it really 100% your fault? Probably not.",
+        "Perfectionism is the enemy. Fix it and move on.",
+        "Self-blame solves nothing. Fix one small thing instead."
+      ],
+      "dbt": [
+        "Drink warm tea.",
+        "Listen to favorite music."
+      ],
+      "act": [
+        "Mistakes are okay. Learn from them.",
+        "Accept the guilt, then fix what you can.",
+        "Mistakes are growth material."
+      ]
+    },
+    "social": {
+      "label": "Social",
+      "cbt": [
+        "Do they really hate you? Probably just guessing.",
+        "Apologize simply if you messed up.",
+        "Think of one person who listens."
+      ],
+      "dbt": [
+        "Take a break if emotional.",
+        "Breathe 3 times before speaking.",
+        "Cool your hands before tough talks."
+      ],
+      "act": [
+        "Relationships aren't perfect. Be kind.",
+        "Rejection is okay. You only need one person who understands."
+      ]
+    }
+  },
+  "motivationMessages": [
+    "Today is a new start. It doesn't have to be perfect.",
+    "Yesterday's mistakes are today's experience.",
+    "You are doing well, even with ADHD.",
+    "Small progress is progress.",
+    "Don't compare. Go your own speed.",
+    "Some days are hard. Start smaller.",
+    "Done is better than perfect."
+  ],
+  "antiBrainFogTips": [
+    "Move your mouse or keyboard immediately.",
+    "Open the last file you worked on without thinking.",
+    "Start for just 5 minutes.",
+    "Write one line of yesterday's work.",
+    "Scan email subjects.",
+    "Set timer for 10 mins and clean desk.",
+    "Click something to start."
+  ],
+  "practicalTips": [
+    {
+      "category": "Starting",
+      "tips": [
+        "25 min timer, one task.",
+        "Reply to one email.",
+        "Continue yesterday's work.",
+        "Type one line."
+      ]
+    },
+    {
+      "category": "Communication",
+      "tips": [
+        "Send one update message.",
+        "Think 3s before speaking.",
+        "Share progress, not perfection.",
+        "Buy coffee or say thanks."
+      ]
+    },
+    {
+      "category": "Emotions",
+      "tips": [
+        "3 deep breaths in bathroom.",
+        "Focus on smallest task.",
+        "Admit mistakes simply.",
+        "Walk 5 mins or drink water."
+      ]
+    }
+  ],
+  "daySpecificMessages": {
+    "0": "Sunday evening or Monday morning, start slow.",
+    "1": "Monday blues are okay. Just do one thing.",
+    "2": "Tuesday, keep the momentum.",
+    "3": "Wednesday, rest if tired. Finish the race.",
+    "4": "Thursday, almost there.",
+    "5": "Friday! Take it easy.",
+    "6": "Saturday, enjoy small achievements."
+  }
+}

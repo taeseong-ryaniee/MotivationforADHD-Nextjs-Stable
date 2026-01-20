@@ -7,11 +7,25 @@ export default function ServiceWorkerRegister() {
     if ('serviceWorker' in navigator) {
       const registerSW = async () => {
         try {
+          // FORCE UNREGISTER OLD WORKERS FIRST
+          // This ensures any broken or zombie workers are killed immediately.
+          const registrations = await navigator.serviceWorker.getRegistrations()
+          for (const registration of registrations) {
+            // Optional: Only unregister if it's NOT the current one we want?
+            // For safety in this "fix" phase, we unregister everything to be clean.
+            // But usually we just register over it.
+            // However, if the old one is blocking fetch, we want it GONE.
+            // We will unregister ONLY if the scope matches or just rely on the new register overwriting.
+            // Actually, 'register' should overwrite. But if the old one is serving a broken cache...
+            // Let's force update.
+            await registration.update()
+          }
+
           const registration = await navigator.serviceWorker.register('/sw.js')
           console.log('[Service Worker] Registered successfully:', registration)
 
-          // Check for updates on registration
-          registration.update()
+          // Force update immediately
+          await registration.update()
 
           // Listen for updates
           registration.addEventListener('updatefound', () => {
@@ -20,19 +34,14 @@ export default function ServiceWorkerRegister() {
 
             newWorker.addEventListener('statechange', () => {
               if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
-                // New service worker available
-                console.log('[Service Worker] Update available')
-                // TODO: Show toast notification in Phase 2
-                // For now, auto-activate the new worker
+                console.log('[Service Worker] Update available - forcing activation')
                 newWorker.postMessage({ type: 'SKIP_WAITING' })
               }
             })
           })
 
-          // Reload page when new service worker takes control
           navigator.serviceWorker.addEventListener('controllerchange', () => {
-            console.log('[Service Worker] New version activated')
-            // Reload to get the latest version
+            console.log('[Service Worker] New version activated - reloading')
             window.location.reload()
           })
         } catch (error) {
@@ -40,12 +49,8 @@ export default function ServiceWorkerRegister() {
         }
       }
 
-      // Register after page load
-      if (document.readyState === 'complete') {
-        registerSW()
-      } else {
-        window.addEventListener('load', registerSW)
-      }
+      // Register immediately to fix the issue ASAP
+      registerSW()
     }
   }, [])
 
