@@ -2,11 +2,12 @@
 
 import { useEffect, useMemo } from 'react'
 import { useNavigate } from '@tanstack/react-router'
-import { Activity, Calendar as CalendarIcon, CheckCircle2, Flame, LayoutDashboard } from 'lucide-react'
+import { Activity, Calendar as CalendarIcon, CheckCircle2 } from 'lucide-react'
 import { MotivationCard } from './MotivationCard'
 import { SpecialEventInput } from './SpecialEventInput'
 import { CreateTodoButton } from './CreateTodoButton'
 import { ThemeToggle } from './ThemeToggle'
+import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { FocusTimer } from './FocusTimer'
@@ -93,24 +94,39 @@ export function MainScreen({
   }
 
   return (
-    <div className="flex-1 space-y-4 p-4 md:p-8 pt-6">
-      <div className="flex flex-col md:flex-row items-start md:items-center justify-between space-y-2 md:space-y-0">
-        <div>
-          <h2 className="text-4xl font-bold tracking-tight flex items-center gap-2 font-serif text-primary">
-            Dashboard
-            <LayoutDashboard className="h-8 w-8 text-muted-foreground/50" />
-          </h2>
-          <p className="text-muted-foreground font-sans mt-1">
-            ADHD 극복을 위한 오늘의 생산성 대시보드입니다.
-          </p>
-        </div>
-        <div className="flex items-center space-x-2">
-          {lastCreated && (
-            <Button 
-              variant="outline" 
-              onClick={onShowTodayTodo}
-              className="hidden lg:flex"
+    <div className="space-y-8" data-section="dashboard-root">
+      <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
+        <div className="space-y-2">
+          <div className="flex flex-wrap items-center gap-2">
+            <Badge variant="secondary" className="font-sans">
+              Daily Focus
+            </Badge>
+            <Badge
+              variant={isTodayDone ? 'default' : 'outline'}
+              className={
+                isTodayDone
+                  ? 'border-emerald-200 bg-emerald-500/15 text-emerald-700 dark:text-emerald-300'
+                  : 'text-muted-foreground'
+              }
             >
+              {isTodayDone ? '오늘 완료' : '오늘 미완료'}
+            </Badge>
+          </div>
+          <h1 className="text-2xl font-bold tracking-tight text-foreground sm:text-3xl md:text-4xl font-serif">
+            산만이의 아침
+          </h1>
+          <p className="text-sm text-muted-foreground sm:text-base font-sans">
+            ADHD 극복을 위한 오늘의 집중 루틴을 설계합니다.
+          </p>
+          <div className="flex items-center gap-2 text-xs text-muted-foreground font-mono">
+            <CalendarIcon className="h-3.5 w-3.5" aria-hidden="true" />
+            {todayString}
+          </div>
+        </div>
+        <div className="flex flex-wrap items-center gap-2">
+          {lastCreated && (
+            <Button variant="secondary" onClick={onShowTodayTodo} className="gap-2 w-full sm:w-auto">
+              <CheckCircle2 className="h-4 w-4" aria-hidden="true" />
               오늘의 To-do 보기
             </Button>
           )}
@@ -118,95 +134,84 @@ export function MainScreen({
         </div>
       </div>
 
-      <Tabs defaultValue="overview" className="space-y-4">
-        <TabsList className="hidden md:inline-flex">
+      <Tabs defaultValue="overview" className="space-y-6">
+        <TabsList className="w-full justify-start gap-2 bg-muted/40 p-1 sm:w-auto">
           <TabsTrigger value="overview">개요</TabsTrigger>
-          <TabsTrigger value="calendar" disabled>캘린더 (준비중)</TabsTrigger>
-          <TabsTrigger value="analytics" disabled>분석 (준비중)</TabsTrigger>
+          <TabsTrigger value="calendar" disabled>
+            캘린더 (준비중)
+          </TabsTrigger>
+          <TabsTrigger value="analytics" disabled>
+            분석 (준비중)
+          </TabsTrigger>
         </TabsList>
-        
-        <TabsContent value="overview" className="space-y-4">
-          {/* Stats Row */}
-          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-            <Card>
+
+        <TabsContent value="overview" className="space-y-6">
+          <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4" data-section="dashboard-stats-grid">
+            <Card className="border-border/60 bg-card/80 shadow-sm" data-section="dashboard-stat-card">
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium font-sans">총 기록</CardTitle>
-                <Activity className="h-4 w-4 text-muted-foreground" />
+                <CardTitle className="text-sm font-medium text-muted-foreground font-sans">
+                  총 기록
+                </CardTitle>
+                <Activity className="h-4 w-4 text-muted-foreground" aria-hidden="true" />
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold font-mono">{totalTodos}</div>
+                <div className="text-2xl font-semibold font-mono">{totalTodos}</div>
                 <p className="text-xs text-muted-foreground">누적 작성된 To-do</p>
               </CardContent>
             </Card>
-            <Card>
+            <Card className="border-border/60 bg-card/80 shadow-sm" data-section="dashboard-stat-card">
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium font-sans">이번 달 달성</CardTitle>
-                <CalendarIcon className="h-4 w-4 text-muted-foreground" />
+                <CardTitle className="text-sm font-medium text-muted-foreground font-sans">
+                  이번 달 달성
+                </CardTitle>
+                <CalendarIcon className="h-4 w-4 text-muted-foreground" aria-hidden="true" />
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold font-mono">{thisMonthTodos}</div>
+                <div className="text-2xl font-semibold font-mono">{thisMonthTodos}</div>
                 <p className="text-xs text-muted-foreground">이번 달 작성 건수</p>
               </CardContent>
             </Card>
-            <Card>
+            <Card className="border-border/60 bg-card/80 shadow-sm" data-section="dashboard-stat-card">
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium font-sans">오늘의 상태</CardTitle>
-                <CheckCircle2 className="h-4 w-4 text-muted-foreground" />
+                <CardTitle className="text-sm font-medium text-muted-foreground font-sans">
+                  오늘의 상태
+                </CardTitle>
+                <CheckCircle2 className="h-4 w-4 text-muted-foreground" aria-hidden="true" />
               </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold font-sans">
-                  {isTodayDone ? <span className="text-primary">완료</span> : <span className="text-muted-foreground">미완료</span>}
+              <CardContent className="space-y-1">
+                <div className="text-2xl font-semibold font-sans">
+                  {isTodayDone ? (
+                    <span className="text-foreground">완료</span>
+                  ) : (
+                    <span className="text-muted-foreground">미완료</span>
+                  )}
                 </div>
                 <p className="text-xs text-muted-foreground">{todayString}</p>
               </CardContent>
             </Card>
-            <Card>
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium font-sans">집중 목표</CardTitle>
-                <Flame className="h-4 w-4 text-muted-foreground" />
-              </CardHeader>
-              <CardContent>
-                <div className="text-2xl font-bold font-mono">25m</div>
-                <p className="text-xs text-muted-foreground">뽀모도로 1세트 도전</p>
-              </CardContent>
-            </Card>
           </div>
 
-          {/* Main Content Grid */}
-          <div className="grid gap-4 grid-cols-1 md:grid-cols-2 lg:grid-cols-7">
-            
-            {/* Left Column (Motivation & Input) - 4 cols */}
-            <Card className="col-span-1 lg:col-span-4 border shadow-sm">
-              <CardHeader>
-                <CardTitle className="font-serif">오늘의 시작</CardTitle>
-              </CardHeader>
-              <CardContent className="pl-2 space-y-6">
-                <div className="px-4">
-                  <MotivationCard motivation={todayMotivation} />
-                </div>
-                
-                <div className="rounded-xl border border-primary/10 bg-secondary/30 text-card-foreground p-6 space-y-4 mx-4">
-                  <div className="space-y-2">
-                    <h3 className="font-bold text-lg flex items-center gap-2 font-serif text-primary">
-                      🎯 특별한 일정이나 이슈가 있나요?
-                    </h3>
-                    <p className="text-sm text-muted-foreground">
-                      입력해주시면 AI가 맞춤형 조언을 함께 생성해드립니다.
-                    </p>
-                    <SpecialEventInput value={specialEvent} onChange={onUpdateSpecialEvent} />
-                  </div>
-                  <div className="pt-2">
-                    <CreateTodoButton isCreating={isCreating} onClick={onCreateDailyTodo} />
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
+          <div className="grid gap-6 lg:grid-cols-12" data-section="dashboard-overview-grid">
+            <div className="lg:col-span-7 space-y-6" data-section="dashboard-overview-main">
+              <MotivationCard motivation={todayMotivation} />
+              <Card className="border-border/60 bg-card/80 shadow-sm" data-section="dashboard-daily-plan">
+                <CardHeader className="space-y-1">
+                  <CardTitle className="font-serif text-lg">오늘의 일정 메모</CardTitle>
+                  <p className="text-sm text-muted-foreground">
+                    특별한 일정이 있으면 AI가 맞춤형 조언을 준비합니다.
+                  </p>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <SpecialEventInput value={specialEvent} onChange={onUpdateSpecialEvent} />
+                  <CreateTodoButton isCreating={isCreating} onClick={onCreateDailyTodo} />
+                </CardContent>
+              </Card>
+            </div>
 
-            {/* Right Column (Calendar & Timer) - 3 cols */}
-            <div className="col-span-1 lg:col-span-3 space-y-4">
-              <Card className="col-span-3 border shadow-sm">
+            <div className="lg:col-span-5 space-y-6" data-section="dashboard-overview-side">
+              <Card className="border-border/60 bg-card/80 shadow-sm" data-section="dashboard-calendar">
                 <CardHeader>
-                  <CardTitle className="font-serif">캘린더</CardTitle>
+                  <CardTitle className="font-serif text-lg">기록 캘린더</CardTitle>
                 </CardHeader>
                 <CardContent className="flex justify-center">
                   <Calendar
@@ -215,20 +220,20 @@ export function MainScreen({
                     onDayClick={handleDayClick}
                     modifiers={{ hasTodo: daysWithTodos }}
                     modifiersStyles={{
-                      hasTodo: { 
+                      hasTodo: {
                         fontWeight: 'bold',
                         textDecoration: 'underline',
                         textDecorationColor: 'hsl(var(--primary))',
                         textDecorationThickness: '2px',
-                        textUnderlineOffset: '4px'
-                      }
+                        textUnderlineOffset: '4px',
+                      },
                     }}
                     className="p-0"
                   />
                 </CardContent>
               </Card>
 
-              <FocusTimer />
+              <FocusTimer className="border-border/60 bg-card/80 shadow-sm" />
             </div>
           </div>
         </TabsContent>

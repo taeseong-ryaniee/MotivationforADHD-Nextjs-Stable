@@ -5,7 +5,6 @@ import { Loader2 } from 'lucide-react'
 import { TodayTodoView } from '@/components/feature/TodayTodoView'
 import { Card, CardContent } from '@/components/ui/card'
 import { useTodo, useSaveTodo } from '@/hooks/useTodos'
-import type { TodoData } from '@/lib/types'
 import { showSuccess } from '@/lib/toast'
 
 export function TodoDetailView() {
@@ -35,8 +34,8 @@ export function TodoDetailView() {
 
   if (error) {
     return (
-      <Card className="shadow-lg h-full border-none sm:border bg-background/50 backdrop-blur-sm">
-        <CardContent className="p-8 flex flex-col items-center justify-center min-h-[60vh]">
+      <Card className="h-full border-border/60 bg-card/80 shadow-sm">
+        <CardContent className="flex min-h-[60vh] flex-col items-center justify-center p-8">
           <p className="text-muted-foreground">To-do를 찾을 수 없어요.</p>
         </CardContent>
       </Card>
@@ -44,11 +43,11 @@ export function TodoDetailView() {
   }
 
   return (
-    <Card className="shadow-lg h-full border-none sm:border bg-background/50 backdrop-blur-sm">
-      <CardContent className="p-4 sm:p-8 lg:p-10 h-full">
+    <Card className="h-full border-border/60 bg-card/80 shadow-sm">
+      <CardContent className="h-full p-4 sm:p-8 lg:p-10">
         {isLoading ? (
           <div className="flex flex-col items-center justify-center py-16">
-            <Loader2 className="mb-4 h-8 w-8 animate-spin text-brand-500" />
+            <Loader2 className="mb-4 h-8 w-8 animate-spin text-primary" />
             <p className="text-sm text-muted-foreground">To-do를 불러오는 중...</p>
           </div>
         ) : (

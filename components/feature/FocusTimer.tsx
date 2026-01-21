@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { Play, Pause, RotateCcw, Timer } from 'lucide-react'
+import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { cn } from '@/lib/utils'
@@ -46,46 +47,65 @@ export function FocusTimer({ className }: { className?: string }) {
   const progress = ((INITIAL_TIME - timeLeft) / INITIAL_TIME) * 100
 
   return (
-    <Card className={cn("border shadow-sm", className)}>
-      <CardHeader className="pb-2">
-        <CardTitle className="text-lg font-bold flex items-center gap-2 font-sans">
-          <Timer className="w-5 h-5 text-primary" />
+    <Card className={cn('border-border/60 bg-card/80 shadow-sm', className)} data-section="dashboard-focus-timer">
+      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+        <CardTitle className="text-base font-semibold flex items-center gap-2 font-sans">
+          <Timer className="w-4 h-4 text-primary" aria-hidden="true" />
           집중 타이머
         </CardTitle>
+        <Badge
+          variant={isActive ? 'default' : 'secondary'}
+          className={
+            isActive
+              ? 'border-emerald-200 bg-emerald-500/15 text-emerald-700 dark:text-emerald-300'
+              : 'text-muted-foreground'
+          }
+        >
+          {isActive ? '집중 중' : '대기'}
+        </Badge>
       </CardHeader>
       <CardContent>
         <div className="flex flex-col items-center justify-center space-y-5">
-          <div className="relative w-full flex justify-center py-4">
-            <div className="text-5xl font-mono font-bold tracking-wider tabular-nums z-10 relative">
+          <div className="relative flex w-full justify-center py-4">
+            <div className="relative z-10 text-4xl font-bold tracking-wider tabular-nums text-foreground font-mono">
               {formatTime(timeLeft)}
             </div>
           </div>
-          
-          <div className="w-full h-2 bg-secondary rounded-full overflow-hidden">
-            <div 
-              className="h-full bg-brand-500 transition-all duration-1000 ease-linear"
+
+          <div className="h-2 w-full overflow-hidden rounded-full bg-muted/60">
+            <div
+              className="h-full bg-primary transition-all duration-1000 ease-linear"
               style={{ width: `${100 - progress}%` }}
             />
           </div>
 
-          <div className="flex gap-3 w-full pt-2">
-            <Button 
+          <div className="flex w-full gap-3 pt-2">
+            <Button
               className={cn(
-                "flex-1 font-semibold shadow-sm transition-all", 
-                isActive 
-                  ? "bg-amber-500 hover:bg-amber-600 text-white" 
-                  : "bg-brand-500 hover:bg-brand-600 text-white"
+                'flex-1 font-semibold shadow-sm transition-all',
+                isActive
+                  ? 'bg-amber-500 text-white hover:bg-amber-600'
+                  : 'bg-primary text-primary-foreground hover:bg-primary/90'
               )}
               onClick={toggleTimer}
             >
               {isActive ? (
-                <><Pause className="mr-2 h-4 w-4" /> 일시정지</>
+                <>
+                  <Pause className="mr-2 h-4 w-4" aria-hidden="true" /> 일시정지
+                </>
               ) : (
-                <><Play className="mr-2 h-4 w-4" /> 시작하기</>
+                <>
+                  <Play className="mr-2 h-4 w-4" aria-hidden="true" /> 시작하기
+                </>
               )}
             </Button>
-            <Button variant="outline" size="icon" onClick={resetTimer} className="border-input hover:bg-accent text-accent-foreground">
-              <RotateCcw className="h-4 w-4" />
+            <Button
+              variant="outline"
+              size="icon"
+              onClick={resetTimer}
+              className="border-border/60 text-foreground hover:bg-accent"
+            >
+              <RotateCcw className="h-4 w-4" aria-hidden="true" />
             </Button>
           </div>
         </div>

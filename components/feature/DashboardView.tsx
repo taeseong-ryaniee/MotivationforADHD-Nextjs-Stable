@@ -1,8 +1,9 @@
 'use client'
 
 import { useNavigate } from '@tanstack/react-router'
-import { Loader2 } from 'lucide-react'
 import { MainScreen } from '@/components/feature/MainScreen'
+import { Card, CardContent } from '@/components/ui/card'
+import { Skeleton } from '@/components/ui/skeleton'
 import { useDailyTodo } from '@/hooks/useTodos'
 import { useContent } from '@/hooks/useContent'
 import { migrateFromLocalStorage } from '@/lib/db'
@@ -51,10 +52,22 @@ export function DashboardView() {
 
   if (isLoadingContent) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-[60vh] space-y-4">
-        <Loader2 className="h-10 w-10 animate-spin text-brand-500" />
-        <p className="text-muted-foreground font-medium animate-pulse">오늘의 영감을 불러오고 있어요...</p>
-      </div>
+      <Card className="border-border/60 bg-card/80 shadow-sm">
+        <CardContent className="space-y-6 p-6">
+          <div className="flex items-center gap-3">
+            <Skeleton className="h-10 w-10 rounded-full" />
+            <div className="space-y-2">
+              <Skeleton className="h-4 w-40" />
+              <Skeleton className="h-3 w-64" />
+            </div>
+          </div>
+          <Skeleton className="h-32 w-full rounded-xl" />
+          <div className="grid gap-4 sm:grid-cols-2">
+            <Skeleton className="h-24 w-full rounded-xl" />
+            <Skeleton className="h-24 w-full rounded-xl" />
+          </div>
+        </CardContent>
+      </Card>
     )
   }
 

@@ -3,6 +3,7 @@
 import { useMemo, useState } from 'react'
 import { ArrowLeft, Copy, NotebookPen, Pencil, Save, X } from 'lucide-react'
 import type { TodoData } from '@/lib/types'
+import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { Textarea } from '@/components/ui/textarea'
@@ -97,7 +98,7 @@ export function TodayTodoView({ todayTodo, onBack, onCopyContent, onUpdate }: To
   }, [todayTodo])
 
   return (
-    <div className="space-y-6 h-full flex flex-col">
+    <div className="space-y-6 h-full flex flex-col" data-section="todo-detail-root">
       <div className="flex flex-wrap items-center justify-between gap-3 shrink-0">
         <div className="flex items-center gap-3">
           <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-primary/10 text-primary">
@@ -108,57 +109,76 @@ export function TodayTodoView({ todayTodo, onBack, onCopyContent, onUpdate }: To
             <h2 className="text-xl font-bold text-foreground md:text-2xl font-serif">오늘의 격려 To-do</h2>
           </div>
         </div>
-        
-        <div className="flex gap-2">
-           {!isEditing && onUpdate && isEditable && (
-             <Button variant="outline" size="sm" onClick={() => setIsEditing(true)}>
-               <Pencil className="h-4 w-4 mr-2" />
-               수정하기
-             </Button>
-           )}
+
+        <div className="flex flex-wrap items-center gap-2">
+          {isEditable && !isEditing && (
+            <Badge variant="secondary" className="text-xs">
+              오늘만 수정 가능
+            </Badge>
+          )}
+          {isEditing && (
+            <Badge className="text-xs">편집 중</Badge>
+          )}
+          {!isEditing && onUpdate && isEditable && (
+            <Button variant="outline" size="sm" onClick={() => setIsEditing(true)}>
+              <Pencil className="mr-2 h-4 w-4" />
+              수정하기
+            </Button>
+          )}
           <Button variant="ghost" size="sm" onClick={onBack}>
-            <ArrowLeft className="h-4 w-4 mr-2" />
+            <ArrowLeft className="mr-2 h-4 w-4" />
             돌아가기
           </Button>
         </div>
       </div>
 
       {todayTodo && (
-        <Card className="shadow-md border-border flex-1 flex flex-col overflow-hidden">
-          <CardContent className="p-6 flex-1 flex flex-col overflow-y-auto">
+        <Card
+          className="flex flex-1 flex-col overflow-hidden border-border/60 bg-card/80 shadow-sm"
+          data-section="todo-detail-content"
+        >
+          <CardContent className="flex flex-1 flex-col overflow-y-auto p-6">
             <div className="mb-6 flex flex-wrap items-center gap-2 border-b border-border/60 pb-4 text-xs text-muted-foreground shrink-0">
-              <span className="rounded-full border border-border/60 bg-muted px-3 py-1 font-semibold text-foreground font-sans">
+              <Badge variant="secondary" className="font-sans">
                 {todayTodo.date}
-              </span>
-              <span className="font-mono">{todayTodo.createdAt}</span>
+              </Badge>
+              <Badge variant="outline" className="font-mono">
+                {todayTodo.createdAt}
+              </Badge>
             </div>
 
             {isEditing ? (
               <div className="flex-1 flex flex-col gap-4">
-                <Textarea 
-                  value={editContent} 
+                <Textarea
+                  value={editContent}
                   onChange={(e) => setEditContent(e.target.value)}
-                  className="flex-1 min-h-[400px] font-mono text-sm leading-relaxed p-4 bg-muted/30"
+                  className="flex-1 min-h-[400px] bg-muted/20 p-4 text-sm leading-relaxed font-mono"
                 />
                 <div className="flex justify-end gap-2 shrink-0">
-                   <Button variant="outline" onClick={handleCancel}>
-                     <X className="h-4 w-4 mr-2" />
-                     취소
-                   </Button>
-                   <Button onClick={handleSave}>
-                     <Save className="h-4 w-4 mr-2" />
-                     저장하기
-                   </Button>
+                  <Button variant="outline" onClick={handleCancel}>
+                    <X className="mr-2 h-4 w-4" />
+                    취소
+                  </Button>
+                  <Button onClick={handleSave}>
+                    <Save className="mr-2 h-4 w-4" />
+                    저장하기
+                  </Button>
                 </div>
               </div>
             ) : (
               <>
                 {sections.length > 0 ? (
-                  <div role="article" aria-label="오늘의 To-do 섹션" className="grid gap-4 md:grid-cols-2">
+                  <div
+                    role="article"
+                    aria-label="오늘의 To-do 섹션"
+                    className="grid gap-4 sm:grid-cols-2"
+                    data-section="todo-detail-sections"
+                  >
                     {sections.map((sec, idx) => (
                       <Card
                         key={idx}
-                        className={`p-5 shadow-none transition-colors hover:bg-opacity-80 ${sectionTone(sec.emoji)}`}
+                        className={`border-border/60 p-5 shadow-sm transition-colors hover:bg-opacity-80 ${sectionTone(sec.emoji)}`}
+                        data-section="todo-detail-section"
                       >
                         <div className="flex items-center gap-3 mb-3">
                           <span className="text-xl" aria-hidden="true">
@@ -173,12 +193,12 @@ export function TodayTodoView({ todayTodo, onBack, onCopyContent, onUpdate }: To
                     ))}
                   </div>
                 ) : (
-                  <Card className="bg-muted/10 p-5 shadow-none border border-border/50">
-                    <pre className="whitespace-pre-wrap font-sans text-sm text-muted-foreground leading-relaxed">
-                      {todayTodo.content}
-                    </pre>
-                  </Card>
-                )}
+                    <Card className="border-border/60 bg-muted/20 p-5 shadow-none">
+                      <pre className="whitespace-pre-wrap font-sans text-sm text-muted-foreground leading-relaxed">
+                        {todayTodo.content}
+                      </pre>
+                    </Card>
+                  )}
 
                 <div className="mt-8 pt-4 border-t border-border/30 shrink-0">
                   <Button

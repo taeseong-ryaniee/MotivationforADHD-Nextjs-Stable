@@ -154,9 +154,10 @@ export function useDailyTodo() {
     staleTime: 1000 * 60 * 60 * 24,
   })
 
-  const todayTodoQuery = useQuery({
-    queryKey: todoKeys.byDate(new Date().toLocaleDateString('ko-KR')),
-    queryFn: () => getTodoByDate(new Date().toLocaleDateString('ko-KR')),
+  const todayDate = new Date().toLocaleDateString('ko-KR')
+  const todayTodoQuery = useQuery<TodoData | null>({
+    queryKey: todoKeys.byDate(todayDate),
+    queryFn: async () => (await getTodoByDate(todayDate)) ?? null,
     staleTime: 1000 * 60 * 5,
   })
 

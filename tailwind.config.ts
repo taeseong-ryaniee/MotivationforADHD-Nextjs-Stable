@@ -13,7 +13,7 @@ const config: Config = {
       fontFamily: {
         sans: ['"KoddiUDOnGothic-Regular"', '"KoddiUDOnGothic-Bold"', 'sans-serif'],
         serif: ['"ChosunilboNM"', 'serif'],
-        mono: ['"JetBrains Mono"', '"D2Coding"', 'monospace'],
+        mono: ['var(--font-jetbrains-mono, "JetBrains Mono")', '"D2Coding"', 'monospace'],
       },
       colors: {
         background: 'hsl(var(--background))',

@@ -1,8 +1,7 @@
 'use client'
 
-import { RouterProvider } from '@tanstack/react-router'
-import { router } from '@/lib/router'
+import { AppRouterProvider } from '@/components/AppRouterProvider'
 
 export function AppRouter() {
-  return <RouterProvider router={router} />
+  return <AppRouterProvider />
 }

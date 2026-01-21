@@ -12,18 +12,23 @@ export const MotivationCard = memo(function MotivationCard({ motivation }: Motiv
   if (!motivation) return null
 
   return (
-    <Card className="h-full flex flex-col justify-center border shadow-sm">
-      <CardHeader className="pb-6 pt-8 px-8">
+    <Card
+      className="relative flex h-full flex-col justify-center overflow-hidden border-border/60 bg-gradient-to-br from-card via-card to-muted/40 shadow-sm"
+      data-section="dashboard-motivation-card"
+    >
+      <CardHeader className="pb-4 pt-6 px-6">
         <div className="flex items-center justify-between">
-          <div className="flex items-center gap-3 text-lg font-bold">
-            <Heart className="h-5 w-5 text-primary fill-primary/20" aria-hidden="true" />
+          <div className="flex items-center gap-3 text-sm font-semibold text-muted-foreground">
+            <span className="flex h-9 w-9 items-center justify-center rounded-full bg-primary/10 text-primary">
+              <Heart className="h-4 w-4" aria-hidden="true" />
+            </span>
             오늘의 격려
           </div>
-          
+
           <Popover>
             <PopoverTrigger asChild>
-              <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground hover:text-accent">
-                <Info className="h-5 w-5" />
+              <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground hover:text-foreground">
+                <Info className="h-4 w-4" />
                 <span className="sr-only">정보 보기</span>
               </Button>
             </PopoverTrigger>
@@ -33,8 +38,8 @@ export const MotivationCard = memo(function MotivationCard({ motivation }: Motiv
           </Popover>
         </div>
       </CardHeader>
-      <CardContent className="pt-0 px-8 pb-8 flex-1 flex items-center justify-center min-h-[160px]">
-        <p className="text-xl sm:text-2xl lg:text-3xl font-bold leading-relaxed text-foreground break-keep font-serif tracking-tight text-center">
+      <CardContent className="flex min-h-[160px] flex-1 items-center justify-center px-6 pb-6 pt-0">
+        <p className="text-xl font-bold leading-relaxed text-foreground break-keep font-serif tracking-tight text-center sm:text-2xl lg:text-3xl">
           {motivation}
         </p>
       </CardContent>

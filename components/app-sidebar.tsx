@@ -18,6 +18,7 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
   SidebarRail,
+  SidebarSeparator,
 } from "@/components/ui/sidebar"
 import { Link, useLocation } from "@tanstack/react-router"
 
@@ -45,30 +46,36 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const pathname = useLocation({ select: (location) => location.pathname })
 
   return (
-    <Sidebar {...props}>
-      <SidebarHeader>
-        <div className="flex items-center gap-2 px-2 py-2">
-          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary text-primary-foreground">
-            <LayoutDashboard className="size-4" />
+    <Sidebar variant="inset" {...props}>
+      <SidebarHeader className="gap-3 px-3 py-4">
+        <div className="flex items-center gap-3">
+          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10 text-primary">
+            <LayoutDashboard className="h-5 w-5" aria-hidden="true" />
           </div>
           <div className="flex flex-col gap-0.5 leading-none">
-            <span className="font-serif font-bold text-lg">산만이의 아침</span>
-            <span className="text-xs text-muted-foreground font-sans">v1.0.0</span>
+            <span className="text-xs font-semibold text-muted-foreground font-sans">Daily Focus</span>
+            <span className="font-serif text-lg font-semibold">산만이의 아침</span>
           </div>
         </div>
+        <div className="rounded-lg border border-sidebar-border/60 bg-sidebar-accent/40 px-3 py-2 text-xs text-muted-foreground">
+          오늘의 루틴을 차근히 기록해요.
+        </div>
       </SidebarHeader>
-      <SidebarContent>
+      <SidebarSeparator className="mx-3" />
+      <SidebarContent className="px-2 pt-3">
         <SidebarGroup>
-          <SidebarGroupLabel>Application</SidebarGroupLabel>
+          <SidebarGroupLabel className="text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">
+            Navigation
+          </SidebarGroupLabel>
           <SidebarGroupContent>
-            <SidebarMenu>
+            <SidebarMenu className="gap-1">
               {data.navMain.map((item) => {
                 const isActive = pathname === item.url || (item.url !== '/' && pathname.startsWith(item.url))
                 return (
                   <SidebarMenuItem key={item.title}>
-                    <SidebarMenuButton asChild isActive={isActive}>
+                    <SidebarMenuButton asChild isActive={isActive} className="gap-3">
                       <Link to={item.url}>
-                        <item.icon />
+                        <item.icon className="h-4 w-4" aria-hidden="true" />
                         <span className="font-medium">{item.title}</span>
                       </Link>
                     </SidebarMenuButton>
