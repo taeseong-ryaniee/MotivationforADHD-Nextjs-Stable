@@ -1,15 +1,8 @@
 import type { Metadata, Viewport } from 'next'
 import './globals.css'
-import { JetBrains_Mono } from 'next/font/google'
 import ServiceWorkerRegister from '@/components/ServiceWorkerRegister'
 import Providers from '@/components/Providers'
 import { Toaster } from '@/components/ui/sonner'
-
-const jetbrainsMono = JetBrains_Mono({
-  subsets: ['latin'],
-  weight: ['400', '700'],
-  variable: '--font-jetbrains-mono',
-})
 
 export const metadata: Metadata = {
   title: '산만이의 아침',
@@ -39,10 +32,10 @@ export default function RootLayout({
         <link rel="icon" href="/icons/app-icon.svg" type="image/svg+xml" />
         <link rel="apple-touch-icon" href="/icons/app-icon.svg" />
       </head>
-      <body className={`${jetbrainsMono.variable} font-sans antialiased`}>
+      <body className="font-sans antialiased">
         <a
           href="#main-content"
-          className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-50 focus:px-4 focus:py-2 focus:bg-brand-500 focus:text-white focus:rounded-lg focus:shadow-lg"
+          className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-50 focus:px-4 focus:py-2 focus:bg-primary focus:text-primary-foreground focus:rounded-lg focus:shadow-lg"
         >
           메인 콘텐츠로 건너뛰기
         </a>

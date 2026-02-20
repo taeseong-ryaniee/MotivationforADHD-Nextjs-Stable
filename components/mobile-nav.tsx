@@ -5,6 +5,7 @@ import {
   Settings,
   Clock,
   LayoutDashboard,
+  NotebookPen,
 } from "lucide-react"
 import { Link, useLocation } from "@tanstack/react-router"
 import { Card, CardContent } from "@/components/ui/card"
@@ -13,8 +14,13 @@ import { cn } from "@/lib/utils"
 const data = {
   navMain: [
     {
+      title: "오늘",
+      url: "/today",
+      icon: NotebookPen,
+    },
+    {
       title: "대시보드",
-      url: "/",
+      url: "/dashboard",
       icon: LayoutDashboard,
     },
     {

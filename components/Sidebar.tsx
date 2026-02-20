@@ -12,10 +12,10 @@ export function Sidebar() {
   ]
 
   return (
-    <aside className="hidden lg:block fixed left-0 top-0 h-screen w-64 bg-surface border-r border-token p-6 pt-safe">
+    <aside className="fixed left-0 top-0 hidden h-screen w-64 border-r border-border bg-background p-6 lg:block">
       <div className="flex items-center mb-8">
         <Coffee className="text-amber-500 w-8 h-8 mr-2" aria-hidden="true" />
-        <h2 className="heading-font text-xl font-bold text-primary">산만이</h2>
+        <h2 className="text-xl font-bold text-foreground">산만이</h2>
       </div>
       <nav aria-label="메인 네비게이션">
         <ul className="space-y-2">
@@ -27,8 +27,8 @@ export function Sidebar() {
                   href={href}
                   className={`flex items-center px-4 py-3 rounded-lg transition-all ${
                     isActive
-                      ? 'bg-brand-500 text-white'
-                      : 'text-primary hover:bg-surface-muted'
+                      ? 'bg-primary text-primary-foreground'
+                      : 'text-foreground hover:bg-accent hover:text-accent-foreground'
                   }`}
                 >
                   <Icon className="w-5 h-5 mr-3" aria-hidden="true" />

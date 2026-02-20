@@ -12,18 +12,18 @@ export function CreateTodoButton({ isCreating, onClick }: CreateTodoButtonProps)
     <Button
       variant="default"
       size="lg"
-      className="w-full"
+      className="w-full gap-2 text-base font-semibold"
       disabled={isCreating}
       onClick={onClick}
       aria-busy={isCreating}
-      aria-label={isCreating ? 'To-do 생성 중' : '오늘 하루 시작하기'}
+      aria-label={isCreating ? '오늘 루틴 생성 중' : '오늘 루틴 만들기'}
     >
       {isCreating ? (
         <LoadingSpinner color="blue" />
       ) : (
         <CheckCircle className="h-5 w-5 text-white" />
       )}
-      {isCreating ? 'To-do 생성 중...' : '오늘 하루 시작!'}
+      <span aria-live="polite">{isCreating ? '루틴 생성 중…' : '오늘 루틴 만들기'}</span>
     </Button>
   )
 }

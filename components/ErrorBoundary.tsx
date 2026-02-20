@@ -68,7 +68,7 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
                 <AlertTriangle className="w-8 h-8 text-red-600 dark:text-red-400" />
               </div>
 
-              <h2 className="heading-font text-xl font-bold text-primary mb-2">
+              <h2 className="text-xl font-bold text-primary mb-2">
                 문제가 발생했습니다
               </h2>
 

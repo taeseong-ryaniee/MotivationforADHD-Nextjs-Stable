@@ -5,6 +5,7 @@ import {
   Settings,
   Clock,
   LayoutDashboard,
+  NotebookPen,
 } from "lucide-react"
 
 import {
@@ -17,7 +18,6 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
-  SidebarRail,
   SidebarSeparator,
 } from "@/components/ui/sidebar"
 import { Link, useLocation } from "@tanstack/react-router"
@@ -25,8 +25,13 @@ import { Link, useLocation } from "@tanstack/react-router"
 const data = {
   navMain: [
     {
-      title: "메인 메뉴",
-      url: "/",
+      title: "오늘의 To-do",
+      url: "/today",
+      icon: NotebookPen,
+    },
+    {
+      title: "대시보드",
+      url: "/dashboard",
       icon: LayoutDashboard,
     },
     {
@@ -86,7 +91,6 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
           </SidebarGroupContent>
         </SidebarGroup>
       </SidebarContent>
-      <SidebarRail />
     </Sidebar>
   )
 }

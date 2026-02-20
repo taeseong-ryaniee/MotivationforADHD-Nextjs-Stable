@@ -22,6 +22,14 @@ const todoKeys = {
   byDate: (date: string) => [...todoKeys.all, 'date', date] as const,
 }
 
+const getTodayDateString = (): string =>
+  new Date().toLocaleDateString('ko-KR', {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+    weekday: 'long',
+  })
+
 const getRandomItem = <T,>(array: T[]): T => {
   return array[Math.floor(Math.random() * array.length)]
 }
@@ -154,7 +162,7 @@ export function useDailyTodo() {
     staleTime: 1000 * 60 * 60 * 24,
   })
 
-  const todayDate = new Date().toLocaleDateString('ko-KR')
+  const todayDate = getTodayDateString()
   const todayTodoQuery = useQuery<TodoData | null>({
     queryKey: todoKeys.byDate(todayDate),
     queryFn: async () => (await getTodoByDate(todayDate)) ?? null,
@@ -167,12 +175,13 @@ export function useDailyTodo() {
     mutationFn: async ({ content, specialEvent }: UseDailyTodoParams) => {
       const today = new Date()
       const dayOfWeek = today.getDay()
-      const dateString = today.toLocaleDateString('ko-KR', {
-        year: 'numeric',
-        month: 'long',
-        day: 'numeric',
-        weekday: 'long',
-      })
+      const dateString = getTodayDateString()
+      const existingTodo = await getTodoByDate(dateString)
+
+      // Prevent duplicate generation for the same day.
+      if (existingTodo) {
+        return existingTodo
+      }
 
       const motivation = motivationQuery.data || getRandomItem(MOTIVATION_DEFAULTS)
       const dayMessages = content?.daySpecificMessages || DAY_MESSAGES_DEFAULT
@@ -182,7 +191,12 @@ export function useDailyTodo() {
       const dayMessage = dayMessages[dayOfWeek] || ''
       const antiFogTip = getRandomItem(antiFogTips)
       const { tip1, tip2 } = getTodayTips(practicalTips)
-      const specialAdvice = getSpecialEventAdvice(specialEvent)
+      const specialEventItems = specialEvent
+        .split('\n')
+        .map((item) => item.trim())
+        .filter(Boolean)
+      const normalizedSpecialEvent = specialEventItems.join(' ')
+      const specialAdvice = getSpecialEventAdvice(normalizedSpecialEvent)
 
       const todoTitle = `ADHD 격려 - ${dateString}`
       let todoContent = `🌅 ${dateString} 아침 격려
@@ -199,10 +213,11 @@ ${antiFogTip}
 1. ${tip1}
 2. ${tip2}`
 
-      if (specialEvent.trim()) {
+      if (specialEventItems.length > 0) {
         todoContent += `
 
-🌟 오늘의 특별 일정: ${specialEvent}
+🌟 오늘의 특별 일정
+${specialEventItems.map((item) => `- ${item}`).join('\n')}
 💡 어드바이스: ${specialAdvice}`
       }
 
@@ -234,13 +249,14 @@ ${antiFogTip}
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: todoKeys.lists() })
-      queryClient.invalidateQueries({ queryKey: todoKeys.byDate(new Date().toLocaleDateString('ko-KR')) })
+      queryClient.invalidateQueries({ queryKey: todoKeys.byDate(getTodayDateString()) })
     },
   })
 
   return {
     todayMotivation: motivationQuery.data || '',
     todayTodo: todayTodoQuery.data || null,
+    isLoadingTodayTodo: todayTodoQuery.isLoading,
     todoHistory: historyQuery.data || [],
     isCreating: createMutation.isPending,
     createDailyTodo: createMutation.mutateAsync,
@@ -283,7 +299,7 @@ export function useDeleteTodo() {
   return useMutation({
     mutationFn: (id: string) => deleteTodo(id),
     onSuccess: (_, id) => {
-      queryClient.invalidateQueries({ queryKey: todoKeys.lists() })
+      queryClient.invalidateQueries({ queryKey: todoKeys.all })
       queryClient.removeQueries({ queryKey: todoKeys.detail(id) })
     },
   })

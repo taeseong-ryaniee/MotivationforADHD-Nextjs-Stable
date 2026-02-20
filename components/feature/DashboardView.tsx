@@ -15,7 +15,7 @@ export function DashboardView() {
   const { data: content, isLoading: isLoadingContent, error: contentError } = useContent('ko')
 
   const [specialEvent, setSpecialEvent] = useState('')
-  const { todayMotivation, todayTodo, todoHistory, isCreating, createDailyTodo } = useDailyTodo()
+  const { isCreating, createDailyTodo } = useDailyTodo()
 
   useEffect(() => {
     const init = async () => {
@@ -38,12 +38,7 @@ export function DashboardView() {
   }
 
   const handleShowTodayTodo = () => {
-    const latest = todayTodo || todoHistory[0]
-    if (latest) {
-      navigate({ to: '/todo/$id', params: { id: latest.id } })
-    } else {
-      navigate({ to: '/' })
-    }
+    navigate({ to: '/today' })
   }
 
   if (contentError) {
@@ -73,14 +68,11 @@ export function DashboardView() {
 
   return (
     <MainScreen
-      todayMotivation={todayMotivation}
       specialEvent={specialEvent}
       isCreating={isCreating}
-      lastCreated={todayTodo?.date || null}
       onUpdateSpecialEvent={setSpecialEvent}
       onCreateDailyTodo={handleCreateTodo}
       onShowTodayTodo={handleShowTodayTodo}
-      todoHistory={todoHistory}
     />
   )
 }

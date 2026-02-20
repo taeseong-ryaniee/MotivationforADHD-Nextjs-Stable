@@ -22,9 +22,70 @@ interface Section {
   body: string
 }
 
+const SPECIAL_HEADER = '🌟 오늘의 특별 일정'
+const ADVICE_PREFIX = '💡 어드바이스:'
+const MEMORY_HEADER = '🧠 기억할 것'
+
+function extractSpecialEvents(content: string): string[] {
+  const lines = content.split(/\r?\n/)
+  const start = lines.findIndex((line) => line.startsWith(SPECIAL_HEADER))
+  if (start === -1) return []
+
+  const out: string[] = []
+
+  for (let i = start + 1; i < lines.length; i++) {
+    const line = lines[i].trim()
+    if (
+      line.startsWith(ADVICE_PREFIX) ||
+      line.startsWith(MEMORY_HEADER) ||
+      ['🌅', '💪', '📅', '⚡', '🎯', '🌟', '🧠'].some((emoji) => line.startsWith(emoji))
+    ) {
+      break
+    }
+    if (line.startsWith('- ')) {
+      out.push(line.slice(2).trim())
+    }
+  }
+
+  return out.filter(Boolean)
+}
+
+function buildSpecialSection(events: string[]): string[] {
+  if (events.length === 0) return []
+  return [
+    SPECIAL_HEADER,
+    ...events.map((item) => `- ${item}`),
+    `${ADVICE_PREFIX} 일정을 기준으로 우선순위를 정해 한 번에 하나씩 진행하세요.`,
+  ]
+}
+
+function updateSpecialEventsInContent(content: string, events: string[]): string {
+  const lines = content.split(/\r?\n/)
+  const nextSection = buildSpecialSection(events)
+  const sectionStart = lines.findIndex((line) => line.startsWith(SPECIAL_HEADER))
+
+  if (sectionStart !== -1) {
+    let sectionEnd = lines.length
+    for (let i = sectionStart + 1; i < lines.length; i++) {
+      const line = lines[i].trim()
+      if (line.startsWith(MEMORY_HEADER)) {
+        sectionEnd = i
+        break
+      }
+    }
+    lines.splice(sectionStart, sectionEnd - sectionStart, ...nextSection)
+  } else if (nextSection.length > 0) {
+    const memoryStart = lines.findIndex((line) => line.startsWith(MEMORY_HEADER))
+    const insertAt = memoryStart === -1 ? lines.length : memoryStart
+    lines.splice(insertAt, 0, ...nextSection, '')
+  }
+
+  return lines.join('\n').replace(/\n{3,}/g, '\n\n').trim()
+}
+
 export function TodayTodoView({ todayTodo, onBack, onCopyContent, onUpdate }: TodayTodoViewProps) {
-  const [isEditing, setIsEditing] = useState(false)
-  const [editContent, setEditContent] = useState(todayTodo?.content || '')
+  const [isEditingSpecial, setIsEditingSpecial] = useState(false)
+  const [specialEventsDraft, setSpecialEventsDraft] = useState('')
 
   const sections = useMemo(() => {
     const text = todayTodo?.content || ''
@@ -74,16 +135,20 @@ export function TodayTodoView({ todayTodo, onBack, onCopyContent, onUpdate }: To
   }
 
   const handleSave = async () => {
-    if (onUpdate) {
-      await onUpdate(editContent)
-      setIsEditing(false)
-      showSuccess('수정되었습니다!')
-    }
+    if (!onUpdate || !todayTodo) return
+    const events = specialEventsDraft
+      .split('\n')
+      .map((item) => item.trim())
+      .filter(Boolean)
+    const updatedContent = updateSpecialEventsInContent(todayTodo.content, events)
+    await onUpdate(updatedContent)
+    setIsEditingSpecial(false)
+    showSuccess('특별 일정이 수정되었습니다!')
   }
 
   const handleCancel = () => {
-    setEditContent(todayTodo?.content || '')
-    setIsEditing(false)
+    setSpecialEventsDraft(extractSpecialEvents(todayTodo?.content || '').join('\n'))
+    setIsEditingSpecial(false)
   }
 
   const isEditable = useMemo(() => {
@@ -111,18 +176,25 @@ export function TodayTodoView({ todayTodo, onBack, onCopyContent, onUpdate }: To
         </div>
 
         <div className="flex flex-wrap items-center gap-2">
-          {isEditable && !isEditing && (
+          {isEditable && !isEditingSpecial && (
             <Badge variant="secondary" className="text-xs">
-              오늘만 수정 가능
+              오늘만 특별 일정 수정 가능
             </Badge>
           )}
-          {isEditing && (
+          {isEditingSpecial && (
             <Badge className="text-xs">편집 중</Badge>
           )}
-          {!isEditing && onUpdate && isEditable && (
-            <Button variant="outline" size="sm" onClick={() => setIsEditing(true)}>
+          {!isEditingSpecial && onUpdate && isEditable && (
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => {
+                setSpecialEventsDraft(extractSpecialEvents(todayTodo?.content || '').join('\n'))
+                setIsEditingSpecial(true)
+              }}
+            >
               <Pencil className="mr-2 h-4 w-4" />
-              수정하기
+              특별 일정 수정
             </Button>
           )}
           <Button variant="ghost" size="sm" onClick={onBack}>
@@ -147,73 +219,80 @@ export function TodayTodoView({ todayTodo, onBack, onCopyContent, onUpdate }: To
               </Badge>
             </div>
 
-            {isEditing ? (
-              <div className="flex-1 flex flex-col gap-4">
-                <Textarea
-                  value={editContent}
-                  onChange={(e) => setEditContent(e.target.value)}
-                  className="flex-1 min-h-[400px] bg-muted/20 p-4 text-sm leading-relaxed font-mono"
-                />
-                <div className="flex justify-end gap-2 shrink-0">
-                  <Button variant="outline" onClick={handleCancel}>
-                    <X className="mr-2 h-4 w-4" />
-                    취소
-                  </Button>
-                  <Button onClick={handleSave}>
-                    <Save className="mr-2 h-4 w-4" />
-                    저장하기
-                  </Button>
-                </div>
-              </div>
-            ) : (
-              <>
-                {sections.length > 0 ? (
-                  <div
-                    role="article"
-                    aria-label="오늘의 To-do 섹션"
-                    className="grid gap-4 sm:grid-cols-2"
-                    data-section="todo-detail-sections"
-                  >
-                    {sections.map((sec, idx) => (
-                      <Card
-                        key={idx}
-                        className={`border-border/60 p-5 shadow-sm transition-colors hover:bg-opacity-80 ${sectionTone(sec.emoji)}`}
-                        data-section="todo-detail-section"
-                      >
-                        <div className="flex items-center gap-3 mb-3">
-                          <span className="text-xl" aria-hidden="true">
-                            {sec.emoji}
-                          </span>
-                          <h4 className="text-base font-bold text-foreground font-serif">{sec.title}</h4>
-                        </div>
-                        <div className="text-sm leading-loose text-muted-foreground whitespace-pre-wrap font-sans">
-                          {sec.body}
-                        </div>
-                      </Card>
-                    ))}
+            {isEditingSpecial && (
+              <Card className="mb-6 border-border/60 bg-muted/20 p-4 shadow-none">
+                <div className="space-y-3">
+                  <p className="text-sm font-medium text-foreground">특별 일정 (한 줄에 하나씩)</p>
+                  <Textarea
+                    value={specialEventsDraft}
+                    onChange={(e) => setSpecialEventsDraft(e.target.value)}
+                    className="min-h-[140px] bg-background p-3 text-sm leading-relaxed"
+                    placeholder="예: 팀 미팅 14:00…"
+                    name="specialEventOnly"
+                    autoComplete="off"
+                    aria-label="특별 일정 수정"
+                  />
+                  <div className="flex justify-end gap-2">
+                    <Button variant="outline" onClick={handleCancel}>
+                      <X className="mr-2 h-4 w-4" />
+                      취소
+                    </Button>
+                    <Button onClick={handleSave}>
+                      <Save className="mr-2 h-4 w-4" />
+                      저장하기
+                    </Button>
                   </div>
-                ) : (
-                    <Card className="border-border/60 bg-muted/20 p-5 shadow-none">
-                      <pre className="whitespace-pre-wrap font-sans text-sm text-muted-foreground leading-relaxed">
-                        {todayTodo.content}
-                      </pre>
-                    </Card>
-                  )}
-
-                <div className="mt-8 pt-4 border-t border-border/30 shrink-0">
-                  <Button
-                    onClick={() => onCopyContent(todayTodo.content)}
-                    className="w-full h-12 text-base font-medium shadow-sm transition-all hover:translate-y-[-1px]"
-                    size="lg"
-                    type="button"
-                    aria-label="To-do 전체 내용 클립보드에 복사"
-                  >
-                    <Copy className="h-5 w-5 mr-2" aria-hidden="true" />
-                    클립보드에 전체 복사하기
-                  </Button>
                 </div>
-              </>
+              </Card>
             )}
+
+            <>
+              {sections.length > 0 ? (
+                <div
+                  role="article"
+                  aria-label="오늘의 To-do 섹션"
+                  className="grid gap-4 sm:grid-cols-2"
+                  data-section="todo-detail-sections"
+                >
+                  {sections.map((sec, idx) => (
+                    <Card
+                      key={idx}
+                      className={`border-border/60 p-5 shadow-sm transition-colors hover:bg-opacity-80 ${sectionTone(sec.emoji)}`}
+                      data-section="todo-detail-section"
+                    >
+                      <div className="flex items-center gap-3 mb-3">
+                        <span className="text-xl" aria-hidden="true">
+                          {sec.emoji}
+                        </span>
+                        <h4 className="text-base font-bold text-foreground font-serif">{sec.title}</h4>
+                      </div>
+                      <div className="text-sm leading-loose text-muted-foreground whitespace-pre-wrap font-sans">
+                        {sec.body}
+                      </div>
+                    </Card>
+                  ))}
+                </div>
+              ) : (
+                  <Card className="border-border/60 bg-muted/20 p-5 shadow-none">
+                    <pre className="whitespace-pre-wrap font-sans text-sm text-muted-foreground leading-relaxed">
+                      {todayTodo.content}
+                    </pre>
+                  </Card>
+                )}
+
+              <div className="mt-8 pt-4 border-t border-border/30 shrink-0">
+                <Button
+                  onClick={() => onCopyContent(todayTodo.content)}
+                  className="w-full h-12 text-base font-medium shadow-sm transition-all hover:translate-y-[-1px]"
+                  size="lg"
+                  type="button"
+                  aria-label="To-do 전체 내용 클립보드에 복사"
+                >
+                  <Copy className="h-5 w-5 mr-2" aria-hidden="true" />
+                  클립보드에 전체 복사하기
+                </Button>
+              </div>
+            </>
           </CardContent>
         </Card>
       )}
