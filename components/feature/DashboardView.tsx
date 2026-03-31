@@ -2,28 +2,62 @@
 
 import { useNavigate } from '@tanstack/react-router'
 import { MainScreen } from '@/components/feature/MainScreen'
+import { StartScreen } from '@/components/feature/StartScreen'
 import { Card, CardContent } from '@/components/ui/card'
 import { Skeleton } from '@/components/ui/skeleton'
-import { useDailyTodo } from '@/hooks/useTodos'
+import { useDailyTodo, useSaveTodo } from '@/hooks/useTodos'
 import { useContent } from '@/hooks/useContent'
 import { migrateFromLocalStorage } from '@/lib/db'
 import { showError } from '@/lib/toast'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo, useCallback } from 'react'
+import type { TodoData } from '@/lib/types'
+
+function getTodayTip(antiBrainFogTips: string[]): { title: string; body: string } | null {
+  if (!antiBrainFogTips || antiBrainFogTips.length === 0) return null
+  const dayOfYear = Math.floor(
+    (Date.now() - new Date(new Date().getFullYear(), 0, 0).getTime()) / 86400000
+  )
+  const tip = antiBrainFogTips[dayOfYear % antiBrainFogTips.length]
+  return { title: '멍함 탈출 팁', body: tip }
+}
 
 export function DashboardView() {
   const navigate = useNavigate()
   const { data: content, isLoading: isLoadingContent, error: contentError } = useContent('ko')
 
   const [specialEvent, setSpecialEvent] = useState('')
-  const { isCreating, createDailyTodo } = useDailyTodo()
+  const { todayTodo, todoHistory, isCreating, createDailyTodo } = useDailyTodo()
+  const saveTodoMutation = useSaveTodo()
 
   useEffect(() => {
-    const init = async () => {
-      await migrateFromLocalStorage()
-    }
-
-    init()
+    migrateFromLocalStorage()
   }, [])
+
+  const cheers = useMemo(() => content?.cheers ?? [], [content])
+  const tip = useMemo(() => getTodayTip(content?.antiBrainFogTips ?? []), [content])
+
+  const handleAddQuickTodo = useCallback(async (text: string) => {
+    const now = new Date()
+    const dateString = now.toLocaleDateString('ko-KR', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+      weekday: 'long',
+    })
+    const todo: TodoData = {
+      id: crypto.randomUUID(),
+      date: dateString,
+      title: text,
+      content: text,
+      createdAt: now.toLocaleString('ko-KR'),
+    }
+    await saveTodoMutation.mutateAsync(todo)
+  }, [saveTodoMutation])
+
+  const handleStartDay = useCallback(() => {
+    navigate({ to: '/' })
+    window.location.reload()
+  }, [navigate])
 
   const handleCreateTodo = async () => {
     try {
@@ -57,15 +91,25 @@ export function DashboardView() {
             </div>
           </div>
           <Skeleton className="h-32 w-full rounded-xl" />
-          <div className="grid gap-4 sm:grid-cols-2">
-            <Skeleton className="h-24 w-full rounded-xl" />
-            <Skeleton className="h-24 w-full rounded-xl" />
-          </div>
         </CardContent>
       </Card>
     )
   }
 
+  // No todo for today → StartScreen
+  if (!todayTodo) {
+    return (
+      <StartScreen
+        cheers={cheers}
+        tip={tip}
+        onAddTodo={handleAddQuickTodo}
+        onStartDay={handleStartDay}
+        todoCount={0}
+      />
+    )
+  }
+
+  // Has today's todo → existing dashboard
   return (
     <MainScreen
       specialEvent={specialEvent}
