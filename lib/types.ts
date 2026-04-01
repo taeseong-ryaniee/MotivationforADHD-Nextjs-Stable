@@ -32,6 +32,7 @@ export interface ContentData {
   antiBrainFogTips: string[]
   practicalTips: PracticalTip[]
   daySpecificMessages: Record<number, string>
+  cheers?: string[]
 }
 
 export interface SyncMetadata {
