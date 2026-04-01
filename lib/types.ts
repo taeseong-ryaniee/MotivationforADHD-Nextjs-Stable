@@ -28,11 +28,20 @@ export interface ContentData {
   version: string
   updatedAt: string
   locale: string
+  therapyMessages?: TherapyMessages
   motivationMessages: string[]
   antiBrainFogTips: string[]
   practicalTips: PracticalTip[]
-  daySpecificMessages: Record<number, string>
-  cheers?: string[]
+  daySpecificMessages: Record<string, string>
+  cheers: string[]
+}
+
+// IndexedDB에 저장되는 콘텐츠 레코드
+export interface ContentRecord {
+  locale: string
+  data: ContentData
+  version: string
+  seededAt: string
 }
 
 export interface SyncMetadata {
@@ -86,9 +95,3 @@ export interface TherapyMessages {
   social: TherapyCategory      // 대인관계/소통
 }
 
-// ContentData 확장 (기존 호환성 유지)
-export interface ContentDataV2 extends Omit<ContentData, 'motivationMessages'> {
-  version: string
-  therapyMessages?: TherapyMessages
-  motivationMessages?: string[] // 하위 호환성
-}
