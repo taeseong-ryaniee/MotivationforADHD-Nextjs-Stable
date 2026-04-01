@@ -26,7 +26,7 @@ export function DashboardView() {
   const { data: content, isLoading: isLoadingContent, error: contentError } = useContent('ko')
 
   const [specialEvent, setSpecialEvent] = useState('')
-  const { todayTodo, todoHistory, isCreating, createDailyTodo } = useDailyTodo()
+  const { todayTodo, todayTodoCount, isCreating, createDailyTodo } = useDailyTodo()
   const saveTodoMutation = useSaveTodo()
 
   useEffect(() => {
@@ -63,7 +63,7 @@ export function DashboardView() {
     try {
       const todo = await createDailyTodo({
         specialEvent,
-        content: content || undefined,
+        content: content!,
       })
       navigate({ to: '/todo/$id', params: { id: todo.id } })
     } catch {
@@ -104,7 +104,7 @@ export function DashboardView() {
         tip={tip}
         onAddTodo={handleAddQuickTodo}
         onStartDay={handleStartDay}
-        todoCount={0}
+        todoCount={todayTodoCount}
       />
     )
   }
