@@ -1,11 +1,12 @@
 import Dexie, { type EntityTable } from 'dexie'
-import type { TodoData, Settings } from './types'
+import type { TodoData, Settings, ContentRecord } from './types'
 import { TodoDataSchema, validateMigrationData } from './validation'
 
 // Lazy initialization to avoid SSR issues
 let _db: (Dexie & {
   todos: EntityTable<TodoData, 'id'>
   settings: EntityTable<Settings, 'key'>
+  content: EntityTable<ContentRecord, 'locale'>
 }) | null = null
 
 function getDB() {
@@ -18,6 +19,7 @@ function getDB() {
     _db = new Dexie('MotivationForADHD') as Dexie & {
       todos: EntityTable<TodoData, 'id'>
       settings: EntityTable<Settings, 'key'>
+      content: EntityTable<ContentRecord, 'locale'>
     }
 
     // Schema declaration
@@ -31,6 +33,13 @@ function getDB() {
     _db.version(2).stores({
       todos: 'id, date, createdAt, [date+createdAt]',
       settings: 'key'
+    })
+
+    // v3: Add content table for IndexedDB seed pattern
+    _db.version(3).stores({
+      todos: 'id, date, createdAt, [date+createdAt]',
+      settings: 'key',
+      content: 'locale'
     })
   }
 
@@ -89,6 +98,20 @@ export async function setSetting<T = unknown>(key: string, value: T): Promise<st
 
 export async function deleteSetting(key: string): Promise<void> {
   await getDB().settings.delete(key)
+}
+
+// Helper functions for content
+export async function getContent(locale: string): Promise<ContentRecord | undefined> {
+  return await getDB().content.get(locale)
+}
+
+export async function saveContent(record: ContentRecord): Promise<string> {
+  return await getDB().content.put(record)
+}
+
+// Helper function for multiple todos by date
+export async function getTodosByDate(date: string): Promise<TodoData[]> {
+  return await getDB().todos.where('date').equals(date).toArray()
 }
 
 // Migration from localStorage to IndexedDB

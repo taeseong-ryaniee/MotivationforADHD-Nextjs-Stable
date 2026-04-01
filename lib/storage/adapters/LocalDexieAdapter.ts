@@ -1,6 +1,6 @@
 import { StorageAdapter, StorageProvider } from '../types';
 import { getDB } from '@/lib/db';
-import { TodoData, Settings } from '@/lib/types';
+import { TodoData, Settings, ContentRecord } from '@/lib/types';
 
 export class LocalDexieAdapter implements StorageAdapter {
   provider: StorageProvider = 'local';
@@ -41,6 +41,15 @@ export class LocalDexieAdapter implements StorageAdapter {
 
   async deleteSetting(key: string): Promise<void> {
     await getDB().settings.delete(key)
+  }
+
+  async getContent(locale: string): Promise<ContentRecord | null> {
+    const record = await getDB().content.get(locale)
+    return record ?? null
+  }
+
+  async saveContent(record: ContentRecord): Promise<void> {
+    await getDB().content.put(record)
   }
 
   // Legacy support

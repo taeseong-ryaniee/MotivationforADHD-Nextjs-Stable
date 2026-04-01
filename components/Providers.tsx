@@ -3,7 +3,8 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { ThemeProvider } from 'next-themes'
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
+import { seedContent } from '@/lib/content-seed'
 
 export default function Providers({ children }: { children: React.ReactNode }) {
   const [queryClient] = useState(
@@ -23,6 +24,13 @@ export default function Providers({ children }: { children: React.ReactNode }) {
         },
       })
   )
+
+  // 앱 시작 시 콘텐츠를 IndexedDB에 시드
+  useEffect(() => {
+    seedContent('ko').catch((err) =>
+      console.error('[ContentSeed] 시드 실패:', err)
+    )
+  }, [])
 
   return (
     <QueryClientProvider client={queryClient}>

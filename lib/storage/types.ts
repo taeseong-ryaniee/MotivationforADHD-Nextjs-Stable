@@ -1,4 +1,4 @@
-import { TodoData, Settings } from '@/lib/types';
+import { TodoData, Settings, ContentData, ContentRecord } from '@/lib/types';
 
 export type StorageProvider = 'local' | 's3' | 'google_drive' | 'icloud';
 
@@ -25,6 +25,10 @@ export interface StorageAdapter {
   saveSetting<T = unknown>(key: string, value: T): Promise<void>;
   deleteSetting(key: string): Promise<void>;
   
+  // Content
+  getContent(locale: string): Promise<ContentRecord | null>;
+  saveContent(record: ContentRecord): Promise<void>;
+
   // Legacy Settings (Optional)
   getSettings?(): Promise<Settings | null>;
   saveSettings?(settings: Settings): Promise<void>;
