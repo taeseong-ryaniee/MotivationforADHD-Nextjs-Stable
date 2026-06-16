@@ -1,12 +1,7 @@
 "use client"
 
 import * as React from "react"
-import {
-  Settings,
-  Clock,
-  LayoutDashboard,
-  NotebookPen,
-} from "lucide-react"
+import { LayoutDashboard } from "lucide-react"
 
 import {
   Sidebar,
@@ -21,31 +16,7 @@ import {
   SidebarSeparator,
 } from "@/components/ui/sidebar"
 import { Link, useLocation } from "@tanstack/react-router"
-
-const data = {
-  navMain: [
-    {
-      title: "오늘의 To-do",
-      url: "/today",
-      icon: NotebookPen,
-    },
-    {
-      title: "대시보드",
-      url: "/dashboard",
-      icon: LayoutDashboard,
-    },
-    {
-      title: "히스토리",
-      url: "/history",
-      icon: Clock,
-    },
-    {
-      title: "설정",
-      url: "/settings",
-      icon: Settings,
-    },
-  ],
-}
+import { NAV_ITEMS } from "@/lib/nav"
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const pathname = useLocation({ select: (location) => location.pathname })
@@ -74,7 +45,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
           </SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu className="gap-1">
-              {data.navMain.map((item) => {
+              {NAV_ITEMS.map((item) => {
                 const isActive = pathname === item.url || (item.url !== '/' && pathname.startsWith(item.url))
                 return (
                   <SidebarMenuItem key={item.title}>

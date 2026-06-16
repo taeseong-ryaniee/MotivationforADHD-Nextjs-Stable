@@ -20,7 +20,6 @@ export interface PracticalTip {
 export interface TodayTips {
   tip1: string
   tip2: string
-  antiFogTip: string
   categories: string[]
 }
 

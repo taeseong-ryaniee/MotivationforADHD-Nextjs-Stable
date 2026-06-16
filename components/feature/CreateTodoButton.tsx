@@ -12,7 +12,7 @@ export function CreateTodoButton({ isCreating, onClick }: CreateTodoButtonProps)
     <Button
       variant="default"
       size="lg"
-      className="w-full gap-2 text-base font-semibold"
+      className="w-full gap-2 rounded-xl text-base font-bold"
       disabled={isCreating}
       onClick={onClick}
       aria-busy={isCreating}
@@ -21,7 +21,7 @@ export function CreateTodoButton({ isCreating, onClick }: CreateTodoButtonProps)
       {isCreating ? (
         <LoadingSpinner color="blue" />
       ) : (
-        <CheckCircle className="h-5 w-5 text-white" />
+        <CheckCircle className="h-5 w-5 text-current" />
       )}
       <span aria-live="polite">{isCreating ? '루틴 생성 중…' : '오늘 루틴 만들기'}</span>
     </Button>

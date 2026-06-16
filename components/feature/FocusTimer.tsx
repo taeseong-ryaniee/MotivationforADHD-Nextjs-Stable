@@ -7,8 +7,9 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { cn } from '@/lib/utils'
 
+const INITIAL_TIME = 25 * 60
+
 export function FocusTimer({ className }: { className?: string }) {
-  const INITIAL_TIME = 25 * 60 // 25 minutes
   const [timeLeft, setTimeLeft] = useState(INITIAL_TIME)
   const [isActive, setIsActive] = useState(false)
 

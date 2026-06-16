@@ -22,6 +22,8 @@ interface Section {
   body: string
 }
 
+const SECTION_EMOJIS = ['🌅', '💪', '📅', '⚡', '🎯', '🌟', '🧠'] as const
+
 const SPECIAL_HEADER = '🌟 오늘의 특별 일정'
 const ADVICE_PREFIX = '💡 어드바이스:'
 const MEMORY_HEADER = '🧠 기억할 것'
@@ -38,7 +40,7 @@ function extractSpecialEvents(content: string): string[] {
     if (
       line.startsWith(ADVICE_PREFIX) ||
       line.startsWith(MEMORY_HEADER) ||
-      ['🌅', '💪', '📅', '⚡', '🎯', '🌟', '🧠'].some((emoji) => line.startsWith(emoji))
+      SECTION_EMOJIS.some((emoji) => line.startsWith(emoji))
     ) {
       break
     }
@@ -92,13 +94,12 @@ export function TodayTodoView({ todayTodo, onBack, onCopyContent, onUpdate }: To
     if (!text) return [] as Section[]
 
     const lines = text.split(/\r?\n/)
-    const headerEmojis = ['🌅', '💪', '📅', '⚡', '🎯', '🌟', '🧠']
     const out: Section[] = []
     let current: Section | null = null
 
     for (const raw of lines) {
       const line = raw.trimEnd()
-      const emoji = headerEmojis.find((e) => line.startsWith(e))
+      const emoji = SECTION_EMOJIS.find((e) => line.startsWith(e))
 
       if (emoji) {
         if (current) out.push(current)

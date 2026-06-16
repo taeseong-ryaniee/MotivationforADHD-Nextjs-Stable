@@ -149,7 +149,7 @@ export function StartScreen({
               size="sm"
               onClick={handleSubmit}
               disabled={!value.trim() || isAdding}
-              className="gap-1.5 bg-amber-500 text-stone-950 hover:bg-amber-400"
+              className="rounded-full gap-1.5 bg-amber-500 text-stone-950 hover:bg-amber-400 px-5"
             >
               <Plus className="h-4 w-4" />
               추가
@@ -177,7 +177,7 @@ export function StartScreen({
           <Button
             onClick={onStartDay}
             size="lg"
-            className="animate-in fade-in mt-4 bg-amber-500 text-lg font-semibold text-stone-950 hover:bg-amber-400"
+            className="animate-in fade-in mt-4 rounded-full bg-amber-500 text-lg font-bold text-stone-950 hover:bg-amber-400 px-8"
           >
             오늘 하루 시작!
           </Button>

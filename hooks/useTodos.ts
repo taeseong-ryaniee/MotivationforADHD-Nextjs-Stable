@@ -10,10 +10,8 @@ import {
   saveTodo,
   deleteTodo,
   clearAllTodos,
-  getSetting,
-  setSetting,
 } from '@/lib/db'
-import { getRandomItem, getSpecialEventAdvice, getTodayTips } from '@/lib/content-utils'
+import { getRandomItem, getSpecialEventAdvice, getTodayTips, buildTodoContent } from '@/lib/content-utils'
 
 const todoKeys = {
   all: ['todos'] as const,
@@ -72,51 +70,23 @@ export function useDailyTodo() {
         return existingTodo
       }
 
-      const motivation = getRandomItem(content.motivationMessages)
-      const dayMessage = content.daySpecificMessages[String(dayOfWeek)] || ''
-      const antiFogTip = getRandomItem(content.antiBrainFogTips)
-      const { tip1, tip2 } = getTodayTips(content.practicalTips)
       const specialEventItems = specialEvent
         .split('\n')
         .map((item) => item.trim())
         .filter(Boolean)
-      const normalizedSpecialEvent = specialEventItems.join(' ')
-      const specialAdvice = getSpecialEventAdvice(normalizedSpecialEvent)
+      const { tip1, tip2 } = getTodayTips(content.practicalTips)
 
-      const todoTitle = `ADHD 격려 - ${dateString}`
-      let todoContent = `🌅 ${dateString} 아침 격려
-
-💪 오늘의 마음가짐
-${motivation}
-
-📅 ${dayMessage}
-
-⚡ 멍함 없이 바로 시작하기
-${antiFogTip}
-
-🎯 오늘 실행할 일
-1. ${tip1}
-2. ${tip2}`
-
-      if (specialEventItems.length > 0) {
-        todoContent += `
-
-🌟 오늘의 특별 일정
-${specialEventItems.map((item) => `- ${item}`).join('\n')}
-💡 어드바이스: ${specialAdvice}`
-      }
-
-      todoContent += `
-
-🧠 기억할 것
-• "지금 당장"보다 "조금씩"
-• 실수는 설명의 기회
-• 완료보다 진행이 중요
-
-🍀 오늘 하루도 화이팅! 당신은 잘하고 있어요.
-
----
-생성 시간: ${today.toLocaleTimeString('ko-KR')}`
+      const { title: todoTitle, content: todoContent } = buildTodoContent({
+        dateString,
+        motivation: getRandomItem(content.motivationMessages),
+        dayMessage: content.daySpecificMessages[String(dayOfWeek)] || '',
+        antiFogTip: getRandomItem(content.antiBrainFogTips),
+        tip1,
+        tip2,
+        specialEventItems,
+        specialAdvice: getSpecialEventAdvice(specialEventItems.join(' ')),
+        createdAt: today.toLocaleTimeString('ko-KR'),
+      })
 
       const id = crypto.randomUUID()
 

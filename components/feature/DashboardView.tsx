@@ -1,11 +1,12 @@
 'use client'
 
 import { useNavigate } from '@tanstack/react-router'
+import { useQueryClient } from '@tanstack/react-query'
 import { MainScreen } from '@/components/feature/MainScreen'
 import { StartScreen } from '@/components/feature/StartScreen'
 import { Card, CardContent } from '@/components/ui/card'
 import { Skeleton } from '@/components/ui/skeleton'
-import { useDailyTodo, useSaveTodo } from '@/hooks/useTodos'
+import { useDailyTodo, useSaveTodo, todoKeys } from '@/hooks/useTodos'
 import { useContent } from '@/hooks/useContent'
 import { migrateFromLocalStorage } from '@/lib/db'
 import { showError } from '@/lib/toast'
@@ -23,6 +24,7 @@ function getTodayTip(antiBrainFogTips: string[]): { title: string; body: string 
 
 export function DashboardView() {
   const navigate = useNavigate()
+  const queryClient = useQueryClient()
   const { data: content, isLoading: isLoadingContent, error: contentError } = useContent('ko')
 
   const [specialEvent, setSpecialEvent] = useState('')
@@ -55,15 +57,15 @@ export function DashboardView() {
   }, [saveTodoMutation])
 
   const handleStartDay = useCallback(() => {
-    navigate({ to: '/' })
-    window.location.reload()
-  }, [navigate])
+    queryClient.invalidateQueries({ queryKey: todoKeys.all })
+  }, [queryClient])
 
   const handleCreateTodo = async () => {
+    if (!content) return
     try {
       const todo = await createDailyTodo({
         specialEvent,
-        content: content!,
+        content,
       })
       navigate({ to: '/todo/$id', params: { id: todo.id } })
     } catch {

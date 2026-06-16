@@ -6,6 +6,7 @@ import { TodayTodoView } from '@/components/feature/TodayTodoView'
 import { Card, CardContent } from '@/components/ui/card'
 import { useTodo, useSaveTodo } from '@/hooks/useTodos'
 import { showSuccess } from '@/lib/toast'
+import { copyToClipboard } from '@/lib/utils'
 
 export function TodoDetailView() {
   const { id } = useParams({ from: '/todo/$id' })
@@ -19,16 +20,7 @@ export function TodoDetailView() {
   }
 
   const handleCopyContent = async (content: string) => {
-    try {
-      await navigator.clipboard.writeText(content)
-    } catch {
-      const textArea = document.createElement('textarea')
-      textArea.value = content
-      document.body.appendChild(textArea)
-      textArea.select()
-      document.execCommand('copy')
-      document.body.removeChild(textArea)
-    }
+    await copyToClipboard(content)
     showSuccess('클립보드에 복사되었습니다!')
   }
 

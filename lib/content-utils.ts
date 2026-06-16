@@ -4,6 +4,67 @@ export function getRandomItem<T>(array: T[]): T {
   return array[Math.floor(Math.random() * array.length)]
 }
 
+interface BuildTodoParams {
+  dateString: string
+  motivation: string
+  dayMessage: string
+  antiFogTip: string
+  tip1: string
+  tip2: string
+  specialEventItems: string[]
+  specialAdvice: string
+  createdAt: string
+}
+
+export function buildTodoContent({
+  dateString,
+  motivation,
+  dayMessage,
+  antiFogTip,
+  tip1,
+  tip2,
+  specialEventItems,
+  specialAdvice,
+  createdAt,
+}: BuildTodoParams): { title: string; content: string } {
+  const title = `ADHD 격려 - ${dateString}`
+  let content = `🌅 ${dateString} 아침 격려
+
+💪 오늘의 마음가짐
+${motivation}
+
+📅 ${dayMessage}
+
+⚡ 멍함 없이 바로 시작하기
+${antiFogTip}
+
+🎯 오늘 실행할 일
+1. ${tip1}
+2. ${tip2}`
+
+  if (specialEventItems.length > 0) {
+    content += `
+
+🌟 오늘의 특별 일정
+${specialEventItems.map((item) => `- ${item}`).join('\n')}
+💡 어드바이스: ${specialAdvice}`
+  }
+
+  content += `
+
+🧠 기억할 것
+• "지금 당장"보다 "조금씩"
+• 실수는 설명의 기회
+• 완료보다 진행이 중요
+
+🍀 오늘 하루도 화이팅! 당신은 잘하고 있어요.
+
+---
+생성 시간: ${createdAt}`
+
+  return { title, content }
+}
+
 export function getSpecialEventAdvice(event: string): string {
   if (!event.trim()) return ''
 
@@ -41,7 +102,6 @@ export function getTodayTips(practicalTips: PracticalTip[]): TodayTips {
   return {
     tip1,
     tip2,
-    antiFogTip: '',
     categories: [selectedCategory.category, secondCategory.category],
   }
 }
