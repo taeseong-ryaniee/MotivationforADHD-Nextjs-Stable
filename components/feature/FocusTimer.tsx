@@ -7,8 +7,9 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { cn } from '@/lib/utils'
 
+const INITIAL_TIME = 25 * 60
+
 export function FocusTimer({ className }: { className?: string }) {
-  const INITIAL_TIME = 25 * 60 // 25 minutes
   const [timeLeft, setTimeLeft] = useState(INITIAL_TIME)
   const [isActive, setIsActive] = useState(false)
 
@@ -82,9 +83,9 @@ export function FocusTimer({ className }: { className?: string }) {
           <div className="flex w-full gap-3 pt-2">
             <Button
               className={cn(
-                'flex-1 font-semibold shadow-sm transition-all',
+                'flex-1 font-semibold transition-all',
                 isActive
-                  ? 'bg-amber-500 text-white hover:bg-amber-600'
+                  ? 'bg-amber-500 text-stone-950 hover:bg-amber-400'
                   : 'bg-primary text-primary-foreground hover:bg-primary/90'
               )}
               onClick={toggleTimer}

@@ -61,14 +61,14 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
 
       // Default fallback UI
       return (
-        <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-slate-900 dark:to-slate-800 flex items-center justify-center p-6">
-          <Card className="max-w-md w-full p-8 shadow-lg">
+        <div className="min-h-screen bg-background flex items-center justify-center p-6">
+          <Card className="max-w-md w-full p-8 shadow-sm border-border/60">
             <div className="flex flex-col items-center text-center">
-              <div className="bg-red-100 dark:bg-red-900/30 rounded-full p-4 mb-4">
-                <AlertTriangle className="w-8 h-8 text-red-600 dark:text-red-400" />
+              <div className="bg-destructive/10 rounded-full p-4 mb-4">
+                <AlertTriangle className="w-8 h-8 text-destructive" />
               </div>
 
-              <h2 className="text-xl font-bold text-primary mb-2">
+              <h2 className="text-xl font-bold text-foreground font-serif mb-2">
                 문제가 발생했습니다
               </h2>
 

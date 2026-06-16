@@ -1,11 +1,12 @@
 'use client'
 
 import { useNavigate } from '@tanstack/react-router'
+import { useQueryClient } from '@tanstack/react-query'
 import { MainScreen } from '@/components/feature/MainScreen'
 import { StartScreen } from '@/components/feature/StartScreen'
 import { Card, CardContent } from '@/components/ui/card'
 import { Skeleton } from '@/components/ui/skeleton'
-import { useDailyTodo, useSaveTodo } from '@/hooks/useTodos'
+import { useDailyTodo, useSaveTodo, todoKeys } from '@/hooks/useTodos'
 import { useContent } from '@/hooks/useContent'
 import { migrateFromLocalStorage } from '@/lib/db'
 import { showError } from '@/lib/toast'
@@ -23,6 +24,7 @@ function getTodayTip(antiBrainFogTips: string[]): { title: string; body: string 
 
 export function DashboardView() {
   const navigate = useNavigate()
+  const queryClient = useQueryClient()
   const { data: content, isLoading: isLoadingContent, error: contentError } = useContent('ko')
 
   const [specialEvent, setSpecialEvent] = useState('')
@@ -55,15 +57,15 @@ export function DashboardView() {
   }, [saveTodoMutation])
 
   const handleStartDay = useCallback(() => {
-    navigate({ to: '/' })
-    window.location.reload()
-  }, [navigate])
+    queryClient.invalidateQueries({ queryKey: todoKeys.all })
+  }, [queryClient])
 
   const handleCreateTodo = async () => {
+    if (!content) return
     try {
       const todo = await createDailyTodo({
         specialEvent,
-        content: content!,
+        content,
       })
       navigate({ to: '/todo/$id', params: { id: todo.id } })
     } catch {
@@ -72,7 +74,7 @@ export function DashboardView() {
   }
 
   const handleShowTodayTodo = () => {
-    navigate({ to: '/today' })
+    navigate({ to: '/' })
   }
 
   if (contentError) {
@@ -99,24 +101,38 @@ export function DashboardView() {
   // No todo for today → StartScreen
   if (!todayTodo) {
     return (
-      <StartScreen
-        cheers={cheers}
-        tip={tip}
-        onAddTodo={handleAddQuickTodo}
-        onStartDay={handleStartDay}
-        todoCount={todayTodoCount}
-      />
+      <div className="flex flex-1 flex-col">
+        <div className="hidden md:block">
+          <p className="text-xs font-semibold text-muted-foreground font-sans">Daily Focus</p>
+          <h1 className="font-serif text-3xl font-extrabold">산만이의 아침</h1>
+          <p className="mt-1 text-sm text-muted-foreground">오늘의 루틴을 차근히 기록해요.</p>
+        </div>
+        <StartScreen
+          cheers={cheers}
+          tip={tip}
+          onAddTodo={handleAddQuickTodo}
+          onStartDay={handleStartDay}
+          todoCount={todayTodoCount}
+        />
+      </div>
     )
   }
 
   // Has today's todo → existing dashboard
   return (
-    <MainScreen
-      specialEvent={specialEvent}
-      isCreating={isCreating}
-      onUpdateSpecialEvent={setSpecialEvent}
-      onCreateDailyTodo={handleCreateTodo}
-      onShowTodayTodo={handleShowTodayTodo}
-    />
+    <>
+      <div className="hidden md:block">
+        <p className="text-xs font-semibold text-muted-foreground font-sans">Daily Focus</p>
+        <h1 className="font-serif text-2xl font-semibold">산만이의 아침</h1>
+        <p className="mt-1 text-sm text-muted-foreground">오늘의 루틴을 차근히 기록해요.</p>
+      </div>
+      <MainScreen
+        specialEvent={specialEvent}
+        isCreating={isCreating}
+        onUpdateSpecialEvent={setSpecialEvent}
+        onCreateDailyTodo={handleCreateTodo}
+        onShowTodayTodo={handleShowTodayTodo}
+      />
+    </>
   )
 }

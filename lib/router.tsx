@@ -44,18 +44,11 @@ const todoRoute = createRoute({
   component: TodoDetailView,
 })
 
-const todayRoute = createRoute({
-  getParentRoute: () => rootRoute,
-  path: '/today',
-  component: TodayTodoPageView,
-})
-
 const routeTree = rootRoute.addChildren([
   indexRoute,
   dashboardRoute,
   historyRoute,
   settingsRoute,
-  todayRoute,
   todoRoute,
 ])
 

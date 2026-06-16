@@ -22,6 +22,8 @@ interface Section {
   body: string
 }
 
+const SECTION_EMOJIS = ['🌅', '💪', '📅', '⚡', '🎯', '🌟', '🧠'] as const
+
 const SPECIAL_HEADER = '🌟 오늘의 특별 일정'
 const ADVICE_PREFIX = '💡 어드바이스:'
 const MEMORY_HEADER = '🧠 기억할 것'
@@ -38,7 +40,7 @@ function extractSpecialEvents(content: string): string[] {
     if (
       line.startsWith(ADVICE_PREFIX) ||
       line.startsWith(MEMORY_HEADER) ||
-      ['🌅', '💪', '📅', '⚡', '🎯', '🌟', '🧠'].some((emoji) => line.startsWith(emoji))
+      SECTION_EMOJIS.some((emoji) => line.startsWith(emoji))
     ) {
       break
     }
@@ -92,13 +94,12 @@ export function TodayTodoView({ todayTodo, onBack, onCopyContent, onUpdate }: To
     if (!text) return [] as Section[]
 
     const lines = text.split(/\r?\n/)
-    const headerEmojis = ['🌅', '💪', '📅', '⚡', '🎯', '🌟', '🧠']
     const out: Section[] = []
     let current: Section | null = null
 
     for (const raw of lines) {
       const line = raw.trimEnd()
-      const emoji = headerEmojis.find((e) => line.startsWith(e))
+      const emoji = SECTION_EMOJIS.find((e) => line.startsWith(e))
 
       if (emoji) {
         if (current) out.push(current)
@@ -113,25 +114,8 @@ export function TodayTodoView({ todayTodo, onBack, onCopyContent, onUpdate }: To
     return out.filter((s) => s.title && s.body.trim())
   }, [todayTodo])
 
-  const sectionTone = (emoji: string) => {
-    switch (emoji) {
-      case '🌅':
-        return 'bg-orange-50/50 border-orange-100 dark:bg-orange-950/20 dark:border-orange-900'
-      case '💪':
-        return 'bg-green-50/50 border-green-100 dark:bg-green-950/20 dark:border-green-900'
-      case '📅':
-        return 'bg-sky-50/50 border-sky-100 dark:bg-sky-950/20 dark:border-sky-900'
-      case '⚡':
-        return 'bg-yellow-50/50 border-yellow-100 dark:bg-yellow-950/20 dark:border-yellow-900'
-      case '🎯':
-        return 'bg-indigo-50/50 border-indigo-100 dark:bg-indigo-950/20 dark:border-indigo-900'
-      case '🌟':
-        return 'bg-purple-50/50 border-purple-100 dark:bg-purple-950/20 dark:border-purple-900'
-      case '🧠':
-        return 'bg-muted/30 border-border'
-      default:
-        return 'bg-card border-border'
-    }
+  const sectionTone = (_emoji: string) => {
+    return 'bg-muted/20 border-border/60'
   }
 
   const handleSave = async () => {
@@ -257,7 +241,7 @@ export function TodayTodoView({ todayTodo, onBack, onCopyContent, onUpdate }: To
                   {sections.map((sec, idx) => (
                     <Card
                       key={idx}
-                      className={`border-border/60 p-5 shadow-sm transition-colors hover:bg-opacity-80 ${sectionTone(sec.emoji)}`}
+                      className={`border-border/60 p-4 shadow-sm transition-colors hover:bg-opacity-80 ${sectionTone(sec.emoji)}`}
                       data-section="todo-detail-section"
                     >
                       <div className="flex items-center gap-3 mb-3">

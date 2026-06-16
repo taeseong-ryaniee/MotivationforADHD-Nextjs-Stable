@@ -1,0 +1,96 @@
+- generic [active] [ref=e1]:
+  - link "메인 콘텐츠로 건너뛰기" [ref=e2] [cursor=pointer]:
+    - /url: "#main-content"
+  - region "Notifications alt+T":
+    - list:
+      - listitem [ref=e190]:
+        - img [ref=e192]
+        - generic [ref=e195]: 잘했어! 작은 시작이 큰 변화야.
+  - generic [ref=e3]:
+    - generic [ref=e7]:
+      - generic [ref=e8]:
+        - generic [ref=e9]:
+          - img [ref=e11]
+          - generic [ref=e16]:
+            - generic [ref=e17]: Daily Focus
+            - generic [ref=e18]: 산만이의 아침
+        - generic [ref=e19]: 오늘의 루틴을 차근히 기록해요.
+      - generic [ref=e21]:
+        - generic [ref=e22]: Navigation
+        - list [ref=e24]:
+          - listitem [ref=e25]:
+            - link "오늘의 To-do" [ref=e26] [cursor=pointer]:
+              - /url: /today
+              - img [ref=e27]
+              - generic [ref=e30]: 오늘의 To-do
+          - listitem [ref=e31]:
+            - link "대시보드" [ref=e32] [cursor=pointer]:
+              - /url: /dashboard
+              - img [ref=e33]
+              - generic [ref=e38]: 대시보드
+          - listitem [ref=e39]:
+            - link "히스토리" [ref=e40] [cursor=pointer]:
+              - /url: /history
+              - img [ref=e41]
+              - generic [ref=e44]: 히스토리
+          - listitem [ref=e45]:
+            - link "설정" [ref=e46] [cursor=pointer]:
+              - /url: /settings
+              - img [ref=e47]
+              - generic [ref=e50]: 설정
+    - main [ref=e51]:
+      - generic [ref=e52]:
+        - button "Toggle Sidebar" [ref=e53]:
+          - img
+          - generic [ref=e54]: Toggle Sidebar
+        - generic [ref=e55]:
+          - generic [ref=e56]: 산만이의 아침
+          - generic [ref=e57]: 오늘의 집중 루틴
+        - button "Toggle theme" [ref=e59]:
+          - img
+          - generic [ref=e60]: Toggle theme
+      - generic [ref=e196]:
+        - generic [ref=e197]:
+          - generic [ref=e198]:
+            - heading "산만이의 아침" [level=1] [ref=e199]
+            - paragraph [ref=e200]: ADHD 극복을 위한 오늘의 집중 루틴을 설계합니다.
+            - generic [ref=e201]:
+              - generic [ref=e202]:
+                - img [ref=e203]
+                - text: 오늘 일정 0개
+              - generic [ref=e206]:
+                - img [ref=e207]
+                - text: "빠른 생성: Ctrl/Cmd + Enter"
+          - button "오늘의 To-do 보기" [ref=e210]:
+            - img
+            - text: 오늘의 To-do 보기
+        - generic [ref=e211]:
+          - generic [ref=e212]:
+            - generic [ref=e214]:
+              - img [ref=e215]
+              - generic [ref=e217]: 2026년 3월 31일 화요일
+            - generic [ref=e218]:
+              - generic [ref=e219]:
+                - heading "오늘 일정 정리" [level=2] [ref=e220]
+                - paragraph [ref=e221]: 핵심 일정만 추가하면 루틴 우선순위를 자동으로 구성합니다.
+              - group [ref=e222]:
+                - generic "일정 조언 안내" [ref=e223] [cursor=pointer]: i
+          - generic [ref=e225]:
+            - button "추천 일정 보기" [ref=e227]: + 추천 일정
+            - generic [ref=e228]:
+              - textbox "오늘 나의 To-do" [ref=e229]:
+                - /placeholder: "예: 보고서 작성 1시간…"
+              - button "일정 추가" [ref=e230]:
+                - img
+                - text: 추가
+            - paragraph [ref=e231]: 아직 일정이 없어요. 가장 중요한 1개만 먼저 추가해보세요.
+        - button "오늘 루틴 만들기" [ref=e233]:
+          - img
+          - generic [ref=e234]: 오늘 루틴 만들기
+  - generic [ref=e80]:
+    - img [ref=e82]
+    - button "Open Tanstack query devtools" [ref=e130] [cursor=pointer]:
+      - img [ref=e131]
+  - button "Open Next.js Dev Tools" [ref=e184] [cursor=pointer]:
+    - img [ref=e185]
+  - alert [ref=e188]

@@ -3,6 +3,8 @@ import { Plus, X } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 
+const QUICK_ITEMS = ['아침 운동 20분', '팀 미팅 1건', '집중 업무 2시간', '병원/약 복용 체크']
+
 interface SpecialEventInputProps {
   value: string
   onChange: (value: string) => void
@@ -11,7 +13,6 @@ interface SpecialEventInputProps {
 export const SpecialEventInput = memo(function SpecialEventInput({ value, onChange }: SpecialEventInputProps) {
   const [draft, setDraft] = useState('')
   const [showQuickItems, setShowQuickItems] = useState(false)
-  const quickItems = ['아침 운동 20분', '팀 미팅 1건', '집중 업무 2시간', '병원/약 복용 체크']
 
   const items = useMemo(
     () =>
@@ -74,7 +75,7 @@ export const SpecialEventInput = memo(function SpecialEventInput({ value, onChan
         </Button>
         {showQuickItems && (
           <div className="flex flex-wrap gap-2">
-            {quickItems.map((item) => (
+            {QUICK_ITEMS.map((item) => (
               <Button
                 key={item}
                 type="button"

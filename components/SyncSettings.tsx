@@ -291,7 +291,7 @@ export default function SyncSettings() {
         <Badge variant="secondary" className="w-fit font-sans">
           Sync
         </Badge>
-        <h1 className="text-2xl font-bold font-serif">동기화 설정</h1>
+        <h1 className="text-3xl font-extrabold font-serif [letter-spacing:-0.015em]">동기화 설정</h1>
         <p className="text-sm text-muted-foreground">
           데이터 백업과 클라우드 연결을 한 곳에서 관리합니다.
         </p>
@@ -300,7 +300,7 @@ export default function SyncSettings() {
       <Card className="overflow-hidden border-border/60 bg-card/80 shadow-sm" data-section="sync-settings-file">
         <CardHeader className="border-b border-border/60 bg-muted/40 pb-6 pt-6">
           <div className="flex items-center gap-4">
-            <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-blue-500/10 text-blue-600">
+            <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-muted/60 text-muted-foreground">
               <FileJson className="h-6 w-6" />
             </div>
             <div>
@@ -312,12 +312,12 @@ export default function SyncSettings() {
         <CardContent className="grid gap-6 p-6 sm:grid-cols-2 sm:p-8">
           <Button 
             variant="outline" 
-            className="h-auto w-full flex-col items-start gap-3 p-6 hover:border-blue-200 hover:bg-blue-50/50"
+            className="h-auto w-full flex-col items-start gap-3 p-6 hover:border-amber-500/30 hover:bg-amber-500/5"
             onClick={handleExport}
             disabled={isLoading}
           >
-            <div className="flex w-full items-center gap-3 font-bold text-lg text-primary">
-              <Download className="h-5 w-5 text-blue-500" />
+            <div className="flex w-full items-center gap-3 font-bold text-sm text-primary">
+              <Download className="h-5 w-5 text-amber-500" />
               내보내기 (백업)
             </div>
             <p className="text-sm text-muted-foreground text-left font-normal leading-relaxed">
@@ -327,12 +327,12 @@ export default function SyncSettings() {
 
           <Button 
             variant="outline" 
-            className="h-auto w-full flex-col items-start gap-3 p-6 hover:border-green-200 hover:bg-green-50/50"
+            className="h-auto w-full flex-col items-start gap-3 p-6 hover:border-amber-500/30 hover:bg-amber-500/5"
             onClick={handleImport}
             disabled={isLoading}
           >
-             <div className="flex w-full items-center gap-3 font-bold text-lg text-primary">
-              <Upload className="h-5 w-5 text-green-600" />
+             <div className="flex w-full items-center gap-3 font-bold text-sm text-primary">
+              <Upload className="h-5 w-5 text-amber-500" />
               가져오기 (복원)
             </div>
             <p className="text-sm text-muted-foreground text-left font-normal leading-relaxed">
@@ -357,7 +357,7 @@ export default function SyncSettings() {
         <CardHeader className="border-b border-border/60 bg-muted/40 pb-6 pt-6">
           <div className="flex flex-wrap items-center justify-between gap-4">
             <div className="flex items-center gap-4">
-              <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-purple-500/10 text-purple-600">
+              <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-muted/60 text-muted-foreground">
                 <Cloud className="h-6 w-6" />
               </div>
               <div>
@@ -370,23 +370,23 @@ export default function SyncSettings() {
 
         <CardContent className="p-8">
           <Tabs defaultValue="s3" className="w-full" onValueChange={() => setActiveProvider(null)}>
-            <TabsList className="grid w-full grid-cols-2 md:grid-cols-4 mb-6 h-12 bg-muted/40 p-1">
-              <TabsTrigger value="s3" className="text-base">AWS S3</TabsTrigger>
-              <TabsTrigger value="google" className="text-base">Google</TabsTrigger>
-              <TabsTrigger value="onedrive" className="text-base">OneDrive</TabsTrigger>
-              <TabsTrigger value="icloud" className="text-base">iCloud</TabsTrigger>
+            <TabsList className="grid w-full grid-cols-2 md:grid-cols-4 mb-6 h-10 bg-muted/40 p-1">
+              <TabsTrigger value="s3" className="text-sm font-bold">AWS S3</TabsTrigger>
+              <TabsTrigger value="google" className="text-sm font-bold">Google</TabsTrigger>
+              <TabsTrigger value="onedrive" className="text-sm font-bold">OneDrive</TabsTrigger>
+              <TabsTrigger value="icloud" className="text-sm font-bold">iCloud</TabsTrigger>
             </TabsList>
 
             <TabsContent value="s3" className="space-y-6">
               <div className="flex justify-between items-center">
-                <h3 className="text-lg font-bold">AWS S3 설정</h3>
+                <h3 className="text-xl font-bold">AWS S3 설정</h3>
                 <Button 
                   variant="ghost" 
                   size="sm" 
                   onClick={() => setIsConfigExpanded(!isConfigExpanded)}
-                  className="gap-2 text-base"
+                  className="gap-2 text-sm"
                 >
-                  <Settings className="h-5 w-5" />
+                  <Settings className="h-4 w-4" />
                   {isConfigExpanded ? '설정 닫기' : '설정 열기'}
                 </Button>
               </div>
@@ -448,7 +448,7 @@ export default function SyncSettings() {
                     </div>
                   </div>
                   <div className="mt-6 flex justify-end">
-                    <Button size="lg" onClick={handleSaveConfig} disabled={isLoading} className="text-base px-6">
+                    <Button size="sm" onClick={handleSaveConfig} disabled={isLoading} className="bg-amber-500 text-stone-950 hover:bg-amber-400 text-sm font-bold px-6 rounded-full">
                       {isLoading ? (
                         <>
                           <Loader2 className="mr-2 h-5 w-5 animate-spin" />
@@ -467,7 +467,7 @@ export default function SyncSettings() {
 
               <div className="grid gap-4 sm:grid-cols-2">
                 <Button 
-                  className="bg-purple-600 hover:bg-purple-700 text-white shadow-sm hover:shadow-purple-500/20 h-14 text-lg"
+                  className="bg-amber-500 hover:bg-amber-400 text-stone-950 h-14 text-sm font-bold"
                   onClick={handleCloudBackup}
                   disabled={isLoading || !s3Config.bucketName}
                 >
@@ -476,7 +476,7 @@ export default function SyncSettings() {
                 </Button>
                 <Button 
                   variant="outline"
-                  className="border-purple-200 text-purple-700 hover:bg-purple-50 h-14 text-lg"
+                  className="border-border text-foreground hover:bg-muted/50 h-14 text-sm font-bold"
                   onClick={handleCloudRestore}
                   disabled={isLoading || !s3Config.bucketName}
                 >
@@ -488,8 +488,8 @@ export default function SyncSettings() {
 
               <TabsContent value="google" className="py-8 text-center space-y-6">
               <div className="flex flex-col items-center gap-6">
-                <div className="p-6 bg-blue-50 rounded-full">
-                  <Cloud className="h-10 w-10 text-blue-500" />
+                <div className="p-6 bg-muted/40 rounded-full">
+                  <Cloud className="h-10 w-10 text-muted-foreground" />
                 </div>
                 <h3 className="font-bold text-xl">Google Drive 연동</h3>
                 
@@ -509,20 +509,20 @@ export default function SyncSettings() {
 
                 {activeProvider?.type === 'google' ? (
                   <div className="space-y-6 w-full max-w-md">
-                    <div className="flex items-center justify-center gap-2 text-green-600 bg-green-50 p-3 rounded-xl text-base font-medium">
+                    <div className="flex items-center justify-center gap-2 text-green-500 bg-green-500/10 p-3 rounded-xl text-sm font-bold">
                       <Check className="h-5 w-5" />
                       연결됨
                     </div>
                     <div className="grid gap-3 sm:grid-cols-2">
-                      <Button onClick={handleCloudBackup} disabled={isLoading} className="h-12 text-base">백업하기</Button>
-                      <Button variant="outline" onClick={handleCloudRestore} disabled={isLoading} className="h-12 text-base">복원하기</Button>
+                      <Button onClick={handleCloudBackup} disabled={isLoading} className="h-12 text-sm font-bold bg-amber-500 text-stone-950 hover:bg-amber-400">백업하기</Button>
+                      <Button variant="outline" onClick={handleCloudRestore} disabled={isLoading} className="h-12 text-sm font-bold border-border text-foreground hover:bg-muted/50">복원하기</Button>
                     </div>
                   </div>
                 ) : (
-                  <Button 
-                    onClick={() => handleOAuthLogin('google')} 
+                  <Button
+                    onClick={() => handleOAuthLogin('google')}
                     disabled={isLoading || !googleClientId}
-                    className="w-full max-w-md h-12 sm:h-14 text-base sm:text-lg"
+                    className="w-full max-w-md h-12 bg-amber-500 text-stone-950 hover:bg-amber-400 text-sm font-bold rounded-full"
                   >
                     <LogIn className="mr-2 h-5 w-5" />
                     Google 로그인
@@ -533,8 +533,8 @@ export default function SyncSettings() {
 
               <TabsContent value="onedrive" className="py-8 text-center space-y-6">
               <div className="flex flex-col items-center gap-6">
-                <div className="p-6 bg-blue-50 rounded-full">
-                  <Cloud className="h-10 w-10 text-blue-700" />
+                <div className="p-6 bg-muted/40 rounded-full">
+                  <Cloud className="h-10 w-10 text-muted-foreground" />
                 </div>
                 <h3 className="font-bold text-xl">OneDrive 연동</h3>
                 
@@ -554,20 +554,20 @@ export default function SyncSettings() {
 
                 {activeProvider?.type === 'onedrive' ? (
                   <div className="space-y-6 w-full max-w-md">
-                    <div className="flex items-center justify-center gap-2 text-green-600 bg-green-50 p-3 rounded-xl text-base font-medium">
+                    <div className="flex items-center justify-center gap-2 text-green-500 bg-green-500/10 p-3 rounded-xl text-sm font-bold">
                       <Check className="h-5 w-5" />
                       연결됨
                     </div>
                     <div className="grid gap-3 sm:grid-cols-2">
-                      <Button onClick={handleCloudBackup} disabled={isLoading} className="h-12 text-base">백업하기</Button>
-                      <Button variant="outline" onClick={handleCloudRestore} disabled={isLoading} className="h-12 text-base">복원하기</Button>
+                      <Button onClick={handleCloudBackup} disabled={isLoading} className="h-12 text-sm font-bold bg-amber-500 text-stone-950 hover:bg-amber-400">백업하기</Button>
+                      <Button variant="outline" onClick={handleCloudRestore} disabled={isLoading} className="h-12 text-sm font-bold border-border text-foreground hover:bg-muted/50">복원하기</Button>
                     </div>
                   </div>
                 ) : (
-                  <Button 
-                    onClick={() => handleOAuthLogin('onedrive')} 
+                  <Button
+                    onClick={() => handleOAuthLogin('onedrive')}
                     disabled={isLoading || !oneDriveClientId}
-                    className="w-full max-w-md h-12 sm:h-14 text-base sm:text-lg"
+                    className="w-full max-w-md h-12 bg-amber-500 text-stone-950 hover:bg-amber-400 text-sm font-bold rounded-full"
                   >
                     <LogIn className="mr-2 h-5 w-5" />
                     Microsoft 로그인
@@ -578,15 +578,15 @@ export default function SyncSettings() {
 
               <TabsContent value="icloud" className="py-8">
               <div className="flex flex-col items-center gap-6 text-center">
-                <div className="p-6 bg-gray-100 rounded-full dark:bg-gray-800">
-                  <HardDrive className="h-10 w-10 text-gray-600 dark:text-gray-300" />
+                <div className="p-6 bg-muted/40 rounded-full">
+                  <HardDrive className="h-10 w-10 text-muted-foreground" />
                 </div>
                 <h3 className="font-bold text-xl">iCloud Drive / 로컬 파일</h3>
                 <p className="text-base text-muted-foreground max-w-sm leading-relaxed">
                   &apos;파일 내보내기&apos; 기능을 사용하여 <strong>iCloud Drive</strong> 폴더에 저장하면, 
                   모든 Apple 기기에서 파일에 접근할 수 있습니다.
                 </p>
-                <Button onClick={handleExport} variant="outline" className="h-14 text-lg px-8">
+                <Button onClick={handleExport} className="h-12 bg-amber-500 text-stone-950 hover:bg-amber-400 text-sm font-bold px-8 rounded-full">
                   <Download className="mr-2 h-5 w-5" />
                   iCloud Drive에 저장하기 (내보내기)
                 </Button>
@@ -607,7 +607,7 @@ export default function SyncSettings() {
       </Card>
       
       <div
-        className="flex items-start gap-3 rounded-xl border border-amber-200/60 bg-amber-50/70 p-6 text-sm text-amber-900 dark:border-amber-900/50 dark:bg-amber-950/30 dark:text-amber-200 leading-relaxed"
+        className="flex items-start gap-3 rounded-xl border border-amber-500/20 bg-amber-500/5 p-6 text-sm text-foreground leading-relaxed"
         data-section="sync-settings-warning"
       >
         <AlertCircle className="h-5 w-5 shrink-0 mt-0.5" />

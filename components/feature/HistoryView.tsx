@@ -89,7 +89,7 @@ export function HistoryView() {
           <Badge variant="secondary" className="w-fit font-sans">
             History
           </Badge>
-          <h1 className="text-2xl font-bold font-serif">나의 발자취</h1>
+          <h1 className="text-3xl font-extrabold font-serif [letter-spacing:-0.015em]">나의 발자취</h1>
           <p className="text-sm text-muted-foreground">작성한 기록을 날짜별로 확인하세요.</p>
         </div>
       </div>
@@ -101,7 +101,7 @@ export function HistoryView() {
             <Activity className="h-4 w-4 text-muted-foreground" aria-hidden="true" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-semibold font-mono">{todoHistory.length}</div>
+            <div className="text-3xl font-bold font-mono">{todoHistory.length}</div>
             <p className="text-xs text-muted-foreground">누적 작성된 To-do</p>
           </CardContent>
         </Card>
@@ -121,7 +121,7 @@ export function HistoryView() {
             <CheckCircle2 className="h-4 w-4 text-muted-foreground" aria-hidden="true" />
           </CardHeader>
           <CardContent className="space-y-1">
-            <div className="text-2xl font-semibold font-sans">
+            <div className="text-3xl font-bold font-sans">
               {isTodayDone ? <span className="text-foreground">완료</span> : <span className="text-muted-foreground">미완료</span>}
             </div>
             <p className="text-xs text-muted-foreground">{todayString}</p>
@@ -164,7 +164,7 @@ export function HistoryView() {
                 <Badge variant="secondary" className="font-sans">
                   선택한 날짜
                 </Badge>
-                <h2 className="text-lg font-bold font-serif">
+                <h2 className="text-2xl font-bold font-serif [letter-spacing:-0.01em]">
                   {date.toLocaleDateString('ko-KR', { month: 'long', day: 'numeric', weekday: 'short' })}의 기록
                 </h2>
               </div>

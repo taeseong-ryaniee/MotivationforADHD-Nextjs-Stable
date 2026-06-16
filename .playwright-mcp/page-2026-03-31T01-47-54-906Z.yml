@@ -1,0 +1,70 @@
+- generic [active] [ref=e1]:
+  - link "메인 콘텐츠로 건너뛰기" [ref=e2] [cursor=pointer]:
+    - /url: "#main-content"
+  - region "Notifications alt+T"
+  - generic [ref=e3]:
+    - generic [ref=e7]:
+      - generic [ref=e8]:
+        - generic [ref=e9]:
+          - img [ref=e11]
+          - generic [ref=e16]:
+            - generic [ref=e17]: Daily Focus
+            - generic [ref=e18]: 산만이의 아침
+        - generic [ref=e19]: 오늘의 루틴을 차근히 기록해요.
+      - generic [ref=e21]:
+        - generic [ref=e22]: Navigation
+        - list [ref=e24]:
+          - listitem [ref=e25]:
+            - link "오늘의 To-do" [ref=e26] [cursor=pointer]:
+              - /url: /today
+              - img [ref=e27]
+              - generic [ref=e30]: 오늘의 To-do
+          - listitem [ref=e31]:
+            - link "대시보드" [ref=e32] [cursor=pointer]:
+              - /url: /dashboard
+              - img [ref=e33]
+              - generic [ref=e38]: 대시보드
+          - listitem [ref=e39]:
+            - link "히스토리" [ref=e40] [cursor=pointer]:
+              - /url: /history
+              - img [ref=e41]
+              - generic [ref=e44]: 히스토리
+          - listitem [ref=e45]:
+            - link "설정" [ref=e46] [cursor=pointer]:
+              - /url: /settings
+              - img [ref=e47]
+              - generic [ref=e50]: 설정
+    - main [ref=e51]:
+      - generic [ref=e52]:
+        - button "Toggle Sidebar" [ref=e53]:
+          - img
+          - generic [ref=e54]: Toggle Sidebar
+        - generic [ref=e55]:
+          - generic [ref=e56]: 산만이의 아침
+          - generic [ref=e57]: 오늘의 집중 루틴
+        - button "Toggle theme" [ref=e59]:
+          - img
+          - generic [ref=e60]: Toggle theme
+      - generic [ref=e63]:
+        - button "메뉴 열기" [ref=e65]:
+          - img
+          - generic [ref=e66]: 메뉴 열기
+        - generic [ref=e68]:
+          - textbox "오늘의 할 일 입력" [ref=e70]:
+            - /placeholder: 오늘 뭐 할까?
+          - generic [ref=e71]:
+            - button "추가" [disabled]:
+              - img
+              - text: 추가
+        - generic [ref=e74]:
+          - img [ref=e75]
+          - generic [ref=e77]:
+            - paragraph [ref=e78]: 멍함 탈출 팁
+            - paragraph [ref=e79]: 일단 브라우저든 프로그램이든 뭐라도 클릭하며 시작하세요
+  - generic [ref=e80]:
+    - img [ref=e82]
+    - button "Open Tanstack query devtools" [ref=e130] [cursor=pointer]:
+      - img [ref=e131]
+  - button "Open Next.js Dev Tools" [ref=e184] [cursor=pointer]:
+    - img [ref=e185]
+  - alert [ref=e188]
