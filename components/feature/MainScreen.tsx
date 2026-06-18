@@ -56,10 +56,10 @@ export function MainScreen({
     <div className="space-y-8" data-section="dashboard-root">
       <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
         <div className="space-y-2">
-          <h1 className="text-balance text-3xl font-extrabold text-foreground md:text-4xl font-serif [letter-spacing:-0.015em]">
+          <h1 className="text-balance text-2xl font-bold text-foreground sm:text-3xl md:text-4xl font-serif [letter-spacing:-0.015em]">
             산만이의 아침
           </h1>
-          <p className="text-base text-muted-foreground font-sans">
+          <p className="text-sm text-muted-foreground sm:text-base font-sans">
             ADHD 극복을 위한 오늘의 집중 루틴을 설계합니다.
           </p>
           <div className="flex flex-wrap items-center gap-2 pt-1 text-xs sm:text-sm">
@@ -95,7 +95,7 @@ export function MainScreen({
           </div>
           <div className="flex items-start justify-between gap-4">
             <div className="space-y-1">
-              <h2 className="text-xl font-bold text-foreground [letter-spacing:-0.01em]">오늘 일정 정리</h2>
+              <h2 className="text-lg font-bold text-foreground sm:text-xl [letter-spacing:-0.01em]">오늘 일정 정리</h2>
               <p className="text-sm text-muted-foreground">
                 핵심 일정만 추가하면 루틴 우선순위를 자동으로 구성합니다.
               </p>
