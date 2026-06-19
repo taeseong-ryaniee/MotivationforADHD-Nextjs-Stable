@@ -30,7 +30,7 @@ export default function RootLayout({
     <html lang="ko" suppressHydrationWarning>
       <head>
         <link rel="icon" href="/icons/app-icon.svg" type="image/svg+xml" />
-        <link rel="apple-touch-icon" href="/icons/app-icon.svg" />
+        <link rel="apple-touch-icon" href="/icons/app-icon-192.png" />
       </head>
       <body className="font-sans antialiased">
         <a

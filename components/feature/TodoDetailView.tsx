@@ -16,7 +16,7 @@ export function TodoDetailView() {
   const saveMutation = useSaveTodo()
 
   const handleBack = () => {
-    navigate({ to: '/dashboard' })
+    navigate({ to: '/' })
   }
 
   const handleCopyContent = async (content: string) => {

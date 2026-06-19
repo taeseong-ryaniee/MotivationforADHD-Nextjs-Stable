@@ -3,7 +3,6 @@ import { AppShell } from '@/components/AppShell'
 import { DashboardView } from '@/components/feature/DashboardView'
 import { HistoryView } from '@/components/feature/HistoryView'
 import { TodoDetailView } from '@/components/feature/TodoDetailView'
-import { TodayTodoPageView } from '@/components/feature/TodayTodoPageView'
 import SyncSettings from '@/components/SyncSettings'
 
 const rootRoute = createRootRoute({
@@ -14,15 +13,10 @@ const rootRoute = createRootRoute({
   ),
 })
 
+// `/` 단일 "오늘" 페이지: todo 없으면 아침 시작 화면, 있으면 To-do 보기
 const indexRoute = createRoute({
   getParentRoute: () => rootRoute,
   path: '/',
-  component: TodayTodoPageView,
-})
-
-const dashboardRoute = createRoute({
-  getParentRoute: () => rootRoute,
-  path: '/dashboard',
   component: DashboardView,
 })
 
@@ -46,7 +40,6 @@ const todoRoute = createRoute({
 
 const routeTree = rootRoute.addChildren([
   indexRoute,
-  dashboardRoute,
   historyRoute,
   settingsRoute,
   todoRoute,

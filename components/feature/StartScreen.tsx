@@ -1,24 +1,23 @@
 'use client'
 
 import { useEffect, useRef, useState } from 'react'
-import { Menu, Lightbulb, Plus } from 'lucide-react'
+import { ChevronDown, Heart, Lightbulb, Loader2, Plus, Sparkles } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
-import {
-  Sheet,
-  SheetContent,
-  SheetHeader,
-  SheetTitle,
-  SheetTrigger,
-} from '@/components/ui/sheet'
+import { SpecialEventInput } from '@/components/feature/SpecialEventInput'
+import { cn } from '@/lib/utils'
 import { toast } from 'sonner'
-import { Link } from '@tanstack/react-router'
 
 interface StartScreenProps {
+  motivation: string
   cheers: string[]
   tip: { title: string; body: string } | null
+  specialEvent: string
+  isCreating: boolean
   onAddTodo: (text: string) => Promise<void>
   onStartDay: () => void
+  onUpdateSpecialEvent: (value: string) => void
+  onGenerate: () => void
   todoCount: number
 }
 
@@ -29,10 +28,15 @@ const DEFAULT_CHEERS = [
 ]
 
 export function StartScreen({
+  motivation,
   cheers,
   tip,
+  specialEvent,
+  isCreating,
   onAddTodo,
   onStartDay,
+  onUpdateSpecialEvent,
+  onGenerate,
   todoCount,
 }: StartScreenProps) {
   const inputRef = useRef<HTMLInputElement>(null)
@@ -40,6 +44,7 @@ export function StartScreen({
   const [isAdding, setIsAdding] = useState(false)
   const [flash, setFlash] = useState(false)
   const [addedItems, setAddedItems] = useState<string[]>([])
+  const [showGenerate, setShowGenerate] = useState(false)
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -83,46 +88,23 @@ export function StartScreen({
   const totalTodos = todoCount + addedItems.length
 
   return (
-    <div className="flex min-h-[calc(100svh-4rem)] flex-col px-4 py-6 md:min-h-[calc(100svh-6rem)]">
-      {/* Header with hamburger */}
-      <div className="mb-auto flex items-center justify-between">
-        <Sheet>
-          <SheetTrigger asChild>
-            <Button variant="ghost" size="icon" className="text-stone-400">
-              <Menu className="h-5 w-5" />
-              <span className="sr-only">메뉴 열기</span>
-            </Button>
-          </SheetTrigger>
-          <SheetContent side="left" className="w-72">
-            <SheetHeader>
-              <SheetTitle className="font-serif text-lg">산만이의 아침</SheetTitle>
-            </SheetHeader>
-            <nav className="mt-6 flex flex-col gap-2">
-              <Link
-                to="/"
-                className="rounded-md px-3 py-2 text-sm font-medium text-foreground hover:bg-muted"
-              >
-                홈
-              </Link>
-              <Link
-                to="/history"
-                className="rounded-md px-3 py-2 text-sm font-medium text-foreground hover:bg-muted"
-              >
-                히스토리
-              </Link>
-              <Link
-                to="/settings"
-                className="rounded-md px-3 py-2 text-sm font-medium text-foreground hover:bg-muted"
-              >
-                설정
-              </Link>
-            </nav>
-          </SheetContent>
-        </Sheet>
-      </div>
+    <div className="flex flex-1 flex-col py-2 md:py-6">
+      {/* 격려 히어로 + 입력 — 화면 중앙 정렬 (네비게이션은 AppShell 헤더 + MobileNav가 담당) */}
+      <div className="flex flex-1 flex-col items-center justify-center gap-8">
+        {/* HERO: 오늘의 격려 (동기부여가 주인공) */}
+        {motivation && (
+          <div className="w-full max-w-md space-y-4 text-center">
+            <div className="inline-flex items-center gap-2 text-sm font-semibold text-amber-500">
+              <Heart className="h-4 w-4" aria-hidden="true" />
+              오늘의 격려
+            </div>
+            <p className="text-balance break-keep font-serif text-2xl font-bold leading-relaxed text-stone-50 sm:text-3xl">
+              {motivation}
+            </p>
+          </div>
+        )}
 
-      {/* Main input area (60%) */}
-      <div className="flex flex-1 flex-col items-center justify-center gap-6">
+        {/* ACTION: 할 일 입력 */}
         <div className="w-full max-w-md space-y-4">
           <div
             className={`rounded-lg border border-amber-500/10 p-4 transition-all duration-300 ${
@@ -168,6 +150,48 @@ export function StartScreen({
                   {item}
                 </span>
               ))}
+            </div>
+          )}
+        </div>
+
+        {/* 보조 행동: 특별 일정으로 격려 To-do 만들기 (progressive disclosure) */}
+        <div className="w-full max-w-md">
+          <Button
+            type="button"
+            variant="ghost"
+            size="sm"
+            onClick={() => setShowGenerate((prev) => !prev)}
+            className="w-full justify-between text-sm text-stone-400 hover:text-stone-200"
+            aria-expanded={showGenerate}
+          >
+            <span className="inline-flex items-center gap-2">
+              <Sparkles className="h-4 w-4" />
+              특별 일정으로 격려 To-do 만들기
+            </span>
+            <ChevronDown
+              className={cn('h-4 w-4 transition-transform', showGenerate && 'rotate-180')}
+            />
+          </Button>
+          {showGenerate && (
+            <div className="animate-in fade-in slide-in-from-top-2 mt-3 space-y-4 rounded-lg border border-border/60 bg-stone-900/40 p-4">
+              <SpecialEventInput value={specialEvent} onChange={onUpdateSpecialEvent} />
+              <Button
+                onClick={onGenerate}
+                disabled={isCreating}
+                className="w-full rounded-full bg-amber-500 font-bold text-stone-950 hover:bg-amber-400"
+              >
+                {isCreating ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    만드는 중…
+                  </>
+                ) : (
+                  <>
+                    <Sparkles className="mr-2 h-4 w-4" />
+                    격려 To-do 만들기
+                  </>
+                )}
+              </Button>
             </div>
           )}
         </div>

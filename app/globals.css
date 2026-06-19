@@ -161,3 +161,8 @@
     @apply bg-background text-foreground;
   }
 }
+
+/* iOS safe area 지원 — pb-safe는 Tailwind v4 기본 클래스가 아님 */
+.pb-safe {
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}

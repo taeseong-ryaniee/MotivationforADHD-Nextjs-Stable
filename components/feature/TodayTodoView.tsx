@@ -11,7 +11,7 @@ import { showSuccess } from '@/lib/toast'
 
 interface TodayTodoViewProps {
   todayTodo: TodoData | null
-  onBack: () => void
+  onBack?: () => void
   onCopyContent: (content: string) => void
   onUpdate?: (content: string) => Promise<void>
 }
@@ -147,8 +147,8 @@ export function TodayTodoView({ todayTodo, onBack, onCopyContent, onUpdate }: To
   }, [todayTodo])
 
   return (
-    <div className="space-y-6 h-full flex flex-col" data-section="todo-detail-root">
-      <div className="flex flex-wrap items-center justify-between gap-3 shrink-0">
+    <div className="flex flex-col space-y-6 md:h-full" data-section="todo-detail-root">
+      <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center sm:justify-between shrink-0">
         <div className="flex items-center gap-3">
           <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-primary/10 text-primary">
             <NotebookPen className="h-5 w-5" aria-hidden="true" />
@@ -181,19 +181,21 @@ export function TodayTodoView({ todayTodo, onBack, onCopyContent, onUpdate }: To
               특별 일정 수정
             </Button>
           )}
-          <Button variant="ghost" size="sm" onClick={onBack}>
-            <ArrowLeft className="mr-2 h-4 w-4" />
-            돌아가기
-          </Button>
+          {onBack && (
+            <Button variant="ghost" size="sm" onClick={onBack}>
+              <ArrowLeft className="mr-2 h-4 w-4" />
+              돌아가기
+            </Button>
+          )}
         </div>
       </div>
 
       {todayTodo && (
         <Card
-          className="flex flex-1 flex-col overflow-hidden border-border/60 bg-card/80 shadow-sm"
+          className="flex flex-col border-border/60 bg-card/80 shadow-sm md:flex-1 md:overflow-hidden"
           data-section="todo-detail-content"
         >
-          <CardContent className="flex flex-1 flex-col overflow-y-auto p-6">
+          <CardContent className="flex flex-col p-4 sm:p-6 md:flex-1 md:overflow-y-auto">
             <div className="mb-6 flex flex-wrap items-center gap-2 border-b border-border/60 pb-4 text-xs text-muted-foreground shrink-0">
               <Badge variant="secondary" className="font-sans">
                 {todayTodo.date}

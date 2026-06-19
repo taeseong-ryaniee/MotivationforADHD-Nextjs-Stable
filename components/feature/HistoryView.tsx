@@ -80,8 +80,8 @@ export function HistoryView() {
         <Button
           variant="outline"
           size="icon"
-          onClick={() => navigate({ to: '/dashboard' })}
-          aria-label="대시보드로 돌아가기"
+          onClick={() => navigate({ to: '/' })}
+          aria-label="오늘로 돌아가기"
         >
           <ArrowLeft className="h-5 w-5" aria-hidden="true" />
         </Button>

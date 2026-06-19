@@ -5,7 +5,8 @@ import { useEffect } from 'react'
 export default function ServiceWorkerRegister() {
   useEffect(() => {
     if (typeof window !== 'undefined' && 'serviceWorker' in navigator) {
-      // DEVELOPMENT: Unregister all service workers to prevent caching issues
+      // DEVELOPMENT: Unregister all service workers AND clear caches to prevent
+      // stale content. unregister만으로는 Cache Storage가 남아 옛 화면이 계속 보임.
       if (process.env.NODE_ENV === 'development') {
         navigator.serviceWorker.getRegistrations().then((registrations) => {
           for (const registration of registrations) {
@@ -13,6 +14,14 @@ export default function ServiceWorkerRegister() {
             registration.unregister()
           }
         })
+        if ('caches' in window) {
+          caches.keys().then((keys) => {
+            for (const key of keys) {
+              console.log('[Service Worker] Clearing cache in dev mode:', key)
+              caches.delete(key)
+            }
+          })
+        }
         return
       }
 
