@@ -13,7 +13,8 @@ export const TodoDataSchema = z.object({
   date: z.string().min(1, 'Date is required'),
   title: z.string().min(1, 'Title is required').max(500, 'Title too long'),
   content: z.string().min(1, 'Content is required').max(50000, 'Content too long'),
-  createdAt: z.string().min(1, 'CreatedAt is required')
+  createdAt: z.string().min(1, 'CreatedAt is required'),
+  createdAtMs: z.number().optional()
 })
 
 export type ValidatedTodoData = z.infer<typeof TodoDataSchema>

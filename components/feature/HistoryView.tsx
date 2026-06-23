@@ -4,6 +4,7 @@ import { useState, useMemo } from 'react'
 import { useNavigate } from '@tanstack/react-router'
 import { ArrowLeft, Calendar as CalendarIcon, Clock, ChevronRight, Activity, CheckCircle2, Trash2 } from 'lucide-react'
 import { useDeleteTodo, useTodos } from '@/hooks/useTodos'
+import { getTodoTimestamp } from '@/lib/todo-utils'
 import { Badge } from '@/components/ui/badge'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
@@ -19,7 +20,7 @@ export function HistoryView() {
   const [date, setDate] = useState<Date | undefined>(new Date())
 
   const recordedDays = useMemo(() => {
-    return todoHistory.map(todo => new Date(todo.createdAt))
+    return todoHistory.map(todo => new Date(getTodoTimestamp(todo)))
   }, [todoHistory])
 
   const selectedTodo = useMemo(() => {
@@ -47,7 +48,7 @@ export function HistoryView() {
   const thisMonthTodos = useMemo(() => {
     const now = new Date()
     return todoHistory.filter((t) => {
-      const d = new Date(t.createdAt)
+      const d = new Date(getTodoTimestamp(t))
       return d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear()
     }).length
   }, [todoHistory])

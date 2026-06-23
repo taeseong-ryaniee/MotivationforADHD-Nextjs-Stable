@@ -96,6 +96,7 @@ export function useDailyTodo() {
         title: todoTitle,
         content: todoContent,
         createdAt: today.toLocaleString('ko-KR'),
+        createdAtMs: today.getTime(),
       }
 
       await saveTodo(todoData)

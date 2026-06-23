@@ -1,6 +1,7 @@
 import Dexie, { type EntityTable } from 'dexie'
 import type { TodoData, Settings, ContentRecord } from './types'
 import { TodoDataSchema, validateMigrationData } from './validation'
+import { getTodoTimestamp, withTimestamp } from './todo-utils'
 
 // Lazy initialization to avoid SSR issues
 let _db: (Dexie & {
@@ -41,6 +42,22 @@ function getDB() {
       settings: 'key',
       content: 'locale'
     })
+
+    // v4: Add machine timestamp `createdAtMs` for correct sorting / month aggregation.
+    // `createdAt` was a display-only ko-KR string (unparseable by new Date()), which
+    // silently broke HistoryView's month count and calendar markers. Backfill existing
+    // records so date logic works at rest, not just on new writes.
+    _db.version(4).stores({
+      todos: 'id, date, createdAt, createdAtMs, [date+createdAt]',
+      settings: 'key',
+      content: 'locale'
+    }).upgrade(async (tx) => {
+      await tx.table('todos').toCollection().modify((todo: TodoData) => {
+        if (typeof todo.createdAtMs !== 'number') {
+          todo.createdAtMs = getTodoTimestamp(todo)
+        }
+      })
+    })
   }
 
   return _db
@@ -58,22 +75,26 @@ export async function getTodoByDate(date: string): Promise<TodoData | undefined>
 }
 
 export async function getAllTodos(): Promise<TodoData[]> {
-  return await getDB().todos.orderBy('createdAt').reverse().toArray()
+  // Sort by machine timestamp in-memory so records missing the createdAtMs index
+  // key (legacy/imported) are never dropped, unlike orderBy on a sparse index.
+  const all = await getDB().todos.toArray()
+  return all.sort((a, b) => getTodoTimestamp(b) - getTodoTimestamp(a))
 }
 
 export async function getRecentTodos(limit: number = 30): Promise<TodoData[]> {
-  return await getDB().todos.orderBy('createdAt').reverse().limit(limit).toArray()
+  const all = await getAllTodos()
+  return all.slice(0, limit)
 }
 
 export async function saveTodo(todo: TodoData): Promise<string> {
-  // Validate before saving to prevent corrupt data
-  const validated = TodoDataSchema.parse(todo)
+  // Ensure a machine timestamp, then validate before saving to prevent corrupt data
+  const validated = TodoDataSchema.parse(withTimestamp(todo))
   return await getDB().todos.put(validated)
 }
 
 export async function bulkSaveTodos(todos: TodoData[]): Promise<string> {
-  // Validate all todos before bulk saving
-  const validated = todos.map(todo => TodoDataSchema.parse(todo))
+  // Backfill timestamps + validate all todos before bulk saving
+  const validated = todos.map(todo => TodoDataSchema.parse(withTimestamp(todo)))
   // bulkPut returns the key of the last item
   return await getDB().todos.bulkPut(validated)
 }
@@ -147,7 +168,8 @@ export async function migrateFromLocalStorage(): Promise<void> {
               date: validated.date || new Date().toLocaleDateString('ko-KR'),
               title: validated.title || 'Migrated Todo',
               content: validated.content || '',
-              createdAt: validated.createdAt || new Date().toLocaleString('ko-KR')
+              createdAt: validated.createdAt || new Date().toLocaleString('ko-KR'),
+              createdAtMs: Date.now()
             }
 
             await saveTodo(todoData)
@@ -173,7 +195,8 @@ export async function migrateFromLocalStorage(): Promise<void> {
             date: validated.date || new Date().toLocaleDateString('ko-KR'),
             title: validated.title || 'Migrated Todo',
             content: validated.content || '',
-            createdAt: validated.createdAt || new Date().toLocaleString('ko-KR')
+            createdAt: validated.createdAt || new Date().toLocaleString('ko-KR'),
+            createdAtMs: Date.now()
           }
 
           await saveTodo(todoData)
