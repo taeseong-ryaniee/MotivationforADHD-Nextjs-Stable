@@ -5,7 +5,6 @@ import type { TodoData, ContentData } from '@/lib/types'
 import {
   getTodoById,
   getTodoByDate,
-  getTodosByDate,
   getRecentTodos,
   saveTodo,
   deleteTodo,
@@ -46,15 +45,6 @@ export function useDailyTodo() {
     queryKey: todoKeys.byDate(todayDate),
     queryFn: async () => (await getTodoByDate(todayDate)) ?? null,
     staleTime: 1000 * 60 * 5,
-  })
-
-  const todayCountQuery = useQuery<number>({
-    queryKey: todoKeys.countByDate(todayDate),
-    queryFn: async () => {
-      const todos = await getTodosByDate(todayDate)
-      return todos.length
-    },
-    staleTime: 1000 * 60,
   })
 
   const historyQuery = useTodos()
@@ -114,7 +104,6 @@ export function useDailyTodo() {
   return {
     todayTodo: todayTodoQuery.data || null,
     isLoadingTodayTodo: todayTodoQuery.isLoading,
-    todayTodoCount: todayCountQuery.data ?? 0,
     todoHistory: historyQuery.data || [],
     isCreating: createMutation.isPending,
     createDailyTodo: createMutation.mutateAsync,

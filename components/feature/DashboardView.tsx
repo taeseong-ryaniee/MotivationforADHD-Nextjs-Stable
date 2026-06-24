@@ -1,18 +1,15 @@
 'use client'
 
-import { useRouter } from 'next/navigation'
-import { useQueryClient } from '@tanstack/react-query'
 import { Loader2 } from 'lucide-react'
 import { StartScreen } from '@/components/feature/StartScreen'
 import { TodayTodoView } from '@/components/feature/TodayTodoView'
 import { Card, CardContent } from '@/components/ui/card'
-import { useDailyTodo, useSaveTodo, todoKeys } from '@/hooks/useTodos'
+import { useDailyTodo, useSaveTodo } from '@/hooks/useTodos'
 import { useContent } from '@/hooks/useContent'
 import { migrateFromLocalStorage } from '@/lib/db'
 import { showError, showSuccess } from '@/lib/toast'
 import { copyToClipboard } from '@/lib/utils'
-import { useState, useEffect, useMemo, useCallback } from 'react'
-import type { TodoData } from '@/lib/types'
+import { useEffect, useMemo, useCallback } from 'react'
 
 function getDayOfYear(): number {
   return Math.floor(
@@ -33,15 +30,11 @@ function getDailyMotivation(motivationMessages: string[]): string {
 }
 
 export function DashboardView() {
-  const router = useRouter()
-  const queryClient = useQueryClient()
   const { data: content, isLoading: isLoadingContent, error: contentError } = useContent('ko')
 
-  const [specialEvent, setSpecialEvent] = useState('')
   const {
     todayTodo,
     isLoadingTodayTodo,
-    todayTodoCount,
     isCreating,
     createDailyTodo,
   } = useDailyTodo()
@@ -58,37 +51,17 @@ export function DashboardView() {
     [content]
   )
 
-  const handleAddQuickTodo = useCallback(async (text: string) => {
-    const now = new Date()
-    const dateString = now.toLocaleDateString('ko-KR', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric',
-      weekday: 'long',
-    })
-    const todo: TodoData = {
-      id: crypto.randomUUID(),
-      date: dateString,
-      title: text,
-      content: text,
-      createdAt: now.toLocaleString('ko-KR'),
-    }
-    await saveTodoMutation.mutateAsync(todo)
-  }, [saveTodoMutation])
-
-  const handleStartDay = useCallback(() => {
-    queryClient.invalidateQueries({ queryKey: todoKeys.all })
-  }, [queryClient])
-
-  const handleCreateTodo = useCallback(async () => {
+  // 단일 행동: 적어둔 항목들로 격려 To-do를 생성하면 todayTodo가 채워지고
+  // 인라인으로 TodayTodoView가 뜬다 (별도 라우팅 없음). "오늘 하루 시작!" =
+  // "격려 To-do 만들기"가 하나의 흐름.
+  const handleStart = useCallback(async (items: string[]) => {
     if (!content) return
     try {
-      const todo = await createDailyTodo({ specialEvent, content })
-      router.push(`/todo/${todo.id}`)
+      await createDailyTodo({ specialEvent: items.join('\n'), content })
     } catch {
       showError('To-do 생성 중 오류가 발생했습니다', '다시 시도해주세요.')
     }
-  }, [content, createDailyTodo, router, specialEvent])
+  }, [content, createDailyTodo])
 
   const handleCopyContent = useCallback(async (text: string) => {
     await copyToClipboard(text)
@@ -107,7 +80,7 @@ export function DashboardView() {
   // todo 로딩 중 → 로더 (StartScreen ↔ TodayTodoView 깜빡임 방지)
   if (isLoadingTodayTodo || isLoadingContent) {
     return (
-      <Card className="border-border/60 bg-card/80 shadow-sm md:h-full">
+      <Card className="border-border/60 bg-card/80 md:h-full">
         <CardContent className="flex flex-col items-center justify-center p-4 py-16 sm:p-8 md:h-full">
           <Loader2 className="mb-4 h-8 w-8 animate-spin text-primary" />
           <p className="text-sm text-muted-foreground">오늘의 To-do를 불러오는 중…</p>
@@ -119,7 +92,7 @@ export function DashboardView() {
   // 오늘의 To-do가 있으면 → 보기
   if (todayTodo) {
     return (
-      <Card className="border-border/60 bg-card/80 shadow-sm md:h-full">
+      <Card className="border-border/60 bg-card/80 md:h-full">
         <CardContent className="p-4 sm:p-8 md:h-full lg:p-10">
           <TodayTodoView
             todayTodo={todayTodo}
@@ -131,25 +104,20 @@ export function DashboardView() {
     )
   }
 
-  // 없으면 → 아침 시작 화면 (모티베이션 + 빠른 입력 + 특별일정 생성)
+  // 없으면 → 아침 시작 화면 (격려 + 팁 + 단일 입력 + 단일 CTA)
   return (
     <div className="flex flex-1 flex-col">
       <div className="hidden md:block">
         <p className="text-xs font-semibold text-muted-foreground font-sans">Daily Focus</p>
-        <h1 className="font-serif text-3xl font-extrabold">산만이의 아침</h1>
+        <h1 className="text-3xl font-extrabold">산만이의 아침</h1>
         <p className="mt-1 text-sm text-muted-foreground">오늘의 루틴을 차근히 기록해요.</p>
       </div>
       <StartScreen
         motivation={motivation}
         cheers={cheers}
         tip={tip}
-        specialEvent={specialEvent}
         isCreating={isCreating}
-        onAddTodo={handleAddQuickTodo}
-        onStartDay={handleStartDay}
-        onUpdateSpecialEvent={setSpecialEvent}
-        onGenerate={handleCreateTodo}
-        todoCount={todayTodoCount}
+        onStart={handleStart}
       />
     </div>
   )

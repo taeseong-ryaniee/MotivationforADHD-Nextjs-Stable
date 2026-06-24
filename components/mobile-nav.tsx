@@ -11,7 +11,7 @@ export function MobileNav() {
 
   return (
     <div className="fixed bottom-0 left-0 right-0 z-50 flex items-center justify-center pb-safe md:hidden">
-      <Card className="mx-3 mb-2 w-full border-border/60 bg-card/95 shadow-lg backdrop-blur">
+      <Card className="mx-3 mb-2 w-full border-border/60 bg-card/95 backdrop-blur">
         <CardContent className="flex items-center justify-between px-2 py-2">
           {NAV_ITEMS.map((item) => {
             const isActive = pathname === item.url || (item.url !== '/' && pathname.startsWith(item.url))
@@ -20,7 +20,7 @@ export function MobileNav() {
                 key={item.url}
                 href={item.url}
                 className={cn(
-                  "flex flex-1 flex-col items-center justify-center gap-1 rounded-lg px-3 py-2 text-[11px] font-medium transition-colors",
+                  "flex flex-1 flex-col items-center justify-center gap-1 rounded-lg px-3 py-2 text-xs font-medium transition-colors",
                   isActive
                     ? "bg-primary/10 text-primary"
                     : "text-muted-foreground hover:text-foreground"

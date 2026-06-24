@@ -90,49 +90,46 @@ export function HistoryView() {
           <Badge variant="secondary" className="w-fit font-sans">
             History
           </Badge>
-          <h1 className="text-3xl font-extrabold font-serif [letter-spacing:-0.015em]">나의 발자취</h1>
+          <h1 className="text-3xl font-extrabold [letter-spacing:-0.015em]">나의 발자취</h1>
           <p className="text-sm text-muted-foreground">작성한 기록을 날짜별로 확인하세요.</p>
         </div>
       </div>
 
-      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3" data-section="history-stats-grid">
-        <Card className="border-border/60 bg-card/80 shadow-sm" data-section="history-stat-card">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground font-sans">총 기록</CardTitle>
-            <Activity className="h-4 w-4 text-muted-foreground" aria-hidden="true" />
+      <div className="grid grid-cols-3 gap-2 sm:gap-4 xl:grid-cols-3" data-section="history-stats-grid">
+        <Card className="border-border/60 bg-card/80" data-section="history-stat-card">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 p-3 pb-1 sm:p-6 sm:pb-2">
+            <CardTitle className="text-xs font-medium text-muted-foreground font-sans sm:text-sm">총 기록</CardTitle>
+            <Activity className="hidden h-4 w-4 text-muted-foreground sm:block" aria-hidden="true" />
           </CardHeader>
-          <CardContent>
-            <div className="text-3xl font-bold font-mono">{todoHistory.length}</div>
-            <p className="text-xs text-muted-foreground">누적 작성된 To-do</p>
+          <CardContent className="p-3 pt-0 sm:p-6 sm:pt-0">
+            <div className="text-2xl font-bold font-mono sm:text-3xl">{todoHistory.length}</div>
           </CardContent>
         </Card>
-        <Card className="border-border/60 bg-card/80 shadow-sm" data-section="history-stat-card">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground font-sans">이번 달 달성</CardTitle>
-            <CalendarIcon className="h-4 w-4 text-muted-foreground" aria-hidden="true" />
+        <Card className="border-border/60 bg-card/80" data-section="history-stat-card">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 p-3 pb-1 sm:p-6 sm:pb-2">
+            <CardTitle className="text-xs font-medium text-muted-foreground font-sans sm:text-sm">이번 달</CardTitle>
+            <CalendarIcon className="hidden h-4 w-4 text-muted-foreground sm:block" aria-hidden="true" />
           </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-semibold font-mono">{thisMonthTodos}</div>
-            <p className="text-xs text-muted-foreground">이번 달 작성 건수</p>
+          <CardContent className="p-3 pt-0 sm:p-6 sm:pt-0">
+            <div className="text-2xl font-semibold font-mono sm:text-3xl">{thisMonthTodos}</div>
           </CardContent>
         </Card>
-        <Card className="border-border/60 bg-card/80 shadow-sm" data-section="history-stat-card">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground font-sans">오늘의 상태</CardTitle>
-            <CheckCircle2 className="h-4 w-4 text-muted-foreground" aria-hidden="true" />
+        <Card className="border-border/60 bg-card/80" data-section="history-stat-card">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 p-3 pb-1 sm:p-6 sm:pb-2">
+            <CardTitle className="text-xs font-medium text-muted-foreground font-sans sm:text-sm">오늘</CardTitle>
+            <CheckCircle2 className="hidden h-4 w-4 text-muted-foreground sm:block" aria-hidden="true" />
           </CardHeader>
-          <CardContent className="space-y-1">
-            <div className="text-3xl font-bold font-sans">
-              {isTodayDone ? <span className="text-foreground">완료</span> : <span className="text-muted-foreground">미완료</span>}
+          <CardContent className="p-3 pt-0 sm:p-6 sm:pt-0">
+            <div className="text-2xl font-bold font-sans sm:text-3xl">
+              {isTodayDone ? <span className="text-primary">기록함</span> : <span className="text-muted-foreground">시작 전</span>}
             </div>
-            <p className="text-xs text-muted-foreground">{todayString}</p>
           </CardContent>
         </Card>
       </div>
 
       <div className="grid gap-6 lg:grid-cols-12">
         <div className="lg:col-span-4 space-y-4" data-section="history-sidebar">
-          <Card className="border-border/60 bg-card/80 shadow-sm" data-section="history-calendar">
+          <Card className="border-border/60 bg-card/80" data-section="history-calendar">
             <CardHeader className="pb-2">
               <CardTitle className="text-sm font-semibold flex items-center gap-2 font-sans">
                 <CalendarIcon className="w-4 h-4 text-primary" aria-hidden="true" />
@@ -165,20 +162,20 @@ export function HistoryView() {
                 <Badge variant="secondary" className="font-sans">
                   선택한 날짜
                 </Badge>
-                <h2 className="text-2xl font-bold font-serif [letter-spacing:-0.01em]">
+                <h2 className="text-2xl font-bold [letter-spacing:-0.01em]">
                   {date.toLocaleDateString('ko-KR', { month: 'long', day: 'numeric', weekday: 'short' })}의 기록
                 </h2>
               </div>
 
               {selectedTodo ? (
                 <Card
-                  className="cursor-pointer border-border/60 bg-card/80 shadow-sm transition-all hover:shadow-md"
+                  className="cursor-pointer border-border/60 bg-card/80 transition-colors hover:bg-accent/5"
                   onClick={() => router.push(`/todo/${selectedTodo.id}`)}
                   data-section="history-selected"
                 >
                   <CardContent className="space-y-4 p-6">
                     <div className="flex items-start justify-between">
-                      <h3 className="font-bold text-xl text-foreground font-serif">{selectedTodo.title}</h3>
+                      <h3 className="font-bold text-xl text-foreground">{selectedTodo.title}</h3>
                       <div className="flex items-center gap-1">
                         <Button
                           type="button"
@@ -222,20 +219,20 @@ export function HistoryView() {
                 <Badge variant="secondary" className="font-sans">
                   최근 기록
                 </Badge>
-                <h2 className="text-lg font-bold font-serif">최근 타임라인</h2>
+                <h2 className="text-lg font-bold">최근 타임라인</h2>
               </div>
               <ScrollArea className="max-h-[420px] pr-2 sm:max-h-[520px]" data-section="history-recent">
                 <div className="space-y-3">
                   {recentHistory.map((todo) => (
                     <Card
                       key={todo.id}
-                      className="cursor-pointer border-border/60 bg-card/80 shadow-sm transition-colors hover:bg-accent/5"
+                      className="cursor-pointer border-border/60 bg-card/80 transition-colors hover:bg-accent/5"
                       onClick={() => router.push(`/todo/${todo.id}`)}
                       data-section="history-recent-item"
                     >
                       <CardContent className="flex items-center justify-between p-4">
                         <div className="space-y-1">
-                          <p className="font-bold text-foreground font-serif">{todo.date}</p>
+                          <p className="font-bold text-foreground">{todo.date}</p>
                           <p className="text-xs text-muted-foreground font-mono">{todo.createdAt}</p>
                         </div>
                         <div className="flex items-center gap-1">
