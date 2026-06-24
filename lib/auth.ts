@@ -6,10 +6,14 @@ export const OAUTH_CONFIG = {
   onedrive: {
     authUrl: 'https://login.microsoftonline.com/common/oauth2/v2.0/authorize',
     scope: 'Files.ReadWrite.AppFolder User.Read',
+  },
+  dropbox: {
+    authUrl: 'https://www.dropbox.com/oauth2/authorize',
+    scope: 'files.content.write files.content.read',
   }
 }
 
-export function initiateOAuth(provider: 'google' | 'onedrive', clientId: string): Promise<string> {
+export function initiateOAuth(provider: 'google' | 'onedrive' | 'dropbox', clientId: string): Promise<string> {
   return new Promise((resolve, reject) => {
     const config = OAUTH_CONFIG[provider]
     // Next.js App Router: app/oauth/callback/page.tsx -> /oauth/callback
