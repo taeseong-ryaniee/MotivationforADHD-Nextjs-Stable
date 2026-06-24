@@ -1,6 +1,6 @@
 'use client'
 
-import { useNavigate } from '@tanstack/react-router'
+import { useRouter } from 'next/navigation'
 import { useQueryClient } from '@tanstack/react-query'
 import { Loader2 } from 'lucide-react'
 import { StartScreen } from '@/components/feature/StartScreen'
@@ -33,7 +33,7 @@ function getDailyMotivation(motivationMessages: string[]): string {
 }
 
 export function DashboardView() {
-  const navigate = useNavigate()
+  const router = useRouter()
   const queryClient = useQueryClient()
   const { data: content, isLoading: isLoadingContent, error: contentError } = useContent('ko')
 
@@ -84,11 +84,11 @@ export function DashboardView() {
     if (!content) return
     try {
       const todo = await createDailyTodo({ specialEvent, content })
-      navigate({ to: '/todo/$id', params: { id: todo.id } })
+      router.push(`/todo/${todo.id}`)
     } catch {
       showError('To-do 생성 중 오류가 발생했습니다', '다시 시도해주세요.')
     }
-  }, [content, createDailyTodo, navigate, specialEvent])
+  }, [content, createDailyTodo, router, specialEvent])
 
   const handleCopyContent = useCallback(async (text: string) => {
     await copyToClipboard(text)

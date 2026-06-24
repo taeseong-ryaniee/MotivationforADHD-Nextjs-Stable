@@ -1,12 +1,13 @@
 "use client"
 
-import { Link, useLocation } from "@tanstack/react-router"
+import Link from "next/link"
+import { usePathname } from "next/navigation"
 import { Card, CardContent } from "@/components/ui/card"
 import { cn } from "@/lib/utils"
 import { NAV_ITEMS } from "@/lib/nav"
 
 export function MobileNav() {
-  const pathname = useLocation({ select: (location) => location.pathname })
+  const pathname = usePathname()
 
   return (
     <div className="fixed bottom-0 left-0 right-0 z-50 flex items-center justify-center pb-safe md:hidden">
@@ -17,7 +18,7 @@ export function MobileNav() {
             return (
               <Link
                 key={item.url}
-                to={item.url}
+                href={item.url}
                 className={cn(
                   "flex flex-1 flex-col items-center justify-center gap-1 rounded-lg px-3 py-2 text-[11px] font-medium transition-colors",
                   isActive

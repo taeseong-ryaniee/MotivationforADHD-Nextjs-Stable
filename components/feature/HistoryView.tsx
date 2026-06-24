@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useMemo } from 'react'
-import { useNavigate } from '@tanstack/react-router'
+import { useRouter } from 'next/navigation'
 import { ArrowLeft, Calendar as CalendarIcon, Clock, ChevronRight, Activity, CheckCircle2, Trash2 } from 'lucide-react'
 import { useDeleteTodo, useTodos } from '@/hooks/useTodos'
 import { getTodoTimestamp } from '@/lib/todo-utils'
@@ -13,7 +13,7 @@ import { ScrollArea } from '@/components/ui/scroll-area'
 import { showConfirm, showError, showSuccess } from '@/lib/toast'
 
 export function HistoryView() {
-  const navigate = useNavigate()
+  const router = useRouter()
   const { data: todoHistory = [] } = useTodos()
   const deleteMutation = useDeleteTodo()
 
@@ -81,7 +81,7 @@ export function HistoryView() {
         <Button
           variant="outline"
           size="icon"
-          onClick={() => navigate({ to: '/' })}
+          onClick={() => router.push('/')}
           aria-label="오늘로 돌아가기"
         >
           <ArrowLeft className="h-5 w-5" aria-hidden="true" />
@@ -173,7 +173,7 @@ export function HistoryView() {
               {selectedTodo ? (
                 <Card
                   className="cursor-pointer border-border/60 bg-card/80 shadow-sm transition-all hover:shadow-md"
-                  onClick={() => navigate({ to: '/todo/$id', params: { id: selectedTodo.id } })}
+                  onClick={() => router.push(`/todo/${selectedTodo.id}`)}
                   data-section="history-selected"
                 >
                   <CardContent className="space-y-4 p-6">
@@ -230,7 +230,7 @@ export function HistoryView() {
                     <Card
                       key={todo.id}
                       className="cursor-pointer border-border/60 bg-card/80 shadow-sm transition-colors hover:bg-accent/5"
-                      onClick={() => navigate({ to: '/todo/$id', params: { id: todo.id } })}
+                      onClick={() => router.push(`/todo/${todo.id}`)}
                       data-section="history-recent-item"
                     >
                       <CardContent className="flex items-center justify-between p-4">

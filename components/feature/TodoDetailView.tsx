@@ -1,6 +1,6 @@
 'use client'
 
-import { useNavigate, useParams } from '@tanstack/react-router'
+import { useRouter, useParams } from 'next/navigation'
 import { Loader2 } from 'lucide-react'
 import { TodayTodoView } from '@/components/feature/TodayTodoView'
 import { Card, CardContent } from '@/components/ui/card'
@@ -9,14 +9,14 @@ import { showSuccess } from '@/lib/toast'
 import { copyToClipboard } from '@/lib/utils'
 
 export function TodoDetailView() {
-  const { id } = useParams({ from: '/todo/$id' })
-  const navigate = useNavigate()
+  const { id } = useParams<{ id: string }>()
+  const router = useRouter()
 
   const { data: todo, isLoading, error } = useTodo(id || '')
   const saveMutation = useSaveTodo()
 
   const handleBack = () => {
-    navigate({ to: '/' })
+    router.push('/')
   }
 
   const handleCopyContent = async (content: string) => {

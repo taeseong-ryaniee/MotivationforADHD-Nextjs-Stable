@@ -15,11 +15,12 @@ import {
   SidebarMenuItem,
   SidebarSeparator,
 } from "@/components/ui/sidebar"
-import { Link, useLocation } from "@tanstack/react-router"
+import Link from "next/link"
+import { usePathname } from "next/navigation"
 import { NAV_ITEMS } from "@/lib/nav"
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
-  const pathname = useLocation({ select: (location) => location.pathname })
+  const pathname = usePathname()
 
   return (
     <Sidebar variant="inset" {...props}>
@@ -50,7 +51,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                 return (
                   <SidebarMenuItem key={item.title}>
                     <SidebarMenuButton asChild isActive={isActive} className="gap-3">
-                      <Link to={item.url}>
+                      <Link href={item.url}>
                         <item.icon className="h-4 w-4" aria-hidden="true" />
                         <span className="font-medium">{item.title}</span>
                       </Link>
