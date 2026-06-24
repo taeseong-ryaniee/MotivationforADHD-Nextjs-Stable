@@ -131,7 +131,8 @@ export function useTodos(limit = 30) {
 export function useTodo(id: string | null) {
   return useQuery({
     queryKey: todoKeys.detail(id || ''),
-    queryFn: () => getTodoById(id || ''),
+    // 못 찾으면 null을 반환한다 — TanStack Query는 queryFn의 undefined 반환을 금지한다.
+    queryFn: async () => (await getTodoById(id || '')) ?? null,
     enabled: !!id,
     staleTime: 1000 * 60 * 10,
   })

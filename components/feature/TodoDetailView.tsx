@@ -24,7 +24,7 @@ export function TodoDetailView() {
     showSuccess('클립보드에 복사되었습니다!')
   }
 
-  if (error) {
+  if (error || (!isLoading && !todo)) {
     return (
       <Card className="h-full border-border/60 bg-card/80 shadow-sm">
         <CardContent className="flex min-h-[60vh] flex-col items-center justify-center p-8">
