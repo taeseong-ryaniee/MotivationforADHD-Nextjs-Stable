@@ -105,19 +105,22 @@ export function uploadSyncFile(): Promise<File> {
   })
 }
 
-export async function importData(file: File, strategy: SyncStrategy = 'merge'): Promise<void> {
-  const text = await file.text()
-  const data = JSON.parse(text) as SyncData
-
+export async function importSyncData(data: SyncData, strategy: SyncStrategy = 'merge'): Promise<void> {
   if (!data.metadata || !Array.isArray(data.todos)) {
     throw new Error('Invalid sync file format')
   }
 
   if (strategy === 'overwrite') {
     await applySyncData(data)
-  } else if (strategy === 'merge') {
+  } else {
     await mergeSyncData(data)
   }
+}
+
+export async function importData(file: File, strategy: SyncStrategy = 'merge'): Promise<void> {
+  const text = await file.text()
+  const data = JSON.parse(text) as SyncData
+  await importSyncData(data, strategy)
 }
 
 async function applySyncData(data: SyncData): Promise<void> {
