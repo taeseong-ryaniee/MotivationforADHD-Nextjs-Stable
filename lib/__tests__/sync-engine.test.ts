@@ -11,7 +11,7 @@ const showError = vi.fn()
 vi.mock('../toast', () => ({ showError: (...a: unknown[]) => showError(...a) }))
 
 import { setActiveProvider, clearActiveProvider } from '../cloud/activeProvider'
-import { schedulePush, runPush, pullOnce, PUSH_DEBOUNCE_MS, SYNC_FILENAME } from '../sync-engine'
+import { schedulePush, runPush, pullOnce, SYNC_FILENAME } from '../sync-engine'
 import type { CloudProvider } from '../cloud/types'
 
 function makeProvider(over: Partial<CloudProvider> = {}): CloudProvider {
@@ -27,17 +27,16 @@ function makeProvider(over: Partial<CloudProvider> = {}): CloudProvider {
 }
 
 describe('sync-engine', () => {
-  beforeEach(() => { clearActiveProvider(); vi.clearAllMocks(); vi.useRealTimers() })
+  beforeEach(() => { clearActiveProvider(); vi.clearAllMocks() })
 
   it('schedulePush coalesces rapid calls into one upload', async () => {
-    vi.useFakeTimers()
     const p = makeProvider()
     setActiveProvider(p)
 
-    schedulePush(); schedulePush(); schedulePush()
+    schedulePush(10); schedulePush(10); schedulePush(10)
     expect(p.upload).not.toHaveBeenCalled()
 
-    await vi.advanceTimersByTimeAsync(PUSH_DEBOUNCE_MS)
+    await new Promise((r) => setTimeout(r, 40))
     expect(p.upload).toHaveBeenCalledTimes(1)
     expect((p.upload as ReturnType<typeof vi.fn>).mock.calls[0][1]).toBe(SYNC_FILENAME)
   })

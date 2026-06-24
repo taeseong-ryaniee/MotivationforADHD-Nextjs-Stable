@@ -9,12 +9,12 @@ let debounceTimer: ReturnType<typeof setTimeout> | null = null
 let inFlight = false
 let dirty = false
 
-export function schedulePush(): void {
+export function schedulePush(delayMs: number = PUSH_DEBOUNCE_MS): void {
   if (debounceTimer) clearTimeout(debounceTimer)
   debounceTimer = setTimeout(() => {
     debounceTimer = null
     void runPush()
-  }, PUSH_DEBOUNCE_MS)
+  }, delayMs)
 }
 
 export async function runPush(): Promise<void> {
