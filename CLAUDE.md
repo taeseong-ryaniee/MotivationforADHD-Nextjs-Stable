@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-**산만이의 아침 (Motivation for ADHD)** - A daily motivation app for ADHD users built with Next.js 16.1.1. The app generates daily motivational messages, manages to-do lists, and provides practical tips tailored for ADHD users. Data is stored locally using IndexedDB with optional multi-cloud sync (AWS S3, Google Drive, OneDrive).
+**산만이의 아침 (Motivation for ADHD)** - A daily motivation app for ADHD users built with Next.js 16 (App Router). The app generates daily motivational messages, manages to-do lists, and provides practical tips tailored for ADHD users. Data is stored locally using IndexedDB with optional multi-cloud sync (AWS S3, Google Drive, OneDrive, Dropbox).
 
 ## Development Commands
 
@@ -13,9 +13,14 @@ bun dev          # Start dev server (http://localhost:3000)
 bun run build    # Build for production
 bun start        # Start production server
 bun run lint     # Run ESLint
-bun test         # Run Vitest tests
-bun test --watch # Run tests in watch mode
+bunx vitest run  # Run tests once (canonical — reads vitest.config.ts)
+bun run test     # Same, watch mode (package.json "test": "vitest")
 ```
+
+> Use `bunx vitest`, **not** `bun test`. `bun test` invokes Bun's built-in
+> runner, which ignores `vitest.config.ts` (jsdom env + `@` alias). It passes
+> today only because every test is pure logic — any test needing jsdom or the
+> `@` alias breaks silently under it.
 
 This project uses **Bun** as the runtime and package manager. Replace all `npm`/`yarn` commands with `bun`.
 
@@ -23,22 +28,27 @@ This project uses **Bun** as the runtime and package manager. Replace all `npm`/
 
 ### State Management Strategy
 
-This app uses a **hybrid state management approach**:
+There is no global store. State is split by where it lives:
 
-1. **TanStack Query** - Server state and IndexedDB operations
-   - All data fetching, caching, and synchronization
-   - Todo CRUD with optimistic updates
+1. **TanStack Query** — all persistent state (IndexedDB + cloud sync)
+   - Data fetching, caching, optimistic todo CRUD
    - See `hooks/useTodos.ts` and `hooks/useContent.ts`
 
-2. **Zustand** - UI state and business logic
-   - Local UI state (special events, creation flags)
-   - Business logic for generating daily todos
-   - See `lib/store.ts`
+2. **React local state** — transient UI state lives in the component that owns it
+   (mostly `components/feature/*`).
 
-**When to use what:**
-- TanStack Query hooks → Any IndexedDB operations or API calls
-- Zustand store → UI state, derived state, business logic without persistence
-- Never directly call `lib/db.ts` → Always go through TanStack Query hooks
+3. **Pure helpers** — derived/business logic (daily todo generation, event-based
+   content selection) lives in stateless modules, not a store:
+   `lib/todo-utils.ts`, `lib/content-utils.ts`, `lib/utils/messageSelector.ts`.
+
+**Rules:**
+- Any IndexedDB read/write → go through a TanStack Query hook. Never call
+  `lib/db.ts` directly from a component. (`lib/sync.ts` is the one sanctioned
+  non-hook caller — the cloud-sync data layer.)
+- Derived logic → a `lib/*-utils.ts` helper, not a hook.
+
+> Note: this app previously used Zustand (`lib/store.ts`); both are now removed.
+> If you find a reference to either, it is stale.
 
 ### Data Flow Architecture
 
@@ -47,12 +57,15 @@ User Action → Component
     ↓
 TanStack Query Hook (useTodos, useContent)
     ↓
-lib/db (Dexie / IndexedDB) OR API Route
+lib/db.ts (Dexie / IndexedDB) — local source of truth
     ↓
-TanStack Query Cache
-    ↓
-Component Re-render
+TanStack Query Cache → Component Re-render
 ```
+
+There are no API routes (`app/api/` does not exist) — the app is fully
+client/local-first. A successful todo write additionally notifies the sync
+engine, which debounce-pushes to the active cloud provider (see Cloud Sync
+Architecture below).
 
 ### Local Storage (local-first)
 
@@ -69,44 +82,61 @@ Writes are validated at the boundary: `saveTodo`/`bulkSaveTodos` run
 
 ### Cloud Sync Architecture
 
-Multi-cloud sync support with OAuth integration:
+Local-first: IndexedDB is the source of truth, the cloud an optional mirror.
+Once a provider is connected, sync runs **automatically** — there is no manual
+"sync now" button.
 
 ```
 lib/
-├── auth.ts          # OAuth popup flow (Google, OneDrive)
-├── sync.ts          # S3 upload/download, file import/export
+├── auth.ts               # OAuth popup flow (Google, OneDrive, Dropbox)
+├── sync.ts               # exportData / importSyncData + S3, file import/export
+├── sync-engine.ts        # debounced auto-push + pullOnce; 401 → drop provider, prompt re-login
+├── sync-trigger.ts       # shouldSyncMutation — only successful todo mutations trigger a push
 └── cloud/
-    ├── types.ts     # CloudProvider interface
-    ├── google.ts    # Google Drive provider
-    └── onedrive.ts  # OneDrive provider
+    ├── types.ts          # CloudProvider interface
+    ├── activeProvider.ts # in-memory session singleton (no token persistence)
+    ├── google.ts         # Google Drive provider
+    ├── onedrive.ts       # OneDrive provider
+    └── dropbox.ts        # Dropbox provider
 ```
+
+**Auto-sync wiring** (`components/Providers.tsx`):
+- On app open → `seedContent()` + `pullOnce()` (pull remote changes if connected).
+- On any successful todo mutation → `schedulePush()` (3s debounce, single-flight,
+  re-runs if marked dirty mid-upload). All state serializes to one file:
+  `motivation-sync.json`.
 
 **CloudProvider interface** (`lib/cloud/types.ts`):
 - `isAuthenticated()`, `login()`, `logout()`
 - `upload(data, filename)`, `download(fileId)`, `list()`
 
-OAuth callback handled at `app/oauth/callback/page.tsx` → `/oauth/callback`
+Auth is implicit OAuth with **no token persistence**: `activeProvider` holds the
+live provider in memory for the session; on expiry (401) the engine clears it and
+asks the user to re-login. OAuth callback: `app/oauth/callback/page.tsx`.
 
 ### Key Files
 
 - **`lib/db.ts`** - IndexedDB (Dexie.js) — local source of truth, accessed via hooks
-- **`lib/store.ts`** - Zustand store for UI state and business logic
-- **`lib/sync.ts`** - Data export/import and S3 integration
+- **`lib/sync.ts`** - `exportData`/`importSyncData`, S3 + file import/export
+- **`lib/sync-engine.ts`** - debounced auto-push / pull engine
+- **`lib/sync-trigger.ts`** - decides which mutations trigger a push
 - **`lib/auth.ts`** - OAuth configuration and popup flow
 - **`hooks/useTodos.ts`** - TanStack Query hooks with query key factory
-- **`hooks/useContent.ts`** - Motivation content fetching
+- **`hooks/useContent.ts`** - Motivation content fetching (seed + cache)
 
 ### Component Organization
 
-- **`app/`** - Next.js App Router pages
+- **`app/`** - Next.js App Router pages (no API routes — client/local-first)
+  - `page.tsx` - Today / morning start screen (root; `/dashboard` was merged here)
   - `settings/page.tsx` - Settings with cloud sync configuration
   - `oauth/callback/page.tsx` - OAuth redirect handler
   - `todo/[id]/page.tsx` - Individual todo detail
   - `history/page.tsx` - Todo history list
-  - `api/content/[locale]/route.ts` - Content API
 
 - **`components/`** - React components
-  - `Providers.tsx` - TanStack Query + ThemeProvider setup
+  - `Providers.tsx` - TanStack Query + ThemeProvider + auto-sync wiring
+  - `AppShell.tsx`, `app-sidebar.tsx`, `mobile-nav.tsx` - layout & navigation
+  - `feature/` - screen-level features (StartScreen, TodayTodoView, etc.)
   - `ui/` - shadcn/ui components (button, card, input, tabs, etc.)
 
 ### TanStack Query Configuration
@@ -119,9 +149,13 @@ Global defaults in `components/Providers.tsx`:
 ### IndexedDB Schema
 
 ```typescript
-// Database: MotivationForADHD
-todos: { id, date, title, content, createdAt }
+// Database: MotivationForADHD (Dexie, schema v4)
+todos:    { id, date, title, content, createdAt, createdAtMs }  // index: [date+createdAt]
 settings: { key, value }
+content:  { locale, ... }  // motivation content cached from public/content/
+
+// createdAt is a display-only ko-KR string; createdAtMs is the machine timestamp
+// used for sorting and month aggregation (added in v4, backfilled on upgrade).
 ```
 
 ### UI Components (shadcn/ui + Tailwind CSS v4)
@@ -152,7 +186,12 @@ IndexedDB is browser-only. All storage operations must be in client components o
 
 ### Content Localization
 
-Locales via `public/content/{locale}.json`. API route validates against whitelist (`ko`, `en`) to prevent path traversal.
+Content ships as static JSON in `public/content/` (`ko.json`, `en.json`,
+`quotes-ko.json`). On app open, `lib/content-seed.ts` fetches
+`/content/{locale}.json`, validates it with `ContentDataSchema`
+(`lib/validation.ts`), and caches it into the IndexedDB `content` table;
+`hooks/useContent.ts` reads from there. There is no API route (the former
+`/api/content` route was removed).
 
 ## PWA Support
 
@@ -162,23 +201,32 @@ Locales via `public/content/{locale}.json`. API route validates against whitelis
 
 ## Testing
 
-Tests use Vitest with React Testing Library. Test files in `__tests__/` directories:
-- `lib/cloud/__tests__/google.test.ts`
-- `lib/cloud/__tests__/onedrive.test.ts`
+Vitest + React Testing Library (jsdom). Config: `vitest.config.ts` sets the
+`jsdom` environment and the `@` path alias. Test files live in `__tests__/`
+dirs next to the code (`lib/__tests__/`, `lib/cloud/__tests__/`,
+`lib/utils/__tests__/`).
 
 ```bash
-bun test                    # Run all tests
-bun test google            # Run tests matching "google"
-bun test --coverage        # Run with coverage
+bunx vitest run             # Run all tests once (canonical)
+bun run test                # Watch mode (package.json "test" script)
+bunx vitest run google      # Run files matching "google"
+bunx vitest run --coverage  # With coverage
 ```
+
+Run with `bunx vitest`, not `bun test` — see the note under Development Commands.
 
 ## Adding New Features
 
 ### Adding a Cloud Provider
 1. Implement `CloudProvider` interface in `lib/cloud/`
 2. Add OAuth config to `lib/auth.ts` if needed
-3. Register in settings UI at `app/settings/page.tsx`
-4. Add tests in `lib/cloud/__tests__/`
+3. Wire it into the UI in `components/SyncSettings.tsx` (the settings page just
+   renders `<SyncSettings />`): instantiate the provider on successful login and
+   call `setActiveProvider(newProvider)`.
+4. **Required for auto-sync:** step 3's `setActiveProvider()` is what makes the
+   sync engine see the provider (`sync-engine.ts` reads it via
+   `getActiveProvider()`). Without it the provider exists but never pushes/pulls.
+5. Add tests in `lib/cloud/__tests__/`
 
 ### Adding New Todo Logic
 1. Persistence → add a function in `lib/db.ts` (validate writes with `TodoDataSchema`)
