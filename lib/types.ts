@@ -9,10 +9,9 @@ export interface TodoData {
   createdAtMs?: number
 }
 
-export interface Settings<T = unknown> {
+export interface Settings {
   key: string
-  value: T
-  id?: string // For compatibility with some storage adapters
+  value: unknown
 }
 
 export interface PracticalTip {

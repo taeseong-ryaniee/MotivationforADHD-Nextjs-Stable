@@ -1,22 +1,6 @@
 import { SyncData } from '@/lib/types'
 
-export type CloudProviderType = 's3' | 'google' | 'onedrive' | 'filesystem' | 'dropbox'
-
-export interface CloudConfig {
-  type: CloudProviderType
-  // S3 specific
-  s3?: {
-    accessKeyId: string
-    secretAccessKey: string
-    region: string
-    bucketName: string
-  }
-  // OAuth specific (Google, OneDrive)
-  oauth?: {
-    accessToken: string
-    expiresAt?: number
-  }
-}
+export type CloudProviderType = 'google' | 'onedrive' | 'dropbox'
 
 export interface CloudFile {
   id: string
