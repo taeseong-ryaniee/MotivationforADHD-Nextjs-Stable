@@ -36,16 +36,6 @@ export const showInfo = (message: string, description?: string) => {
 }
 
 /**
- * Show warning toast
- */
-export const showWarning = (message: string, description?: string) => {
-  toast.warning(message, {
-    description,
-    duration: 4000
-  })
-}
-
-/**
  * Show confirmation toast with action button
  */
 export const showConfirm = (
@@ -69,25 +59,4 @@ export const showConfirm = (
       onClick: () => {}
     }
   })
-}
-
-/**
- * Show loading toast (returns ID to dismiss later)
- */
-export const showLoading = (message: string) => {
-  return toast.loading(message)
-}
-
-/**
- * Dismiss a specific toast by ID
- */
-export const dismissToast = (id: string | number) => {
-  toast.dismiss(id)
-}
-
-/**
- * Dismiss all toasts
- */
-export const dismissAll = () => {
-  toast.dismiss()
 }

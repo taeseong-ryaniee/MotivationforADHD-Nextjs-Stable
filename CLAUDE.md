@@ -47,31 +47,25 @@ User Action → Component
     ↓
 TanStack Query Hook (useTodos, useContent)
     ↓
-StorageAdapter (via StorageManager) OR API Route
+lib/db (Dexie / IndexedDB) OR API Route
     ↓
 TanStack Query Cache
     ↓
 Component Re-render
 ```
 
-### Storage Adapter Pattern (Phase 5)
+### Local Storage (local-first)
 
-The app uses a pluggable storage system via the Adapter pattern:
+All data lives locally in IndexedDB via `lib/db.ts` (Dexie.js) — the single
+source of truth. There is no central server; the cloud is an optional sync
+target (see below), never the primary store.
 
-```
-lib/storage/
-├── types.ts           # StorageAdapter interface
-├── StorageManager.ts  # Singleton manager for adapter access
-└── adapters/
-    └── LocalDexieAdapter.ts  # Default IndexedDB implementation
-```
+Access storage through TanStack Query hooks (`hooks/useTodos.ts`,
+`hooks/useContent.ts`). `lib/sync.ts` is the one non-hook caller — it is the
+cloud-sync data layer and reads/writes `lib/db.ts` directly.
 
-**StorageAdapter interface** (`lib/storage/types.ts`):
-- `getTodos()`, `saveTodo()`, `deleteTodo()`, `bulkSaveTodos()`
-- `getSetting<T>()`, `saveSetting()`, `deleteSetting()`
-- Optional: `sync()`, `backup()`, `restore()`
-
-Access storage through: `storage.getAdapter()` from `lib/storage/StorageManager.ts`
+Writes are validated at the boundary: `saveTodo`/`bulkSaveTodos` run
+`TodoDataSchema.parse()` before persisting (`lib/validation.ts`).
 
 ### Cloud Sync Architecture
 
@@ -95,8 +89,7 @@ OAuth callback handled at `app/oauth/callback/page.tsx` → `/oauth/callback`
 
 ### Key Files
 
-- **`lib/storage/StorageManager.ts`** - Singleton access to storage adapter
-- **`lib/db.ts`** - Legacy IndexedDB (Dexie.js), use StorageAdapter instead
+- **`lib/db.ts`** - IndexedDB (Dexie.js) — local source of truth, accessed via hooks
 - **`lib/store.ts`** - Zustand store for UI state and business logic
 - **`lib/sync.ts`** - Data export/import and S3 integration
 - **`lib/auth.ts`** - OAuth configuration and popup flow
@@ -188,9 +181,8 @@ bun test --coverage        # Run with coverage
 4. Add tests in `lib/cloud/__tests__/`
 
 ### Adding New Todo Logic
-1. Business logic → `lib/store.ts`
-2. Persistence → Implement in `StorageAdapter`
-3. Wrap with TanStack Query → `hooks/useTodos.ts`
+1. Persistence → add a function in `lib/db.ts` (validate writes with `TodoDataSchema`)
+2. Wrap with TanStack Query → `hooks/useTodos.ts`
 
 ### Adding UI Components
 Use shadcn/ui CLI: `bunx shadcn@latest add [component]`

@@ -1,6 +1,6 @@
 import { SyncData } from '@/lib/types'
 
-export type CloudProviderType = 's3' | 'google' | 'onedrive' | 'filesystem'
+export type CloudProviderType = 's3' | 'google' | 'onedrive' | 'filesystem' | 'dropbox'
 
 export interface CloudConfig {
   type: CloudProviderType

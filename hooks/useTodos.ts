@@ -60,6 +60,7 @@ export function useDailyTodo() {
   const historyQuery = useTodos()
 
   const createMutation = useMutation({
+    mutationKey: todoKeys.all,
     mutationFn: async ({ content, specialEvent }: UseDailyTodoParams) => {
       const today = new Date()
       const dayOfWeek = today.getDay()
@@ -142,6 +143,7 @@ export function useSaveTodo() {
   const queryClient = useQueryClient()
 
   return useMutation({
+    mutationKey: todoKeys.all,
     mutationFn: (todo: TodoData) => saveTodo(todo),
     onSuccess: (_, todo) => {
       queryClient.invalidateQueries({ queryKey: todoKeys.lists() })
@@ -156,6 +158,7 @@ export function useDeleteTodo() {
   const queryClient = useQueryClient()
 
   return useMutation({
+    mutationKey: todoKeys.all,
     mutationFn: (id: string) => deleteTodo(id),
     onSuccess: (_, id) => {
       queryClient.invalidateQueries({ queryKey: todoKeys.all })
@@ -168,6 +171,7 @@ export function useClearTodos() {
   const queryClient = useQueryClient()
 
   return useMutation({
+    mutationKey: todoKeys.all,
     mutationFn: () => clearAllTodos(),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: todoKeys.all })

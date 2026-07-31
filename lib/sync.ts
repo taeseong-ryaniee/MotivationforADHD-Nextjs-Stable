@@ -1,5 +1,5 @@
 import { S3Client, PutObjectCommand, GetObjectCommand, ListObjectsV2Command } from '@aws-sdk/client-s3'
-import { storage } from './storage/StorageManager'
+import { getAllTodos, bulkSaveTodos, getSetting, setSetting, deleteSetting } from './db'
 import type { TodoData, SyncData, SyncMetadata, S3Config, SyncStrategy } from './types'
 
 let deviceId: string | null = null
@@ -49,17 +49,12 @@ function getPlatform(): string {
 }
 
 export async function exportData(): Promise<SyncData> {
-  const adapter = storage.getAdapter()
-  const todos = await adapter.getTodos()
-  
-  // Settings 가져오기 (현재 어댑터에는 getSettings가 단일 키 조회만 지원할 수 있으므로 주의)
-  // 여기서는 로컬 어댑터의 특성을 고려하여 모든 설정을 가져오는 로직이 필요할 수 있음
-  // 일단은 주요 설정만 가져오거나, 어댑터에 getAllSettings를 추가하는 것이 좋음.
-  // 임시로 빈 객체 또는 주요 설정만 포함
+  const todos = await getAllTodos()
+
+  // ponytail: settings are not exported yet (always empty). lib/db reads settings
+  // by key only — add a getAllSettings() to lib/db when settings need to round-trip.
   const settings: Record<string, unknown> = {}
-  
-  // TODO: StorageAdapter에 getAllSettings 메서드 추가 권장
-  
+
   const metadata: SyncMetadata = {
     deviceId: getOrCreateDeviceId(),
     deviceName: getDeviceName(),
@@ -110,42 +105,43 @@ export function uploadSyncFile(): Promise<File> {
   })
 }
 
-export async function importData(file: File, strategy: SyncStrategy = 'merge'): Promise<void> {
-  const text = await file.text()
-  const data = JSON.parse(text) as SyncData
-
+export async function importSyncData(data: SyncData, strategy: SyncStrategy = 'merge'): Promise<void> {
   if (!data.metadata || !Array.isArray(data.todos)) {
     throw new Error('Invalid sync file format')
   }
 
   if (strategy === 'overwrite') {
     await applySyncData(data)
-  } else if (strategy === 'merge') {
+  } else {
     await mergeSyncData(data)
   }
 }
 
+export async function importData(file: File, strategy: SyncStrategy = 'merge'): Promise<void> {
+  const text = await file.text()
+  const data = JSON.parse(text) as SyncData
+  await importSyncData(data, strategy)
+}
+
 async function applySyncData(data: SyncData): Promise<void> {
-  const adapter = storage.getAdapter()
   
   // 기존 데이터 삭제 후 대량 삽입 (bulkSaveTodos가 덮어쓰기 모드라면 삭제 불필요할 수도 있음)
   // Dexie의 bulkPut은 키가 같으면 덮어쓰고 없으면 추가함.
   // 완전한 덮어쓰기(기존 것 삭제)를 원한다면 clear가 필요함.
   // 여기서는 안전하게 bulkPut 사용 (기존 데이터 유지 + 덮어쓰기)
-  await adapter.bulkSaveTodos(data.todos)
+  await bulkSaveTodos(data.todos)
 
   // 설정 복원
   for (const [key, value] of Object.entries(data.settings)) {
-    await adapter.saveSetting(key, value)
+    await setSetting(key, value)
   }
 
-  await adapter.saveSetting('lastSyncAt', data.metadata.lastSyncAt)
-  await adapter.saveSetting('syncedWith', data.metadata.deviceId)
+  await setSetting('lastSyncAt', data.metadata.lastSyncAt)
+  await setSetting('syncedWith', data.metadata.deviceId)
 }
 
 async function mergeSyncData(data: SyncData): Promise<void> {
-  const adapter = storage.getAdapter()
-  const localTodos = await adapter.getTodos()
+  const localTodos = await getAllTodos()
   const localTodoIds = new Set(localTodos.map((t) => t.id))
 
   const todosToSave: TodoData[] = []
@@ -157,13 +153,13 @@ async function mergeSyncData(data: SyncData): Promise<void> {
   }
 
   if (todosToSave.length > 0) {
-    await adapter.bulkSaveTodos(todosToSave)
+    await bulkSaveTodos(todosToSave)
   }
 
 
   // 메타데이터 업데이트
-  await adapter.saveSetting('lastSyncAt', data.metadata.lastSyncAt)
-  await adapter.saveSetting('syncedWith', data.metadata.deviceId)
+  await setSetting('lastSyncAt', data.metadata.lastSyncAt)
+  await setSetting('syncedWith', data.metadata.deviceId)
 }
 
 // === AWS S3 Integration ===
@@ -232,19 +228,16 @@ export async function listS3Files(config: S3Config): Promise<string[]> {
 }
 
 export async function saveS3Config(config: S3Config): Promise<void> {
-  const adapter = storage.getAdapter()
-  await adapter.saveSetting('s3_config', config)
+  await setSetting('s3_config', config)
 }
 
 export async function getS3Config(): Promise<S3Config | undefined> {
-  const adapter = storage.getAdapter()
-  const config = await adapter.getSetting<S3Config>('s3_config')
+  const config = await getSetting<S3Config>('s3_config')
   return config || undefined
 }
 
 export async function clearS3Config(): Promise<void> {
-  const adapter = storage.getAdapter()
-  await adapter.deleteSetting('s3_config')
+  await deleteSetting('s3_config')
 }
 
 export function getSyncStatus(): {

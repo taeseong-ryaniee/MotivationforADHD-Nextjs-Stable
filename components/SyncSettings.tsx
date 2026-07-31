@@ -37,6 +37,9 @@ import type { S3Config } from '@/lib/types'
 import { initiateOAuth } from '@/lib/auth'
 import { GoogleDriveProvider } from '@/lib/cloud/google'
 import { OneDriveProvider } from '@/lib/cloud/onedrive'
+import { DropboxProvider } from '@/lib/cloud/dropbox'
+import { setActiveProvider } from '@/lib/cloud/activeProvider'
+import { pullOnce } from '@/lib/sync-engine'
 import type { CloudProvider } from '@/lib/cloud/types'
 
 export default function SyncSettings() {
@@ -54,7 +57,9 @@ export default function SyncSettings() {
   // OAuth States
   const [googleClientId, setGoogleClientId] = useState('')
   const [oneDriveClientId, setOneDriveClientId] = useState('')
-  const [activeProvider, setActiveProvider] = useState<CloudProvider | null>(null)
+  const [dropboxClientId, setDropboxClientId] = useState('')
+  // 컴포넌트 로컬 UI state — 세션 싱글톤 setActiveProvider(import)와 이름 충돌 피하려 *State 접미사
+  const [activeProviderState, setActiveProviderState] = useState<CloudProvider | null>(null)
 
   const refreshSyncStatus = useCallback(() => {
     setSyncStatus(getSyncStatus())
@@ -77,6 +82,7 @@ export default function SyncSettings() {
     // Load saved client IDs from localStorage (convenience)
     setGoogleClientId(localStorage.getItem('google_client_id') || '')
     setOneDriveClientId(localStorage.getItem('onedrive_client_id') || '')
+    setDropboxClientId(localStorage.getItem('dropbox_client_id') || '')
   }, [loadInitialData])
 
 
@@ -176,10 +182,10 @@ export default function SyncSettings() {
       setIsLoading(true)
       const data = await exportData()
       
-      if (activeProvider) {
+      if (activeProviderState) {
         // Use active OAuth provider
-        await activeProvider.upload(data)
-        showSuccess(`${activeProvider.name} 백업 완료`, '데이터가 안전하게 저장되었습니다.')
+        await activeProviderState.upload(data)
+        showSuccess(`${activeProviderState.name} 백업 완료`, '데이터가 안전하게 저장되었습니다.')
       } else {
         // Fallback to S3
         await uploadToS3(s3Config, data)
@@ -199,8 +205,8 @@ export default function SyncSettings() {
       setIsLoading(true)
       let files: string[] | { name: string, id: string }[] = []
       
-      if (activeProvider) {
-        const list = await activeProvider.list()
+      if (activeProviderState) {
+        const list = await activeProviderState.list()
         files = list.map(f => ({ name: f.name, id: f.id }))
       } else {
         files = await listS3Files(s3Config)
@@ -222,8 +228,8 @@ export default function SyncSettings() {
           try {
             setIsLoading(true)
             let data
-            if (activeProvider) {
-              data = await activeProvider.download(fileId)
+            if (activeProviderState) {
+              data = await activeProviderState.download(fileId)
             } else {
               data = await downloadFromS3(s3Config, fileName)
             }
@@ -255,8 +261,11 @@ export default function SyncSettings() {
     }
   }
 
-  const handleOAuthLogin = async (provider: 'google' | 'onedrive') => {
-    const clientId = provider === 'google' ? googleClientId : oneDriveClientId
+  const handleOAuthLogin = async (provider: 'google' | 'onedrive' | 'dropbox') => {
+    const clientId =
+      provider === 'google' ? googleClientId
+      : provider === 'onedrive' ? oneDriveClientId
+      : dropboxClientId
     if (!clientId) {
       return showError('Client ID 필요', '설정에서 Client ID를 입력해주세요.')
     }
@@ -264,20 +273,19 @@ export default function SyncSettings() {
     try {
       setIsLoading(true)
       const token = await initiateOAuth(provider, clientId)
-      
+
       // Save Client ID for convenience
-      if (provider === 'google') localStorage.setItem('google_client_id', clientId)
-      else localStorage.setItem('onedrive_client_id', clientId)
+      localStorage.setItem(`${provider}_client_id`, clientId)
 
       let newProvider: CloudProvider
-      if (provider === 'google') {
-        newProvider = new GoogleDriveProvider(token)
-      } else {
-        newProvider = new OneDriveProvider(token)
-      }
-      
-      setActiveProvider(newProvider)
+      if (provider === 'google') newProvider = new GoogleDriveProvider(token)
+      else if (provider === 'onedrive') newProvider = new OneDriveProvider(token)
+      else newProvider = new DropboxProvider(token)
+
+      setActiveProvider(newProvider)        // 앱 전역 세션 싱글톤 — 자동 동기화 엔진이 사용
+      setActiveProviderState(newProvider)   // 컴포넌트 UI state
       showSuccess('로그인 성공', `${newProvider.name}와 연결되었습니다.`)
+      void pullOnce()                       // 로그인 직후 원격 변경 가져오기
     } catch (error) {
       showError('로그인 실패', error instanceof Error ? error.message : '인증 중 오류가 발생했습니다.')
     } finally {
@@ -369,11 +377,12 @@ export default function SyncSettings() {
         </CardHeader>
 
         <CardContent className="p-8">
-          <Tabs defaultValue="s3" className="w-full" onValueChange={() => setActiveProvider(null)}>
-            <TabsList className="grid w-full grid-cols-2 md:grid-cols-4 mb-6 h-10 bg-muted/40 p-1">
+          <Tabs defaultValue="s3" className="w-full" onValueChange={() => setActiveProviderState(null)}>
+            <TabsList className="grid w-full grid-cols-2 md:grid-cols-5 mb-6 h-10 bg-muted/40 p-1">
               <TabsTrigger value="s3" className="text-sm font-bold">AWS S3</TabsTrigger>
               <TabsTrigger value="google" className="text-sm font-bold">Google</TabsTrigger>
               <TabsTrigger value="onedrive" className="text-sm font-bold">OneDrive</TabsTrigger>
+              <TabsTrigger value="dropbox" className="text-sm font-bold">Dropbox</TabsTrigger>
               <TabsTrigger value="icloud" className="text-sm font-bold">iCloud</TabsTrigger>
             </TabsList>
 
@@ -507,7 +516,7 @@ export default function SyncSettings() {
                   </p>
                 </div>
 
-                {activeProvider?.type === 'google' ? (
+                {activeProviderState?.type === 'google' ? (
                   <div className="space-y-6 w-full max-w-md">
                     <div className="flex items-center justify-center gap-2 text-green-500 bg-green-500/10 p-3 rounded-xl text-sm font-bold">
                       <Check className="h-5 w-5" />
@@ -552,7 +561,7 @@ export default function SyncSettings() {
                   </p>
                 </div>
 
-                {activeProvider?.type === 'onedrive' ? (
+                {activeProviderState?.type === 'onedrive' ? (
                   <div className="space-y-6 w-full max-w-md">
                     <div className="flex items-center justify-center gap-2 text-green-500 bg-green-500/10 p-3 rounded-xl text-sm font-bold">
                       <Check className="h-5 w-5" />
@@ -576,6 +585,51 @@ export default function SyncSettings() {
               </div>
             </TabsContent>
 
+              <TabsContent value="dropbox" className="py-8 text-center space-y-6">
+              <div className="flex flex-col items-center gap-6">
+                <div className="p-6 bg-muted/40 rounded-full">
+                  <Cloud className="h-10 w-10 text-muted-foreground" />
+                </div>
+                <h3 className="font-bold text-xl">Dropbox 연동</h3>
+
+                <div className="w-full max-w-md space-y-3 text-left">
+                  <label htmlFor="dropbox-client-id" className="text-sm font-medium text-muted-foreground ml-1">Dropbox App Key</label>
+                  <Input
+                    id="dropbox-client-id"
+                    placeholder="xxxxxxxxxxxxxxx"
+                    value={dropboxClientId}
+                    onChange={(e) => setDropboxClientId(e.target.value)}
+                    className="h-12 text-base"
+                  />
+                  <p className="text-xs text-muted-foreground">
+                    * Dropbox App Console에서 발급한 App key가 필요합니다. (App folder 권한)
+                  </p>
+                </div>
+
+                {activeProviderState?.type === 'dropbox' ? (
+                  <div className="space-y-6 w-full max-w-md">
+                    <div className="flex items-center justify-center gap-2 text-green-500 bg-green-500/10 p-3 rounded-xl text-sm font-bold">
+                      <Check className="h-5 w-5" />
+                      연결됨 · 편집 시 자동 동기화
+                    </div>
+                    <div className="grid gap-3 sm:grid-cols-2">
+                      <Button onClick={handleCloudBackup} disabled={isLoading} className="h-12 text-sm font-bold bg-amber-500 text-stone-950 hover:bg-amber-400">지금 백업</Button>
+                      <Button variant="outline" onClick={handleCloudRestore} disabled={isLoading} className="h-12 text-sm font-bold border-border text-foreground hover:bg-muted/50">지금 복원</Button>
+                    </div>
+                  </div>
+                ) : (
+                  <Button
+                    onClick={() => handleOAuthLogin('dropbox')}
+                    disabled={isLoading || !dropboxClientId}
+                    className="w-full max-w-md h-12 bg-amber-500 text-stone-950 hover:bg-amber-400 text-sm font-bold rounded-full"
+                  >
+                    <LogIn className="mr-2 h-5 w-5" />
+                    Dropbox 로그인
+                  </Button>
+                )}
+              </div>
+            </TabsContent>
+
               <TabsContent value="icloud" className="py-8">
               <div className="flex flex-col items-center gap-6 text-center">
                 <div className="p-6 bg-muted/40 rounded-full">
@@ -583,8 +637,9 @@ export default function SyncSettings() {
                 </div>
                 <h3 className="font-bold text-xl">iCloud Drive / 로컬 파일</h3>
                 <p className="text-base text-muted-foreground max-w-sm leading-relaxed">
-                  &apos;파일 내보내기&apos; 기능을 사용하여 <strong>iCloud Drive</strong> 폴더에 저장하면, 
-                  모든 Apple 기기에서 파일에 접근할 수 있습니다.
+                  iCloud는 웹앱이 직접 접근할 수 없습니다. <strong>&apos;내보내기&apos;</strong>로
+                  파일을 <strong>iCloud Drive</strong> 폴더에 저장하면 모든 Apple 기기에서 열 수 있습니다.
+                  (자동 동기화는 Dropbox/Google/OneDrive를 사용하세요.)
                 </p>
                 <Button onClick={handleExport} className="h-12 bg-amber-500 text-stone-950 hover:bg-amber-400 text-sm font-bold px-8 rounded-full">
                   <Download className="mr-2 h-5 w-5" />

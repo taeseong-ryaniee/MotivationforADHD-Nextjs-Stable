@@ -5,8 +5,9 @@ import { z } from 'zod'
 // ===========================
 
 /**
- * Schema for validating TodoData before storing to IndexedDB
- * Ensures all required fields are present and valid
+ * Schema for validating TodoData before storing to IndexedDB.
+ * The real guard: lib/db.ts saveTodo/bulkSaveTodos call TodoDataSchema.parse()
+ * on every write, so corrupt todos never reach storage.
  */
 export const TodoDataSchema = z.object({
   id: z.string().uuid('Invalid UUID format'),
@@ -16,28 +17,6 @@ export const TodoDataSchema = z.object({
   createdAt: z.string().min(1, 'CreatedAt is required'),
   createdAtMs: z.number().optional()
 })
-
-export type ValidatedTodoData = z.infer<typeof TodoDataSchema>
-
-// ===========================
-// Special Event Validation (XSS Prevention)
-// ===========================
-
-/**
- * Schema for validating special event input
- * Prevents XSS attacks by blocking dangerous patterns
- */
-export const SpecialEventSchema = z.string()
-  .max(200, '특별 일정은 200자를 초과할 수 없습니다')
-  .transform(str => str.trim())
-  .refine(
-    str => !/<script|javascript:|on\w+=/i.test(str),
-    '유효하지 않은 문자가 포함되어 있습니다'
-  )
-  .refine(
-    str => !/<iframe|<object|<embed/i.test(str),
-    '유효하지 않은 문자가 포함되어 있습니다'
-  )
 
 // ===========================
 // Migration Data Validation
@@ -57,77 +36,6 @@ export const MigrationDataSchema = z.object({
 
 export type MigrationData = z.infer<typeof MigrationDataSchema>
 
-// ===========================
-// Content Data Validation
-// ===========================
-
-/**
- * Schema for validating motivation content from API
- */
-export const ContentDataSchema = z.object({
-  version: z.string(),
-  updatedAt: z.string(),
-  locale: z.string(),
-  motivationMessages: z.array(z.string()),
-  antiBrainFogTips: z.array(z.string()),
-  practicalTips: z.array(z.object({
-    category: z.string(),
-    tips: z.array(z.string())
-  })),
-  daySpecificMessages: z.record(z.string(), z.string())
-})
-
-export type ValidatedContentData = z.infer<typeof ContentDataSchema>
-
-// ===========================
-// Validation Helper Functions
-// ===========================
-
-/**
- * Safely validate TodoData and return errors
- */
-export function validateTodoData(data: unknown): {
-  success: true
-  data: ValidatedTodoData
-} | {
-  success: false
-  errors: string[]
-} {
-  const result = TodoDataSchema.safeParse(data)
-
-  if (result.success) {
-    return { success: true, data: result.data }
-  }
-
-  const errors = result.error.issues.map(err =>
-    `${err.path.join('.')}: ${err.message}`
-  )
-
-  return { success: false, errors }
-}
-
-/**
- * Safely validate special event input
- */
-export function validateSpecialEvent(input: string): {
-  success: true
-  data: string
-} | {
-  success: false
-  error: string
-} {
-  const result = SpecialEventSchema.safeParse(input)
-
-  if (result.success) {
-    return { success: true, data: result.data }
-  }
-
-  return {
-    success: false,
-    error: result.error.issues[0]?.message || '유효하지 않은 입력입니다'
-  }
-}
-
 /**
  * Validate migration data and fill in defaults
  */
@@ -142,16 +50,29 @@ export function validateMigrationData(data: unknown): MigrationData | null {
   return result.data
 }
 
+// ===========================
+// Content Data Validation
+// ===========================
+
 /**
- * Validate content data from API
+ * Contract for the bundled motivation content (public/content/{locale}.json).
+ * Not a runtime guard — content is a trusted build-time asset with no user/import
+ * path. Instead lib/__tests__/content-schema.test.ts parses the bundled files
+ * against this schema, so drift (a renamed/removed field) fails CI, not the app.
+ * cheers is ko-only; therapyMessages exists in every locale.
  */
-export function validateContentData(data: unknown): ValidatedContentData | null {
-  const result = ContentDataSchema.safeParse(data)
-
-  if (!result.success) {
-    console.error('Content data validation failed:', result.error)
-    return null
-  }
-
-  return result.data
-}
+export const ContentDataSchema = z.object({
+  version: z.string(),
+  updatedAt: z.string(),
+  locale: z.string(),
+  motivationMessages: z.array(z.string()),
+  antiBrainFogTips: z.array(z.string()),
+  practicalTips: z.array(z.object({
+    category: z.string(),
+    tips: z.array(z.string())
+  })),
+  daySpecificMessages: z.record(z.string(), z.string()),
+  // ponytail: shape-only check, not the deep TherapyCategory tree. Model it fully if a locale ships a malformed therapyMessages tree.
+  therapyMessages: z.record(z.string(), z.unknown()).optional(),
+  cheers: z.array(z.string()).optional()
+})
