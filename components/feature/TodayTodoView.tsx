@@ -150,7 +150,7 @@ export function TodayTodoView({ todayTodo, onBack, onCopyContent, onUpdate }: To
     <div className="flex flex-col space-y-6 md:h-full" data-section="todo-detail-root">
       <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center sm:justify-between shrink-0">
         <div className="flex items-center gap-3">
-          <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-primary/10 text-primary">
+          <div className="flex h-10 w-10 items-center justify-center rounded-container bg-primary/10 text-primary">
             <NotebookPen className="h-5 w-5" aria-hidden="true" />
           </div>
           <div>

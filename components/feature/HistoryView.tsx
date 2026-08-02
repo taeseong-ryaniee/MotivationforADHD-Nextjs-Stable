@@ -149,7 +149,7 @@ export function HistoryView() {
                     position: 'relative',
                   },
                 }}
-                className="rounded-lg border border-border/60 bg-background"
+                className="rounded-container border border-border/60 bg-background"
               />
             </CardContent>
           </Card>

@@ -20,7 +20,7 @@ export function MobileNav() {
                 key={item.url}
                 href={item.url}
                 className={cn(
-                  "flex flex-1 flex-col items-center justify-center gap-1 rounded-lg px-3 py-2 text-xs font-medium transition-colors",
+                  "flex flex-1 flex-col items-center justify-center gap-1 rounded-container px-3 py-2 text-xs font-medium transition-colors",
                   isActive
                     ? "bg-primary/10 text-primary"
                     : "text-muted-foreground hover:text-foreground"

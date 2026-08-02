@@ -98,7 +98,7 @@ export function StartScreen({ motivation, cheers, tip, isCreating, onStart }: St
           </>
         )}
         {tip && (
-          <div className="mx-auto flex max-w-sm items-start gap-2 rounded-lg border border-amber-500/10 bg-stone-900/60 p-3 text-left">
+          <div className="mx-auto flex max-w-sm items-start gap-2 rounded-container border border-amber-500/10 bg-stone-900/60 p-3 text-left">
             <Lightbulb className="mt-0.5 h-4 w-4 shrink-0 text-amber-500" aria-hidden="true" />
             <p className="text-xs text-stone-400">
               <span className="font-medium text-stone-300">{tip.title}</span> · {tip.body}
@@ -110,7 +110,7 @@ export function StartScreen({ motivation, cheers, tip, isCreating, onStart }: St
       {/* 2. 단일 입력 — "오늘 뭐 할까?"와 특별 일정을 하나로 */}
       <div className="mx-auto w-full max-w-md space-y-4">
         <div
-          className={`rounded-lg border border-amber-500/10 p-4 transition-all duration-300 ${
+          className={`rounded-container border border-amber-500/10 p-4 transition-all duration-300 ${
             flash
               ? 'bg-amber-500/10 shadow-[0_0_20px_rgba(245,158,11,0.15)]'
               : 'bg-stone-900/50 shadow-[0_0_10px_rgba(245,158,11,0.05)]'

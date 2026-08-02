@@ -308,7 +308,7 @@ export default function SyncSettings() {
       <Card className="overflow-hidden border-border/60 bg-card/80 shadow-sm" data-section="sync-settings-file">
         <CardHeader className="border-b border-border/60 bg-muted/40 pb-6 pt-6">
           <div className="flex items-center gap-4">
-            <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-muted/60 text-muted-foreground">
+            <div className="flex h-12 w-12 items-center justify-center rounded-container bg-muted/60 text-muted-foreground">
               <FileJson className="h-6 w-6" />
             </div>
             <div>
@@ -365,7 +365,7 @@ export default function SyncSettings() {
         <CardHeader className="border-b border-border/60 bg-muted/40 pb-6 pt-6">
           <div className="flex flex-wrap items-center justify-between gap-4">
             <div className="flex items-center gap-4">
-              <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-muted/60 text-muted-foreground">
+              <div className="flex h-12 w-12 items-center justify-center rounded-container bg-muted/60 text-muted-foreground">
                 <Cloud className="h-6 w-6" />
               </div>
               <div>
@@ -401,7 +401,7 @@ export default function SyncSettings() {
               </div>
 
               {isConfigExpanded && (
-                <div className="mb-8 rounded-xl border border-border/60 bg-muted/30 p-6 animate-in fade-in slide-in-from-top-2">
+                <div className="mb-8 rounded-container border border-border/60 bg-muted/30 p-6 animate-in fade-in slide-in-from-top-2">
                   <div className="grid gap-6 sm:grid-cols-2">
                     <div className="space-y-3">
                       <label htmlFor="s3-bucket" className="text-sm font-medium text-muted-foreground ml-1">Bucket Name</label>
@@ -518,7 +518,7 @@ export default function SyncSettings() {
 
                 {activeProviderState?.type === 'google' ? (
                   <div className="space-y-6 w-full max-w-md">
-                    <div className="flex items-center justify-center gap-2 text-green-500 bg-green-500/10 p-3 rounded-xl text-sm font-bold">
+                    <div className="flex items-center justify-center gap-2 text-green-500 bg-green-500/10 p-3 rounded-container text-sm font-bold">
                       <Check className="h-5 w-5" />
                       연결됨
                     </div>
@@ -563,7 +563,7 @@ export default function SyncSettings() {
 
                 {activeProviderState?.type === 'onedrive' ? (
                   <div className="space-y-6 w-full max-w-md">
-                    <div className="flex items-center justify-center gap-2 text-green-500 bg-green-500/10 p-3 rounded-xl text-sm font-bold">
+                    <div className="flex items-center justify-center gap-2 text-green-500 bg-green-500/10 p-3 rounded-container text-sm font-bold">
                       <Check className="h-5 w-5" />
                       연결됨
                     </div>
@@ -608,7 +608,7 @@ export default function SyncSettings() {
 
                 {activeProviderState?.type === 'dropbox' ? (
                   <div className="space-y-6 w-full max-w-md">
-                    <div className="flex items-center justify-center gap-2 text-green-500 bg-green-500/10 p-3 rounded-xl text-sm font-bold">
+                    <div className="flex items-center justify-center gap-2 text-green-500 bg-green-500/10 p-3 rounded-container text-sm font-bold">
                       <Check className="h-5 w-5" />
                       연결됨 · 편집 시 자동 동기화
                     </div>
@@ -650,7 +650,7 @@ export default function SyncSettings() {
           </Tabs>
 
           {syncStatus.lastSyncAt && (
-            <div className="mt-8 flex items-center gap-3 rounded-xl border border-border/60 bg-muted/40 px-4 py-3 text-sm text-muted-foreground">
+            <div className="mt-8 flex items-center gap-3 rounded-container border border-border/60 bg-muted/40 px-4 py-3 text-sm text-muted-foreground">
               <Check className="h-4 w-4 text-green-500" />
               <span>
                 마지막 동기화: {new Date(syncStatus.lastSyncAt).toLocaleString('ko-KR')}
@@ -662,7 +662,7 @@ export default function SyncSettings() {
       </Card>
       
       <div
-        className="flex items-start gap-3 rounded-xl border border-amber-500/20 bg-amber-500/5 p-6 text-sm text-foreground leading-relaxed"
+        className="flex items-start gap-3 rounded-container border border-amber-500/20 bg-amber-500/5 p-6 text-sm text-foreground leading-relaxed"
         data-section="sync-settings-warning"
       >
         <AlertCircle className="h-5 w-5 shrink-0 mt-0.5" />

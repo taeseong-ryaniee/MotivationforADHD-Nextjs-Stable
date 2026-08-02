@@ -26,7 +26,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
     <Sidebar variant="inset" {...props}>
       <SidebarHeader className="gap-3 px-3 py-4">
         <div className="flex items-center gap-3">
-          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10 text-primary">
+          <div className="flex h-10 w-10 items-center justify-center rounded-container bg-primary/10 text-primary">
             <LayoutDashboard className="h-5 w-5" aria-hidden="true" />
           </div>
           <div className="flex flex-col gap-0.5 leading-none">
@@ -34,7 +34,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
             <span className="font-serif text-lg font-semibold">산만이의 아침</span>
           </div>
         </div>
-        <div className="rounded-lg border border-sidebar-border/60 bg-sidebar-accent/40 px-3 py-2 text-xs text-muted-foreground">
+        <div className="rounded-container border border-sidebar-border/60 bg-sidebar-accent/40 px-3 py-2 text-xs text-muted-foreground">
           오늘의 루틴을 차근히 기록해요.
         </div>
       </SidebarHeader>
