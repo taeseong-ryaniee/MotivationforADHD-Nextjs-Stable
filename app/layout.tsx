@@ -32,10 +32,6 @@ export default function RootLayout({
       <head>
         <link rel="icon" href="/icons/app-icon.svg" type="image/svg+xml" />
         <link rel="apple-touch-icon" href="/icons/app-icon-192.png" />
-        {/* TEMP(dev-only): Figma 캡처 스크립트 — 캡처 끝나면 제거. 프로덕션 빌드에선 렌더 안 됨 */}
-        {process.env.NODE_ENV !== 'production' && (
-          <script src="https://mcp.figma.com/mcp/html-to-design/capture.js" async></script>
-        )}
       </head>
       <body className="font-sans antialiased">
         <a
