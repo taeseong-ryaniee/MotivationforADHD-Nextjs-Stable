@@ -101,6 +101,7 @@ export async function bulkSaveTodos(todos: TodoData[]): Promise<string> {
 
 export async function deleteTodo(id: string): Promise<void> {
   await getDB().todos.delete(id)
+  await recordDeletedTodoId(id)
 }
 
 export async function clearAllTodos(): Promise<void> {
@@ -119,6 +120,21 @@ export async function setSetting<T = unknown>(key: string, value: T): Promise<st
 
 export async function deleteSetting(key: string): Promise<void> {
   await getDB().settings.delete(key)
+}
+
+// 삭제 툼스톤 — 로컬에서 지운 todo 의 id 를 settings 에 남긴다.
+// pull 병합(lib/sync.ts 의 mergeSyncData)이 이 목록을 보고 이미 지운 항목을 되살리지 않는다.
+// settings 는 key-value 테이블이라 Dexie version() 을 올릴 필요가 없다 — 이 웨이브는 v4 를 유지한다.
+export const DELETED_TODO_IDS_KEY = 'deletedTodoIds'
+
+export async function recordDeletedTodoId(id: string): Promise<void> {
+  const ids = (await getSetting<string[]>(DELETED_TODO_IDS_KEY)) ?? []
+  if (ids.includes(id)) return
+  await setSetting(DELETED_TODO_IDS_KEY, [...ids, id])
+}
+
+export async function getDeletedTodoIds(): Promise<string[]> {
+  return (await getSetting<string[]>(DELETED_TODO_IDS_KEY)) ?? []
 }
 
 // Helper functions for content

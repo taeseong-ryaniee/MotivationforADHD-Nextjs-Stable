@@ -27,7 +27,7 @@ export default function Error({
   }, [error])
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-slate-900 dark:to-slate-800 flex items-center justify-center p-6">
+    <div className="min-h-screen bg-gradient-to-b from-background via-background to-muted/40 flex items-center justify-center p-6">
       <Card className="max-w-md w-full p-8 shadow-lg">
         <div className="flex flex-col items-center text-center">
           <div className="bg-red-100 dark:bg-red-900/30 rounded-full p-4 mb-4">

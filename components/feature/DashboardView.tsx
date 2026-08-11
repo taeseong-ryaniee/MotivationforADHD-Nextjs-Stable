@@ -6,10 +6,9 @@ import { TodayTodoView } from '@/components/feature/TodayTodoView'
 import { Card, CardContent } from '@/components/ui/card'
 import { useDailyTodo, useSaveTodo } from '@/hooks/useTodos'
 import { useContent } from '@/hooks/useContent'
-import { migrateFromLocalStorage } from '@/lib/db'
 import { showError, showSuccess } from '@/lib/toast'
 import { copyToClipboard } from '@/lib/utils'
-import { useEffect, useMemo, useCallback } from 'react'
+import { useMemo, useCallback } from 'react'
 
 function getDayOfYear(): number {
   return Math.floor(
@@ -39,10 +38,6 @@ export function DashboardView() {
     createDailyTodo,
   } = useDailyTodo()
   const saveTodoMutation = useSaveTodo()
-
-  useEffect(() => {
-    migrateFromLocalStorage()
-  }, [])
 
   const cheers = useMemo(() => content?.cheers ?? [], [content])
   const tip = useMemo(() => getTodayTip(content?.antiBrainFogTips ?? []), [content])

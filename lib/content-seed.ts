@@ -1,5 +1,6 @@
 import { getContent, saveContent } from '@/lib/db'
 import type { ContentData, ContentRecord } from '@/lib/types'
+import { ContentDataSchema } from '@/lib/validation'
 
 /**
  * ko.json을 IndexedDB에 시드합니다.
@@ -36,12 +37,14 @@ export async function seedContent(locale: string = 'ko'): Promise<ContentData> {
 }
 
 async function fetchContentFromStatic(locale: string): Promise<ContentData> {
+  let raw: unknown
+
   try {
     const response = await fetch(`/content/${locale}.json`)
     if (!response.ok) {
       throw new Error(`콘텐츠 로딩 실패: ${response.status}`)
     }
-    return await response.json()
+    raw = await response.json()
   } catch (error) {
     // fetch 실패 시 (오프라인 등) 기존 IndexedDB 데이터 반환 시도
     const existing = await getContent(locale)
@@ -52,4 +55,9 @@ async function fetchContentFromStatic(locale: string): Promise<ContentData> {
       `콘텐츠를 로딩할 수 없습니다: ${error instanceof Error ? error.message : '알 수 없는 오류'}`
     )
   }
+
+  // 검증은 catch 밖에서 한다 — 스키마 위반이 오프라인 폴백으로 조용히 삼켜지면
+  // 깨진 콘텐츠가 그대로 IndexedDB 에 시드된다.
+  // cheers 는 ko 전용이라 스키마에서 optional 이고 ContentData 에서는 필수라 캐스트가 필요하다.
+  return ContentDataSchema.parse(raw) as ContentData
 }
