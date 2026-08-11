@@ -4,6 +4,7 @@ import { useState, useSyncExternalStore } from 'react'
 import { Share, Plus, X } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
+import { shouldShowPrompt } from '@/lib/pwa-utils'
 
 const DISMISS_KEY = 'pwa-install-dismissed-at'
 
@@ -34,24 +35,6 @@ function readDismissedAt(): number | null {
   if (typeof window === 'undefined') return null
   const raw = window.localStorage.getItem(DISMISS_KEY)
   return raw ? Number(raw) : null
-}
-
-/**
- * TODO(human): shouldShowPrompt 구현
- *
- * 사용자가 마지막으로 배너를 닫은 시각(dismissedAt: epoch ms, 닫은 적 없으면 null)과
- * 현재 시각(now: epoch ms)을 받아, 지금 설치 안내 배너를 다시 보여줄지 결정한다.
- *
- * ADHD-UX 제약 (DESIGN.md):
- *   - "실패 없는 UX" + "여백은 calm signal" — 반복되는 배너는 마찰이자 압박이다.
- *   - 한 번 닫은 사용자에게 매번 다시 띄우면 죄책감/짜증을 유발한다.
- *   - 그렇다고 영원히 안 띄우면, 나중에 설치하고 싶을 때 경로가 사라진다.
- *
- * 결정해야 할 것: 한 번 닫으면 다시 안 보여줄지, 일정 기간(예: 7일/30일) 후 한 번 더
- * 보여줄지, 아니면 다른 정책을 쓸지. true면 배너 표시, false면 숨김.
- */
-function shouldShowPrompt(dismissedAt: number | null, now: number): boolean {
-  return false
 }
 
 // --- 외부 스토어: 브라우저 설치 상태를 SSR-안전하게 구독 ---

@@ -56,9 +56,11 @@ export function validateMigrationData(data: unknown): MigrationData | null {
 
 /**
  * Contract for the bundled motivation content (public/content/{locale}.json).
- * Not a runtime guard — content is a trusted build-time asset with no user/import
- * path. Instead lib/__tests__/content-schema.test.ts parses the bundled files
- * against this schema, so drift (a renamed/removed field) fails CI, not the app.
+ * Runtime guard at the fetch boundary: lib/content-seed.ts parses every
+ * /content/{locale}.json response against this schema, so a malformed or
+ * truncated asset fails loudly instead of seeding garbage into IndexedDB.
+ * lib/__tests__/content-schema.test.ts additionally parses the bundled files,
+ * so drift (a renamed/removed field) fails CI too.
  * cheers is ko-only; therapyMessages exists in every locale.
  */
 export const ContentDataSchema = z.object({
