@@ -3,8 +3,8 @@ import { describe, it, expect, vi, beforeEach } from 'vitest'
 const exportData = vi.fn(async () => ({ metadata: {}, todos: [], settings: {} }))
 const importSyncData = vi.fn(async () => {})
 vi.mock('../sync', () => ({
-  exportData: (...a: unknown[]) => exportData(...a),
-  importSyncData: (...a: unknown[]) => importSyncData(...a),
+  exportData: (...a: Parameters<typeof exportData>) => exportData(...a),
+  importSyncData: (...a: Parameters<typeof importSyncData>) => importSyncData(...a),
 }))
 
 const showError = vi.fn()

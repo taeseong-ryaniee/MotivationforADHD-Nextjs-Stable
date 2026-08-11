@@ -66,6 +66,8 @@ Koddi UD On Gothic은 가독성을 위해 설계된 UD 폰트이므로 자간을
 | `green-500/15` | `#22c55e26` | 완료 chip 배경 |
 
 ### Surface & Background (다크 모드 기본)
+> **전환(2026-07-30):** `.dark` 클래스 + `hsl(var(--x))` 2단 간접 대신 CSS `light-dark()` 사용. `:root`에 `color-scheme: light`, `.dark`에 `color-scheme: dark` 선언 추가 — `light-dark()` 동작의 필수 조건.
+
 | Token | Value | Role |
 |-------|-------|------|
 | `zinc-950` / `#0a0a0a` | 기본 페이지 배경 (Canvas) |
@@ -115,15 +117,17 @@ Koddi UD On Gothic은 가독성을 위해 설계된 UD 폰트이므로 자간을
 
 | Token | Value | Role |
 |-------|-------|------|
-| xs | 4px | 인풋 필드 작은 요소, 유틸리티 배지 |
-| sm | 8px | 카드, 팁 카드, 대화창 |
-| md | 12px | 중간 크기 카드, 그룹 블록 |
-| lg | 20px | 큰 카드, 시트 컨테이너 |
-| pill | 9999px | CTA 버튼, status chip, badge |
+| inner | 4px | 중첩된 내부 요소 |
+| element | 8px | 인터랙티브 컨트롤 (버튼·인풋·셀렉터) |
+| container | 12px | 콘텐츠 컨테이너 (카드·패널·다이얼로그) |
+| page | 28px | 페이지 레벨 컨테이너. 작은 요소에 쓰지 말 것 |
+| full | 9999px | pill (배지·태그·메인 CTA) |
+
+> Astryx 의미 네이밍으로 개명(2026-07-30). 기존 20px(`lg`)은 사라짐 — 10곳 중 9곳은 `container`(12px), 1곳(사이드바 inset 셸)은 `page`(28px)로 재배치.
 
 메인 CTA("추가", "오늘 하루 시작!")는 반드시 `rounded-full` (pill).
 완료 chip은 `rounded-full`.
-일반 카드는 `rounded-lg` (12px).
+일반 카드는 `rounded-container` (12px).
 
 ---
 
@@ -186,7 +190,7 @@ text-stone-400 hover:text-stone-200 underline-offset-4 hover:underline
 ### input-card
 입력 영역을 감싸는 카드. micro-stimulation glow를 포함.
 ```
-rounded-lg border border-amber-500/10 p-4
+rounded-container border border-amber-500/10 p-4
 bg-stone-900/50 shadow-[0_0_10px_rgba(245,158,11,0.05)]
 transition-all duration-300
 /* flash 상태: */
@@ -233,7 +237,7 @@ inline-flex items-center gap-1
 ### Do
 - 따뜻한 다크(zinc-950)를 기본 표면으로 유지한다.
 - CTA는 amber pill (rounded-full) 하나만. 보조 행동은 텍스트 링크.
-- 카드 반경은 12px (`rounded-lg`), 미디어/큰 컨테이너는 20px (`rounded-xl`).
+- 카드 반경은 12px (`rounded-container`), 미디어/큰 컨테이너는 28px (`rounded-page`).
 - 날짜·단축키는 JetBrains Mono mono-label 패턴으로 표시한다.
 - 표면 교체와 얇은 테두리로 계층을 만든다.
 - 앰버 glow를 micro-stimulation 피드백으로 반드시 유지한다.
@@ -271,3 +275,4 @@ inline-flex items-center gap-1
 | 2026-06-16 | Cohere design analysis 적용 | 구조적 엄밀함(type hierarchy, flat elevation, token table, Do/Don't) 도입. 브랜드(white canvas, coral, 기업 느낌)는 유지하지 않음. 여백을 "calm signal"로 명명. |
 | 2026-06-16 | 4px base unit 유지 | Cohere 8px base 미채택 — ADHD comfortable density는 명시적 설계 결정. |
 | 2026-06-16 | 한글 자간 제한 | Display(-0.015em), Heading(-0.01em), Body(0). Koddi UD 가독성 보호. |
+| 2026-07-30 | Astryx 토큰 일부 채용 (radius 의미 네이밍 + light-dark()) | radius 5개 중 4개 값 동일(20px→28px `page`만 변경). light-dark() 전환에 `color-scheme` 선언 필수(next-themes가 `attribute="class"`라 클래스만 토글, `color-scheme`은 안 바뀜). Astryx 패키지는 설치 안 함(`@astryxdesign/core` 0.1.9 Beta 이전 + `@stylexjs/stylex` peer dep 요구). 폰트는 Koddi UD On Gothic 유지(Figtree에 한글 글리프 없음). 죽은 토큰 7개 제거(`chart-1~5`, `sidebar-primary`, `sidebar-primary-foreground`). |

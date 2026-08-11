@@ -9,10 +9,9 @@ export interface TodoData {
   createdAtMs?: number
 }
 
-export interface Settings<T = unknown> {
+export interface Settings {
   key: string
-  value: T
-  id?: string // For compatibility with some storage adapters
+  value: unknown
 }
 
 export interface PracticalTip {
@@ -30,7 +29,6 @@ export interface ContentData {
   version: string
   updatedAt: string
   locale: string
-  therapyMessages?: TherapyMessages
   motivationMessages: string[]
   antiBrainFogTips: string[]
   practicalTips: PracticalTip[]
@@ -68,32 +66,4 @@ export interface S3Config {
 }
 
 export type SyncStrategy = 'overwrite' | 'merge' | 'manual'
-
-export interface SyncConflict {
-  type: 'todo' | 'setting'
-  id: string
-  localValue: TodoData | unknown
-  remoteValue: TodoData | unknown
-  localModifiedAt: string
-  remoteModifiedAt: string
-}
-
-// Therapy Messages (인지치료 기반 메시지)
-export type TherapyType = 'cbt' | 'dbt' | 'act'
-
-export interface TherapyCategory {
-  label: string
-  cbt: string[]
-  dbt: string[]
-  act: string[]
-}
-
-export interface TherapyMessages {
-  starting: TherapyCategory    // 시작하기
-  working: TherapyCategory     // 업무/공부 진행
-  stuck: TherapyCategory       // 막힘/멈춤
-  emotion: TherapyCategory     // 감정 다스리기
-  mistake: TherapyCategory     // 실수/자책 대응
-  social: TherapyCategory      // 대인관계/소통
-}
 

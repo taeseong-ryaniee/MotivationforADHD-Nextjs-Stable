@@ -72,7 +72,5 @@ export const ContentDataSchema = z.object({
     tips: z.array(z.string())
   })),
   daySpecificMessages: z.record(z.string(), z.string()),
-  // ponytail: shape-only check, not the deep TherapyCategory tree. Model it fully if a locale ships a malformed therapyMessages tree.
-  therapyMessages: z.record(z.string(), z.unknown()).optional(),
   cheers: z.array(z.string()).optional()
 })

@@ -5,7 +5,7 @@ const bulkSaveTodos = vi.fn()
 const setSetting = vi.fn()
 const getAllTodos = vi.fn(async () => [])
 vi.mock('../db', () => ({
-  getAllTodos: (...a: unknown[]) => getAllTodos(...a),
+  getAllTodos: (...a: Parameters<typeof getAllTodos>) => getAllTodos(...a),
   bulkSaveTodos: (...a: unknown[]) => bulkSaveTodos(...a),
   setSetting: (...a: unknown[]) => setSetting(...a),
   getSetting: vi.fn(),

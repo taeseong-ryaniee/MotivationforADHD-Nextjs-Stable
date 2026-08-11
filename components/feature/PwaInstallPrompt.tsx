@@ -101,7 +101,7 @@ export function PwaInstallPrompt() {
   return (
     <Card className="border-amber-500/20 bg-stone-900/90 md:hidden">
       <CardContent className="flex items-start gap-3 p-4">
-        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-amber-500/10 text-amber-500">
+        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-container bg-amber-500/10 text-amber-500">
           <Plus className="h-5 w-5" aria-hidden="true" />
         </div>
         <div className="min-w-0 flex-1">
@@ -129,7 +129,7 @@ export function PwaInstallPrompt() {
         </div>
         <button
           onClick={handleDismiss}
-          className="-m-1 shrink-0 rounded-md p-1 text-stone-500 hover:text-stone-300"
+          className="-m-1 shrink-0 rounded-element p-1 text-stone-500 hover:text-stone-300"
           aria-label="설치 안내 닫기"
         >
           <X className="h-4 w-4" />

@@ -150,12 +150,12 @@ export function TodayTodoView({ todayTodo, onBack, onCopyContent, onUpdate }: To
     <div className="flex flex-col space-y-6 md:h-full" data-section="todo-detail-root">
       <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center sm:justify-between shrink-0">
         <div className="flex items-center gap-3">
-          <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-primary/10 text-primary">
+          <div className="flex h-10 w-10 items-center justify-center rounded-container bg-primary/10 text-primary">
             <NotebookPen className="h-5 w-5" aria-hidden="true" />
           </div>
           <div>
             <p className="text-xs font-semibold text-muted-foreground font-sans">오늘의 정리</p>
-            <h2 className="text-xl font-bold text-foreground md:text-2xl font-serif">오늘의 격려 To-do</h2>
+            <h2 className="text-xl font-bold text-foreground md:text-2xl">오늘의 격려 To-do</h2>
           </div>
         </div>
 
@@ -192,7 +192,7 @@ export function TodayTodoView({ todayTodo, onBack, onCopyContent, onUpdate }: To
 
       {todayTodo && (
         <Card
-          className="flex flex-col border-border/60 bg-card/80 shadow-sm md:flex-1 md:overflow-hidden"
+          className="flex flex-col border-border/60 bg-card/80 md:flex-1 md:overflow-hidden"
           data-section="todo-detail-content"
         >
           <CardContent className="flex flex-col p-4 sm:p-6 md:flex-1 md:overflow-y-auto">
@@ -243,14 +243,14 @@ export function TodayTodoView({ todayTodo, onBack, onCopyContent, onUpdate }: To
                   {sections.map((sec, idx) => (
                     <Card
                       key={idx}
-                      className={`border-border/60 p-4 shadow-sm transition-colors hover:bg-opacity-80 ${sectionTone(sec.emoji)}`}
+                      className={`border-border/60 p-4 transition-colors ${sectionTone(sec.emoji)}`}
                       data-section="todo-detail-section"
                     >
                       <div className="flex items-center gap-3 mb-3">
                         <span className="text-xl" aria-hidden="true">
                           {sec.emoji}
                         </span>
-                        <h4 className="text-base font-bold text-foreground font-serif">{sec.title}</h4>
+                        <h4 className="text-base font-bold text-foreground">{sec.title}</h4>
                       </div>
                       <div className="text-sm leading-loose text-muted-foreground whitespace-pre-wrap font-sans">
                         {sec.body}
@@ -269,7 +269,7 @@ export function TodayTodoView({ todayTodo, onBack, onCopyContent, onUpdate }: To
               <div className="mt-8 pt-4 border-t border-border/30 shrink-0">
                 <Button
                   onClick={() => onCopyContent(todayTodo.content)}
-                  className="w-full h-12 text-base font-medium shadow-sm transition-all hover:translate-y-[-1px]"
+                  className="w-full h-12 text-base font-medium"
                   size="lg"
                   type="button"
                   aria-label="To-do 전체 내용 클립보드에 복사"
