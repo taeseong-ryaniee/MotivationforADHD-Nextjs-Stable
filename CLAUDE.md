@@ -39,7 +39,7 @@ There is no global store. State is split by where it lives:
 
 3. **Pure helpers** — derived/business logic (daily todo generation, event-based
    content selection) lives in stateless modules, not a store:
-   `lib/todo-utils.ts`, `lib/content-utils.ts`, `lib/utils/messageSelector.ts`.
+   `lib/todo-utils.ts`, `lib/content-utils.ts`.
 
 **Rules:**
 - Any IndexedDB read/write → go through a TanStack Query hook. Never call
