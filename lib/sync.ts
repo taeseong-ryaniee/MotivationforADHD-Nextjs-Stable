@@ -1,5 +1,5 @@
 import { S3Client, PutObjectCommand, GetObjectCommand, ListObjectsV2Command } from '@aws-sdk/client-s3'
-import { getAllTodos, bulkSaveTodos, getSetting, setSetting, deleteSetting } from './db'
+import { getAllTodos, bulkSaveTodos, getSetting, setSetting, deleteSetting, getDeletedTodoIds } from './db'
 import type { TodoData, SyncData, SyncMetadata, S3Config, SyncStrategy } from './types'
 
 let deviceId: string | null = null
@@ -143,11 +143,13 @@ async function applySyncData(data: SyncData): Promise<void> {
 async function mergeSyncData(data: SyncData): Promise<void> {
   const localTodos = await getAllTodos()
   const localTodoIds = new Set(localTodos.map((t) => t.id))
+  const deletedIds = new Set(await getDeletedTodoIds())
 
   const todosToSave: TodoData[] = []
 
   for (const remoteTodo of data.todos) {
-    if (!localTodoIds.has(remoteTodo.id)) {
+    // 로컬에 없다고 곧바로 추가하지 않는다 — 여기서 지운 것일 수 있다.
+    if (!localTodoIds.has(remoteTodo.id) && !deletedIds.has(remoteTodo.id)) {
       todosToSave.push(remoteTodo)
     }
   }
@@ -160,6 +162,21 @@ async function mergeSyncData(data: SyncData): Promise<void> {
   // 메타데이터 업데이트
   await setSetting('lastSyncAt', data.metadata.lastSyncAt)
   await setSetting('syncedWith', data.metadata.deviceId)
+}
+
+/**
+ * 원격 스냅샷이 "우리가 마지막으로 반영한 것"보다 새로운가.
+ *
+ * mergeSyncData / applySyncData 가 settings 의 lastSyncAt 에 남긴 값(마지막으로 반영한
+ * 원격 시각)과 비교한다. 기록이 없으면(첫 동기화) 새로운 것으로 본다 — 덮어쓰기보다
+ * 병합이 안전하다. ISO 8601 문자열은 사전식 비교가 시간순 비교와 같다.
+ *
+ * IndexedDB 를 읽으므로 sync-engine 이 아니라 여기 있다(루트 CLAUDE.md 의 접근 규칙).
+ */
+export async function isRemoteNewer(remote: SyncData): Promise<boolean> {
+  const absorbed = await getSetting<string>('lastSyncAt')
+  if (!absorbed) return true
+  return remote.metadata.lastSyncAt > absorbed
 }
 
 // === AWS S3 Integration ===
